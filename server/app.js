@@ -147,7 +147,7 @@ export function createApp({ database = resolve('.local/server.sqlite'), staticRo
         case 'sign': next = E.signOffer(c, args.index); break;
         case 'event': next = E.chooseEvent(c, args.choice); break;
         case 'train': next = E.beginTraining(c, args.skill); break;
-        case 'shot': next = E.trainingShot(c, args.marker); break;
+        case 'shot': next = E.trainingShot(c, args.input ?? args.marker); break;
         case 'finish-training': next = E.finishTraining(c); break;
         case 'retire': next = E.retire(c); break;
         case 'focus':

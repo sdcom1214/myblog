@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as E from '../src/engine.js';
 import { majorSeasonAwards } from '../src/awards.js';
+import { trainingInput } from './training-input.mjs';
 import { emptyStore, parseSave, serializeCareer, serializeSave, validateStore, loadStore } from '../src/storage.js';
 
 const profile = (position = 'FW') => ({ name: '테스트선수', number: 10, foot: '왼발', position, academy: 'hale-end', preferred: 'arsenal' });
@@ -101,10 +102,10 @@ test('goalkeeper seasons produce goalkeeper records with no outfield goals', () 
 test('training limits and five attempts survive a saved game round trip', () => {
   let c = E.beginTraining(pro(), 0);
   assert.throws(() => E.beginTraining(c, 1)); assert.throws(() => E.playSeason(c));
-  c = E.trainingShot(c, 50); c = E.trainingShot(c, 20);
+  c = E.trainingShot(c, trainingInput(c, 2)); c = E.trainingShot(c, trainingInput(c, 0));
   c = parseSave(serializeCareer(c)).value;
   assert.deepEqual(c.pendingTraining.shots, [2, 0]);
-  c = E.trainingShot(c, 50); c = E.trainingShot(c, 35); c = E.trainingShot(c, 10);
+  c = E.trainingShot(c, trainingInput(c, 2)); c = E.trainingShot(c, trainingInput(c, 1)); c = E.trainingShot(c, trainingInput(c, 0));
   const before = c.skills[0]; c = E.finishTraining(c);
   assert.equal(c.lastTraining.score, 5); assert.equal(c.skills[0], E.round(before + 2));
   assert.throws(() => E.beginTraining(c, 1)); assert.throws(() => E.finishTraining(c));
@@ -115,7 +116,7 @@ test('three lifetime training opportunities cannot be exceeded', () => {
   let c = pro();
   for (const skill of [0, 1, 2]) {
     c = E.beginTraining(c, skill);
-    for (let i = 0; i < 5; i++) c = E.trainingShot(c, 50);
+    for (let i = 0; i < 5; i++) c = E.trainingShot(c, trainingInput(c));
     c = E.finishTraining(c); c = nextPreseason(E.playSeason(c));
   }
   assert.throws(() => E.beginTraining(c, 3));
@@ -220,4 +221,52 @@ test('expanded achievements do not count youth statistics as senior honours', ()
   c.records = [row];
   assert.equal(E.careerAchievements(c).find(a => a.title === '발롱도르 수상').unlocked, false);
   assert.equal(E.careerAchievements(c).find(a => a.key === 'first-100-goals').unlocked, false);
+});
+
+test('each training skill uses its own game with persisted challenges and validated inputs', () => {
+  const modes = new Set();
+  for (const position of ['FW','GK']) for (let skill = 0; skill < 5; skill++) {
+    let c = E.beginTraining(pro(position), skill); modes.add(c.pendingTraining.mode);
+    assert.deepEqual(parseSave(serializeCareer(c)).value.pendingTraining.rounds, c.pendingTraining.rounds);
+    const before = structuredClone(c); assert.throws(() => E.trainingShot(c, { score: 100 })); assert.deepEqual(c, before);
+    c = E.trainingShot(c, trainingInput(c, 2)); c = E.trainingShot(c, trainingInput(c, 0)); assert.deepEqual(c.pendingTraining.shots, [2, 0]);
+    const broken = structuredClone(c); broken.pendingTraining.mode = 'fake'; assert.equal(E.validateCareer(broken), false);
+    const wrongRound = structuredClone(c); wrongRound.pendingTraining.rounds[0].lane = 99; assert.equal(E.validateCareer(wrongRound), false);
+  }
+  assert.equal(modes.size, 9);
+});
+
+test('old unfinished timing training saves remain playable', () => {
+  let c = E.beginTraining(pro(), 0); delete c.pendingTraining.mode; delete c.pendingTraining.rounds;
+  c = parseSave(serializeCareer(c)).value;
+  for (let i = 0; i < 5; i++) c = E.trainingShot(c, 50);
+  c = E.finishTraining(c); assert.equal(c.lastTraining.score, 10); assert.ok(E.validateCareer(c));
+});
+
+test('training near the overall limit never lowers ability and perfect achievements persist', () => {
+  let c = pro(); c.skills = [20.1, 20, 20, 20, 20]; c = E.beginTraining(c, 0);
+  for (let i = 0; i < 5; i++) c = E.trainingShot(c, trainingInput(c));
+  const before = c.skills; c = E.finishTraining(c); assert.equal(c.lastTraining.bonus, 0); assert.deepEqual(c.skills, before);
+  c.lastTraining.score = 0; assert.equal(E.careerAchievements(c).find(a => a.key === 'perfect-training').unlocked, true);
+});
+
+test('three-training achievement waits for the third game to finish', () => {
+  let c = pro(); c.trainingUsed = [0, 1]; c = E.beginTraining(c, 2);
+  assert.equal(E.careerAchievements(c).find(a => a.key === 'master-training').unlocked, false);
+  for (let i = 0; i < 5; i++) c = E.trainingShot(c, trainingInput(c));
+  c = E.finishTraining(c); assert.equal(E.careerAchievements(c).find(a => a.key === 'master-training').unlocked, true);
+  c.trainingUsed = [0, 0, 2]; assert.equal(E.validateCareer(c), false);
+});
+
+test('a named golden boot and its generic title count as one award', () => {
+  const c = E.playSeason(pro()); c.records.at(-1).awards = ['프리미어리그 골든부트'];
+  const expected = E.legacy(c); c.records.at(-1).awards.push('득점왕'); assert.equal(E.legacy(c), expected);
+  assert.deepEqual(E.distinctAwards(['득점왕','득점왕']), ['득점왕']);
+  assert.deepEqual(E.distinctAwards(['득점왕','프리미어리그 골든부트','유러피언 골든슈']), ['프리미어리그 골든부트','유러피언 골든슈']);
+  const elite = pro(); elite.skills = [24, 20, 23, 11, 22]; elite.popularity = 0;
+  const result = E.playSeason(elite), r = result.records.at(-1);
+  assert.ok(r.awards.includes('득점왕') && r.awards.includes('프리미어리그 골든부트'));
+  const prizeCount = r.awards.filter(a => a !== '득점왕').length;
+  assert.equal(result.coins - elite.coins, 80 + r.goals * 5 + r.assists * 4 + r.cleanSheets * 5 + prizeCount * 50);
+  assert.equal(result.popularity, Math.min(100, Math.round((r.rating - 6.4) * 7) + prizeCount * 4));
 });

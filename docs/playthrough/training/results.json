@@ -1,0 +1,135 @@
+{
+  "games": [
+    {
+      "position": "FW",
+      "skill": 0,
+      "game": "finish",
+      "scores": [
+        2,
+        2,
+        2,
+        2,
+        2
+      ],
+      "bonus": 4
+    },
+    {
+      "position": "FW",
+      "skill": 1,
+      "game": "passing",
+      "scores": [
+        2,
+        2,
+        2,
+        2,
+        2
+      ],
+      "bonus": 4
+    },
+    {
+      "position": "FW",
+      "skill": 2,
+      "game": "dribble",
+      "scores": [
+        2,
+        2,
+        2,
+        2,
+        2
+      ],
+      "bonus": 4
+    },
+    {
+      "position": "FW",
+      "skill": 3,
+      "game": "tackle",
+      "scores": [
+        2,
+        2,
+        2,
+        2,
+        2
+      ],
+      "bonus": 4
+    },
+    {
+      "position": "FW",
+      "skill": 4,
+      "game": "sprint",
+      "scores": [
+        2,
+        2,
+        2,
+        2,
+        2
+      ],
+      "bonus": 4
+    },
+    {
+      "position": "GK",
+      "skill": 0,
+      "game": "reflex",
+      "scores": [
+        2,
+        2,
+        2,
+        2,
+        2
+      ],
+      "bonus": 4
+    },
+    {
+      "position": "GK",
+      "skill": 1,
+      "game": "position",
+      "scores": [
+        2,
+        2,
+        2,
+        2,
+        2
+      ],
+      "bonus": 4
+    },
+    {
+      "position": "GK",
+      "skill": 2,
+      "game": "catch",
+      "scores": [
+        2,
+        2,
+        2,
+        2,
+        2
+      ],
+      "bonus": 4
+    },
+    {
+      "position": "GK",
+      "skill": 3,
+      "game": "kicking",
+      "scores": [
+        2,
+        2,
+        2,
+        1,
+        1
+      ],
+      "bonus": 3.2
+    },
+    {
+      "position": "GK",
+      "skill": 4,
+      "game": "sprint",
+      "scores": [
+        2,
+        2,
+        2,
+        2,
+        2
+      ],
+      "bonus": 4
+    }
+  ],
+  "consoleErrors": []
+}

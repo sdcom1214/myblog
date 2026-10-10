@@ -11,6 +11,12 @@ export const LEAGUE_AWARDS = {
 const global = ['발롱도르', 'FIFA 올해의 선수', '유러피언 골든슈', 'FIFPRO 월드 XI', '코파 트로피', '골든보이', '야신 트로피', 'FIFA 최우수 골키퍼'];
 export const AWARD_CATALOG = [...new Set(['리그 우승', '득점왕', '도움왕', '베스트 XI', '신인상', ...global, ...Object.values(LEAGUE_AWARDS).flat()])].map((title, i) => ({ key: `award-${i}`, title }));
 
+// Older saves use the generic title; a league's named golden boot is the same prize.
+export function distinctAwards(awards) {
+  const namedBoot = Object.values(LEAGUE_AWARDS).some(([boot]) => awards.includes(boot));
+  return [...new Set(awards)].filter(title => title !== '득점왕' || !namedBoot);
+}
+
 export function majorSeasonAwards(c, r, ability, draw) {
   if (r.level !== '프로' || r.tier !== '1군' || r.games < 15) return [];
   const league = LEAGUE_AWARDS[r.league.leagueId], keeper = c.position === 'GK';

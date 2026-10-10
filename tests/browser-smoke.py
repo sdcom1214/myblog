@@ -2,6 +2,7 @@
 import json, os
 from pathlib import Path
 from playwright.sync_api import sync_playwright
+from browser_training_helpers import play_attempt
 
 OUT = Path(__file__).resolve().parents[1] / '.local'
 OUT.mkdir(exist_ok=True)
@@ -81,13 +82,12 @@ with sync_playwright() as pw:
         if state()['current']['stage']=='failed': click('semipro'); wait_stage('offer')
     click('offer:0'); shot('contract-mobile.png'); assert page.locator('[data-action="sign"]').is_disabled()
     click('signature'); click('sign'); wait_stage('preseason'); record('U21 academy checkpoint, trial and signed rookie contract')
-    click('training'); click('train-skill:0'); click('training-start')
-    page.wait_for_timeout(350); page.keyboard.press('Space')
+    click('training'); click('train-skill:0'); play_attempt(page,click,keyboard=True)
     assert len(state()['current']['pendingTraining']['shots'])==1
     page.reload(wait_until='networkidle'); click('continue')
     assert len(state()['current']['pendingTraining']['shots'])==1
     for _ in range(4):
-        click('training-start'); page.wait_for_timeout(220); click('shoot')
+        play_attempt(page,click)
     assert len(state()['current']['pendingTraining']['shots'])==5
     shot('training-mobile.png'); click('training-finish'); click('close')
     assert state()['current']['pendingTraining'] is None

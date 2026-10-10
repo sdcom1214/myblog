@@ -4,6 +4,7 @@ import { mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { createApp } from '../server/app.js';
+import { trainingInput } from './training-input.mjs';
 
 const profile = { name: '부카요 사카', number: 7, position: 'FW', foot: '왼발', preferred: 'arsenal', academy: 'hale-end' };
 async function fixture(t) {
@@ -69,11 +70,24 @@ test('server career commands enforce transitions and imported edits are excluded
 });
 test('five training shots and limits are enforced and preserved by server restart', async t => {
   const f = await fixture(t), a = f.client(); await a.signup('training'); await professional(a);
-  await a.command('train', { skill: 0 }); await a.command('shot', { marker: 50 }); await a.command('season', {}, 400);
+  await a.command('train', { skill: 0 }); await a.command('shot', { input: trainingInput(a.data.current) }); await a.command('season', {}, 400);
   await f.restart(); const result = await a.request('/save'); assert.deepEqual(result.data.current.pendingTraining.shots, [2]);
-  for (const marker of [50, 35, 10, 50]) await a.command('shot', { marker });
+  for (const score of [2, 1, 0, 2]) await a.command('shot', { input: trainingInput(a.data.current, score) });
   await a.command('finish-training'); assert.equal(a.data.current.lastTraining.score, 7);
   await a.command('train', { skill: 1 }, 400);
+});
+test('all training games validate inputs on the server and award personal achievements once', async t => {
+  const f = await fixture(t);
+  for (const position of ['FW','GK']) for (let skill = 0; skill < 5; skill++) {
+    const a = f.client(); await a.signup(`train-${position}-${skill}`); await a.command('create', { profile: { ...profile, position } }); await professional(a, false);
+    await a.command('train', { skill }); const before = structuredClone(a.data.current.pendingTraining);
+    await a.command('shot', { input: { score: 100 } }, 400); await a.command('shot', { marker: 50 }, 400);
+    await a.request('/save'); assert.deepEqual(a.data.current.pendingTraining, before);
+    for (let i = 0; i < 5; i++) await a.command('shot', { input: trainingInput(a.data.current) });
+    await a.command('finish-training'); assert.equal(a.data.current.lastTraining.score, 10);
+    const club = await a.request('/club'); assert.ok(club.achievements.some(x => x.key === 'perfect-training'));
+    assert.equal(club.achievements.filter(x => x.key === 'first-training').length, 1);
+  }
 });
 test('friends start equal candidate careers and the server compares both retired careers', async t => {
   const f = await fixture(t), a = f.client(), b = f.client(), outsider = f.client();

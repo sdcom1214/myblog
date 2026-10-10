@@ -4,6 +4,7 @@ import { STORAGE_KEY, loadStore, parseSave, serializeSave, serializeCareer, empt
 import { OnlineFeatures } from './online-ui.js';
 import { signaturePad, bindSignature } from './signature.js';
 import { careerCardBlob, downloadBlob } from './career-export.js';
+import { TrainingGame } from './training-ui.js';
 import './style.css';
 import './parity.css';
 
@@ -11,7 +12,7 @@ const loaded = loadStore(localStorage);
 let data = loaded.data, screen = 'home', tab = 'season', modal = null, viewing = null;
 const defaultForm = () => ({ name: '', number: 10, foot: '오른발', position: 'FW', leagueId: 'premier', preferred: 'arsenal', academy: 'hale-end', reference: '' });
 let selectedCard = 0, focus = [], growthRole = null, growthTechnique = '균형', form = defaultForm();
-let duelResult = null, friend = null, squad = [], teamResult = null, busy = false, markerFrame = 0, markerStart = 0, markerPosition = 50, markerRunning = false;
+let duelResult = null, friend = null, squad = [], teamResult = null, busy = false;
 let storageBlocked = !!loaded.error;
 const app = document.querySelector('#app');
 const esc = (v) => String(v ?? '').replace(/[&<>"']/g, x => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[x]));
@@ -44,6 +45,10 @@ const features = new OnlineFeatures({
   backup: () => exportFile(serializeSave(data), 'football-before-cloud-restore.json'),
   resume: () => { screen = 'game'; viewing = null; tab = 'season'; modal = null; selectedCard = 0; focus = []; growthRole = null; render(); },
   viewCareer: player => { viewing = player; screen = 'game'; tab = 'career'; modal = null; render(); },
+});
+const trainingGame = new TrainingGame({
+  root: app, career: () => data.current, render, toast, isOpen: () => modal?.type === 'training',
+  submit: async input => { await changeCareer('shot', typeof input === 'number' ? { marker: input } : { input }, x => E.trainingShot(x, input)); sound(); },
 });
 
 function save() {
@@ -252,8 +257,8 @@ function modalContent() {
   }
   if (modal.type === 'retire') { small = 'CAREER DECISION'; title = '현역 은퇴하시겠습니까?'; body = `<p>${esc(p.name)}의 커리어를 마무리합니다. 은퇴한 선수의 시즌은 다시 진행할 수 없습니다.</p><div class="modal-actions">${btn('계속 선수 생활', 'close', 'secondary')}${primary('은퇴 확정', 'retire-confirm')}</div>`; }
   if (modal.type === 'contract') { const o = p.offers[modal.index]; small = o.rookie ? 'ROOKIE CONTRACT' : 'FA CONTRACT'; title = o.rookie ? '프로 계약서에 사인하시겠습니까?' : '새 계약서에 사인하시겠습니까?'; body = `<p>${club(o.team).name} · ${o.years}년 계약 · 연봉 ${money(o.salary)}원</p>${signaturePad(modal, esc(p.name))}<p class="helper">직접 사인하거나 이름 사인을 사용할 수 있습니다.</p><div class="signature-actions">${btn('이름 사인 사용', 'signature', 'secondary')}${btn('다시 사인', 'signature-clear', 'secondary')}</div>${primary(o.rookie ? '사인하고 프로 입단' : '사인하고 계약 체결', 'sign', modal.signed ? '' : 'disabled')}`; }
-  if (modal.type === 'training-select') { small = `OFFSEASON · 잔여 ${3 - p.trainingUsed.length}회`; title = '특별훈련'; body = `<div class="info-banner">시즌당 1회 · 커리어 전체 3회<br>능력치마다 1회만 훈련할 수 있습니다.</div>${E.skillNames(p).map((s, i) => btn(`<span>${s} 강화 훈련</span><strong>${p.skills[i].toFixed(1)}</strong>`, `train-skill:${i}`, 'training-choice', p.trainingUsed.includes(i) ? 'disabled' : '')).join('')}<p class="helper">5번의 타이밍 시도 · 획득 점수 × 0.4 능력 상승</p>`; }
-  if (modal.type === 'training') { small = 'SPECIAL TRAINING'; title = `${E.skillNames(p)[p.pendingTraining.skill]} 강화 훈련`; const shots = p.pendingTraining.shots; body = `<div class="training-score"><strong>특별훈련 · ${Math.min(shots.length + 1, 5)} / 5</strong><b>${shots.reduce((a, b) => a + b, 0)} / 10점</b></div><div class="shot-list">${Array.from({ length: 5 }, (_, i) => `<span class="${i === shots.length ? 'active' : ''}">${i + 1}회 <b>${shots[i] === undefined ? '—' : `${shots[i]}점`}</b></span>`).join('')}</div><div class="timing-board"><div class="timing-zone"><i id="timing-marker" style="left:${markerPosition}%"></i></div><div><small>실패</small><small>1점 · 중앙 2점</small><small>실패</small></div></div><p class="centered">${shots.length === 5 ? '5번의 시도를 모두 마쳤습니다!' : '노란 중앙에 왔을 때 공을 차세요.'}</p>${shots.length === 5 ? primary('결과 보기', 'training-finish') : btn(`${icon('soccer-ball')} ${markerRunning ? '지금 슛!' : shots.length ? '다음 시도' : '훈련 시작'}<small>스페이스 / Enter로도 플레이</small>`, markerRunning ? 'shoot' : 'training-start', 'shoot-button')}<p class="helper">키보드와 터치의 점수 계산은 같습니다.</p>`; }
+  if (modal.type === 'training-select') { small = `OFFSEASON · 잔여 ${3 - p.trainingUsed.length}회`; title = '특별훈련'; body = `<div class="info-banner">시즌당 1회 · 커리어 전체 3회<br>능력치마다 1회만 훈련할 수 있습니다.</div>${E.skillNames(p).map((s, i) => btn(`<span>${s} 강화 훈련<small>${E.TRAINING_GAMES[E.trainingMode(p.position,i)].name}</small></span><strong>${p.skills[i].toFixed(1)}</strong>`, `train-skill:${i}`, 'training-choice', p.trainingUsed.includes(i) ? 'disabled' : '')).join('')}<p class="helper">능력치별 다른 게임 · 5번의 시도 · 획득 점수 × 0.4 능력 상승</p>`; }
+  if (modal.type === 'training') { small = 'SPECIAL TRAINING'; title = `${E.skillNames(p)[p.pendingTraining.skill]} 강화 훈련`; const shots = p.pendingTraining.shots; body = `<div class="training-score"><strong>특별훈련 · ${Math.min(shots.length + 1, 5)} / 5</strong><b>${shots.reduce((a, b) => a + b, 0)} / 10점</b></div><div class="shot-list">${Array.from({ length: 5 }, (_, i) => `<span class="${i === shots.length ? 'active' : ''}">${i + 1}회 <b>${shots[i] === undefined ? '—' : `${shots[i]}점`}</b></span>`).join('')}</div>${trainingGame.markup()}${shots.length === 5 ? primary('결과 보기', 'training-finish') : ''}`; }
   if (modal.type === 'training-result') { small = 'TRAINING RESULT'; title = '훈련 결과'; body = `<div class="training-bonus"><small>${E.skillNames(p)[p.lastTraining.skill]}</small><strong>+${p.lastTraining.bonus.toFixed(1)}</strong><p>${p.lastTraining.score}점 × 0.4</p></div>${primary('스토브리그로', 'close')}`; }
   if (modal.type === 'focus') { small = 'PLAYER DEVELOPMENT'; title = '집중 육성 방향 변경'; body = `<p>성장 총량은 같고, 배분만 달라집니다.</p><div class="focus-grid">${E.skillNames(p).map((s, i) => btn(`<span>${s}</span><strong>${p.skills[i].toFixed(1)}</strong>`, `focus:${i}`, focus.includes(i) ? 'selected' : '', `aria-pressed="${focus.includes(i)}"`)).join('')}</div>${primary('성장 방향 저장', 'focus-save', focus.length ? '' : 'disabled')}`; }
   if (modal.type === 'settings') { small = 'ENVIRONMENT'; title = '환경설정 · 저장 관리'; body = `<p class="helper">모든 기록은 이 브라우저에 자동 저장됩니다. 다른 기기로 옮기려면 저장 파일을 내보내 주세요.</p><label class="field-label">테마</label><div class="theme-options">${[['green', '그린'], ['blue', '블루'], ['burgundy', '버건디']].map(([id, name]) => btn(name, `theme:${id}`, data.theme === id ? 'selected' : '')).join('')}</div>${btn(`${icon(data.muted ? 'speaker-slash' : 'speaker-high')} 효과음 ${data.muted ? '꺼짐' : '켜짐'}`, 'mute', 'secondary')}${btn(`${icon('download')} 전체 저장 파일 내보내기`, 'export-save', 'secondary')}${btn(`${icon('upload')} 저장 파일 불러오기`, 'import-save', 'secondary')}${storageBlocked ? `${btn('기존 원본 데이터 백업', 'export-raw', 'secondary')}${btn('백업 후 새 저장 시작', 'reset-storage', 'secondary')}` : ''}<p class="helper">게임 코인은 현금 가치가 없습니다. 온라인 로그인 없이 플레이합니다.</p>`; }
@@ -295,18 +300,7 @@ async function simulate(operation, command, args = {}) {
   else if (!failure && command === 'season' && E.seasonMilestones(data.current).length) modal = { type: 'milestones' };
   render(); if (failure) toast(failure);
 }
-function stopMarker() { cancelAnimationFrame(markerFrame); markerRunning = false; }
-function startMarker() {
-  markerRunning = true; markerStart = performance.now(); render(true);
-  const tick = (time) => {
-    const attempt = data.current?.pendingTraining?.shots.length || 0;
-    const elapsed = (time - markerStart) / (650 - attempt * 55);
-    markerPosition = 50 + Math.sin(elapsed * Math.PI) * 48;
-    const el = document.querySelector('#timing-marker'); if (el) el.style.left = `${markerPosition}%`;
-    if (markerRunning) markerFrame = requestAnimationFrame(tick);
-  };
-  markerFrame = requestAnimationFrame(tick);
-}
+function stopMarker() { trainingGame.stop(); }
 function exportFile(text, filename) {
   const url = URL.createObjectURL(new Blob([text], { type: 'application/json;charset=utf-8' }));
   const a = document.createElement('a'); a.href = url; a.download = filename; a.click(); setTimeout(() => URL.revokeObjectURL(url), 2000);
@@ -342,6 +336,7 @@ async function action(value) {
   if (busy) return;
   const [a, raw] = value.split(':'), i = Number(raw), p = c();
   try {
+    if (trainingGame.handle(value)) return;
     if (await features.handle(value)) return;
     if (a === 'home') return navigate('home');
     if (a === 'nav') { if (raw === 'play') return data.current ? action('continue') : action('new'); return navigate(raw); }
@@ -378,9 +373,7 @@ async function action(value) {
     if (a === 'event') await changeCareer('event', { choice: i }, x => E.chooseEvent(x, i));
     if (a === 'tab') { tab = raw; modal = null; }
     if (a === 'training') modal = { type: data.current.pendingTraining ? 'training' : 'training-select' };
-    if (a === 'train-skill') { await changeCareer('train', { skill: i }, x => E.beginTraining(x, i)); markerPosition = 50; modal = { type: 'training' }; }
-    if (a === 'training-start') { startMarker(); return; }
-    if (a === 'shoot') { if (!markerRunning) return; stopMarker(); await changeCareer('shot', { marker: markerPosition }, x => E.trainingShot(x, markerPosition)); sound(); }
+    if (a === 'train-skill') { await changeCareer('train', { skill: i }, x => E.beginTraining(x, i)); modal = { type: 'training' }; }
     if (a === 'training-finish') { stopMarker(); await changeCareer('finish-training', {}, E.finishTraining); modal = { type: 'training-result' }; }
     if (a === 'change-focus') { focus = [...p.focus]; modal = { type: 'focus' }; }
     if (a === 'focus-save') { await changeCareer('focus', { focus }, x => ({ ...x, focus: [...focus] })); modal = null; }
@@ -473,7 +466,7 @@ document.addEventListener('keydown', (event) => {
       else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
     }
   }
-  if (modal?.type === 'training' && markerRunning && [' ', 'Enter'].includes(event.key)) { event.preventDefault(); if (!event.repeat) action('shoot'); }
+  if (trainingGame.keydown(event)) event.preventDefault();
 });
 bindSignature(app, () => modal, render);
 render();

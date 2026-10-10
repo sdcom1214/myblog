@@ -1,0 +1,4392 @@
+{
+  "careers": [
+    {
+      "name": "FW",
+      "position": "FW",
+      "finalAge": 40,
+      "seasons": 17,
+      "peakOvr": 100,
+      "legacy": 10691,
+      "transfers": 5,
+      "milestonePopups": 6,
+      "reason": "39세 시즌을 마친 뒤 기량과 출전 기회를 고려해 선수 생활을 마무리했습니다.",
+      "records": 22,
+      "statistics": [
+        {
+          "year": 2026,
+          "age": 18,
+          "level": "U18",
+          "tier": "U18",
+          "goals": 4,
+          "assists": 1,
+          "awards": []
+        },
+        {
+          "year": 2027,
+          "age": 19,
+          "level": "U21",
+          "tier": "U21",
+          "goals": 5,
+          "assists": 1,
+          "awards": []
+        },
+        {
+          "year": 2028,
+          "age": 20,
+          "level": "U21",
+          "tier": "U21",
+          "goals": 4,
+          "assists": 1,
+          "awards": []
+        },
+        {
+          "year": 2029,
+          "age": 21,
+          "level": "U23",
+          "tier": "U23",
+          "goals": 8,
+          "assists": 2,
+          "awards": []
+        },
+        {
+          "year": 2030,
+          "age": 22,
+          "level": "U23",
+          "tier": "U23",
+          "goals": 7,
+          "assists": 0,
+          "awards": []
+        },
+        {
+          "year": 2031,
+          "age": 23,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 16,
+          "assists": 6,
+          "awards": [
+            "신인상",
+            "FIFPRO 월드 XI"
+          ]
+        },
+        {
+          "year": 2032,
+          "age": 24,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 15,
+          "assists": 8,
+          "awards": [
+            "리그 우승",
+            "베스트 XI",
+            "PFA 올해의 선수",
+            "FIFPRO 월드 XI",
+            "국가대표 발탁"
+          ]
+        },
+        {
+          "year": 2033,
+          "age": 25,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 20,
+          "assists": 1,
+          "awards": [
+            "리그 우승",
+            "FIFPRO 월드 XI"
+          ]
+        },
+        {
+          "year": 2034,
+          "age": 26,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 22,
+          "assists": 9,
+          "awards": [
+            "리그 우승",
+            "득점왕",
+            "베스트 XI",
+            "프리미어리그 골든부트",
+            "PFA 올해의 선수",
+            "FIFPRO 월드 XI",
+            "발롱도르",
+            "FIFA 올해의 선수",
+            "국가대표 발탁"
+          ]
+        },
+        {
+          "year": 2035,
+          "age": 27,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 21,
+          "assists": 7,
+          "awards": [
+            "FIFPRO 월드 XI"
+          ]
+        },
+        {
+          "year": 2036,
+          "age": 28,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 24,
+          "assists": 4,
+          "awards": [
+            "득점왕",
+            "베스트 XI",
+            "프리미어리그 골든부트",
+            "PFA 올해의 선수",
+            "FIFPRO 월드 XI",
+            "발롱도르",
+            "FIFA 올해의 선수",
+            "국가대표 발탁"
+          ]
+        },
+        {
+          "year": 2037,
+          "age": 29,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 22,
+          "assists": 13,
+          "awards": [
+            "득점왕",
+            "베스트 XI",
+            "프리미어리그 골든부트",
+            "PFA 올해의 선수",
+            "FIFPRO 월드 XI",
+            "발롱도르",
+            "FIFA 올해의 선수"
+          ]
+        },
+        {
+          "year": 2038,
+          "age": 30,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 27,
+          "assists": 10,
+          "awards": [
+            "득점왕",
+            "베스트 XI",
+            "프리미어리그 골든부트",
+            "PFA 올해의 선수",
+            "FIFPRO 월드 XI",
+            "발롱도르",
+            "FIFA 올해의 선수",
+            "국가대표 발탁"
+          ]
+        },
+        {
+          "year": 2039,
+          "age": 31,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 23,
+          "assists": 11,
+          "awards": [
+            "득점왕",
+            "베스트 XI",
+            "프리미어리그 골든부트",
+            "PFA 올해의 선수",
+            "FIFPRO 월드 XI",
+            "FIFA 올해의 선수"
+          ]
+        },
+        {
+          "year": 2040,
+          "age": 32,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 20,
+          "assists": 8,
+          "awards": [
+            "베스트 XI",
+            "PFA 올해의 선수",
+            "FIFPRO 월드 XI",
+            "FIFA 올해의 선수",
+            "국가대표 발탁"
+          ]
+        },
+        {
+          "year": 2041,
+          "age": 33,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 22,
+          "assists": 3,
+          "awards": [
+            "득점왕",
+            "프리미어리그 골든부트",
+            "FIFPRO 월드 XI"
+          ]
+        },
+        {
+          "year": 2042,
+          "age": 34,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 27,
+          "assists": 9,
+          "awards": [
+            "득점왕",
+            "베스트 XI",
+            "프리미어리그 골든부트",
+            "PFA 올해의 선수",
+            "FIFPRO 월드 XI",
+            "발롱도르",
+            "FIFA 올해의 선수",
+            "국가대표 발탁"
+          ]
+        },
+        {
+          "year": 2043,
+          "age": 35,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 19,
+          "assists": 6,
+          "awards": [
+            "베스트 XI",
+            "PFA 올해의 선수",
+            "FIFPRO 월드 XI",
+            "FIFA 올해의 선수"
+          ]
+        },
+        {
+          "year": 2044,
+          "age": 36,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 25,
+          "assists": 7,
+          "awards": [
+            "득점왕",
+            "베스트 XI",
+            "프리미어리그 골든부트",
+            "PFA 올해의 선수",
+            "FIFPRO 월드 XI",
+            "국가대표 발탁"
+          ]
+        },
+        {
+          "year": 2045,
+          "age": 37,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 21,
+          "assists": 9,
+          "awards": [
+            "베스트 XI",
+            "PFA 올해의 선수",
+            "FIFPRO 월드 XI"
+          ]
+        },
+        {
+          "year": 2046,
+          "age": 38,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 20,
+          "assists": 6,
+          "awards": [
+            "국가대표 발탁"
+          ]
+        },
+        {
+          "year": 2047,
+          "age": 39,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 24,
+          "assists": 6,
+          "awards": [
+            "득점왕",
+            "베스트 XI",
+            "프리미어리그 골든부트",
+            "PFA 올해의 선수",
+            "FIFPRO 월드 XI"
+          ]
+        }
+      ],
+      "trace": [
+        {
+          "stage": "candidates",
+          "year": 2026,
+          "age": 18,
+          "ovr": 50,
+          "proSeasons": 0,
+          "team": null
+        },
+        {
+          "stage": "growth",
+          "year": 2026,
+          "age": 18,
+          "ovr": 50.0,
+          "proSeasons": 0,
+          "team": null
+        },
+        {
+          "stage": "academyReady",
+          "year": 2026,
+          "age": 18,
+          "ovr": 50.0,
+          "proSeasons": 0,
+          "team": null
+        },
+        {
+          "stage": "review",
+          "year": 2027,
+          "age": 19,
+          "ovr": 54.7,
+          "proSeasons": 0,
+          "team": null
+        },
+        {
+          "stage": "path",
+          "year": 2027,
+          "age": 19,
+          "ovr": 54.7,
+          "proSeasons": 0,
+          "team": null
+        },
+        {
+          "stage": "review",
+          "year": 2029,
+          "age": 21,
+          "ovr": 63.7,
+          "proSeasons": 0,
+          "team": null
+        },
+        {
+          "stage": "path",
+          "year": 2029,
+          "age": 21,
+          "ovr": 63.7,
+          "proSeasons": 0,
+          "team": null
+        },
+        {
+          "stage": "review",
+          "year": 2031,
+          "age": 23,
+          "ovr": 71.8,
+          "proSeasons": 0,
+          "team": null
+        },
+        {
+          "stage": "path",
+          "year": 2031,
+          "age": 23,
+          "ovr": 71.8,
+          "proSeasons": 0,
+          "team": null
+        },
+        {
+          "stage": "offer",
+          "year": 2031,
+          "age": 23,
+          "ovr": 71.8,
+          "proSeasons": 0,
+          "team": null
+        },
+        {
+          "stage": "preseason",
+          "year": 2031,
+          "age": 23,
+          "ovr": 71.8,
+          "proSeasons": 0,
+          "team": "arsenal"
+        },
+        {
+          "stage": "review",
+          "year": 2032,
+          "age": 24,
+          "ovr": 78.5,
+          "proSeasons": 1,
+          "team": "arsenal"
+        },
+        {
+          "stage": "preseason",
+          "year": 2032,
+          "age": 24,
+          "ovr": 78.5,
+          "proSeasons": 1,
+          "team": "arsenal"
+        },
+        {
+          "stage": "review",
+          "year": 2033,
+          "age": 25,
+          "ovr": 86.1,
+          "proSeasons": 2,
+          "team": "arsenal"
+        },
+        {
+          "stage": "market",
+          "year": 2033,
+          "age": 25,
+          "ovr": 86.1,
+          "proSeasons": 2,
+          "team": "arsenal"
+        },
+        {
+          "stage": "preseason",
+          "year": 2033,
+          "age": 25,
+          "ovr": 86.1,
+          "proSeasons": 2,
+          "team": "fulham"
+        },
+        {
+          "stage": "review",
+          "year": 2034,
+          "age": 26,
+          "ovr": 93.0,
+          "proSeasons": 3,
+          "team": "fulham"
+        },
+        {
+          "stage": "event",
+          "year": 2034,
+          "age": 26,
+          "ovr": 93.0,
+          "proSeasons": 3,
+          "team": "fulham"
+        },
+        {
+          "stage": "preseason",
+          "year": 2034,
+          "age": 26,
+          "ovr": 93.0,
+          "proSeasons": 3,
+          "team": "fulham"
+        },
+        {
+          "stage": "review",
+          "year": 2035,
+          "age": 27,
+          "ovr": 96.4,
+          "proSeasons": 4,
+          "team": "fulham"
+        },
+        {
+          "stage": "preseason",
+          "year": 2035,
+          "age": 27,
+          "ovr": 96.4,
+          "proSeasons": 4,
+          "team": "fulham"
+        },
+        {
+          "stage": "review",
+          "year": 2036,
+          "age": 28,
+          "ovr": 99.1,
+          "proSeasons": 5,
+          "team": "fulham"
+        },
+        {
+          "stage": "market",
+          "year": 2036,
+          "age": 28,
+          "ovr": 99.1,
+          "proSeasons": 5,
+          "team": "fulham"
+        },
+        {
+          "stage": "preseason",
+          "year": 2036,
+          "age": 28,
+          "ovr": 99.1,
+          "proSeasons": 5,
+          "team": "everton"
+        },
+        {
+          "stage": "review",
+          "year": 2037,
+          "age": 29,
+          "ovr": 100.0,
+          "proSeasons": 6,
+          "team": "everton"
+        },
+        {
+          "stage": "event",
+          "year": 2037,
+          "age": 29,
+          "ovr": 100.0,
+          "proSeasons": 6,
+          "team": "everton"
+        },
+        {
+          "stage": "preseason",
+          "year": 2037,
+          "age": 29,
+          "ovr": 100.0,
+          "proSeasons": 6,
+          "team": "everton"
+        },
+        {
+          "stage": "review",
+          "year": 2038,
+          "age": 30,
+          "ovr": 100.0,
+          "proSeasons": 7,
+          "team": "everton"
+        },
+        {
+          "stage": "preseason",
+          "year": 2038,
+          "age": 30,
+          "ovr": 100.0,
+          "proSeasons": 7,
+          "team": "everton"
+        },
+        {
+          "stage": "review",
+          "year": 2039,
+          "age": 31,
+          "ovr": 100.0,
+          "proSeasons": 8,
+          "team": "everton"
+        },
+        {
+          "stage": "market",
+          "year": 2039,
+          "age": 31,
+          "ovr": 100.0,
+          "proSeasons": 8,
+          "team": "everton"
+        },
+        {
+          "stage": "preseason",
+          "year": 2039,
+          "age": 31,
+          "ovr": 100.0,
+          "proSeasons": 8,
+          "team": "west-ham"
+        },
+        {
+          "stage": "review",
+          "year": 2040,
+          "age": 32,
+          "ovr": 98.4,
+          "proSeasons": 9,
+          "team": "west-ham"
+        },
+        {
+          "stage": "event",
+          "year": 2040,
+          "age": 32,
+          "ovr": 98.4,
+          "proSeasons": 9,
+          "team": "west-ham"
+        },
+        {
+          "stage": "preseason",
+          "year": 2040,
+          "age": 32,
+          "ovr": 98.4,
+          "proSeasons": 9,
+          "team": "west-ham"
+        },
+        {
+          "stage": "review",
+          "year": 2041,
+          "age": 33,
+          "ovr": 96.6,
+          "proSeasons": 10,
+          "team": "west-ham"
+        },
+        {
+          "stage": "preseason",
+          "year": 2041,
+          "age": 33,
+          "ovr": 96.6,
+          "proSeasons": 10,
+          "team": "west-ham"
+        },
+        {
+          "stage": "review",
+          "year": 2042,
+          "age": 34,
+          "ovr": 94.6,
+          "proSeasons": 11,
+          "team": "west-ham"
+        },
+        {
+          "stage": "market",
+          "year": 2042,
+          "age": 34,
+          "ovr": 94.6,
+          "proSeasons": 11,
+          "team": "west-ham"
+        },
+        {
+          "stage": "preseason",
+          "year": 2042,
+          "age": 34,
+          "ovr": 94.6,
+          "proSeasons": 11,
+          "team": "wolves"
+        },
+        {
+          "stage": "review",
+          "year": 2043,
+          "age": 35,
+          "ovr": 91.9,
+          "proSeasons": 12,
+          "team": "wolves"
+        },
+        {
+          "stage": "event",
+          "year": 2043,
+          "age": 35,
+          "ovr": 91.9,
+          "proSeasons": 12,
+          "team": "wolves"
+        },
+        {
+          "stage": "preseason",
+          "year": 2043,
+          "age": 35,
+          "ovr": 92.8,
+          "proSeasons": 12,
+          "team": "wolves"
+        },
+        {
+          "stage": "review",
+          "year": 2044,
+          "age": 36,
+          "ovr": 89.9,
+          "proSeasons": 13,
+          "team": "wolves"
+        },
+        {
+          "stage": "preseason",
+          "year": 2044,
+          "age": 36,
+          "ovr": 89.9,
+          "proSeasons": 13,
+          "team": "wolves"
+        },
+        {
+          "stage": "review",
+          "year": 2045,
+          "age": 37,
+          "ovr": 86.5,
+          "proSeasons": 14,
+          "team": "wolves"
+        },
+        {
+          "stage": "market",
+          "year": 2045,
+          "age": 37,
+          "ovr": 86.5,
+          "proSeasons": 14,
+          "team": "wolves"
+        },
+        {
+          "stage": "preseason",
+          "year": 2045,
+          "age": 37,
+          "ovr": 86.5,
+          "proSeasons": 14,
+          "team": "crystal-palace"
+        },
+        {
+          "stage": "review",
+          "year": 2046,
+          "age": 38,
+          "ovr": 82.9,
+          "proSeasons": 15,
+          "team": "crystal-palace"
+        },
+        {
+          "stage": "event",
+          "year": 2046,
+          "age": 38,
+          "ovr": 82.9,
+          "proSeasons": 15,
+          "team": "crystal-palace"
+        },
+        {
+          "stage": "preseason",
+          "year": 2046,
+          "age": 38,
+          "ovr": 82.9,
+          "proSeasons": 15,
+          "team": "crystal-palace"
+        },
+        {
+          "stage": "review",
+          "year": 2047,
+          "age": 39,
+          "ovr": 79.1,
+          "proSeasons": 16,
+          "team": "crystal-palace"
+        },
+        {
+          "stage": "preseason",
+          "year": 2047,
+          "age": 39,
+          "ovr": 79.1,
+          "proSeasons": 16,
+          "team": "crystal-palace"
+        },
+        {
+          "stage": "review",
+          "year": 2048,
+          "age": 40,
+          "ovr": 74.8,
+          "proSeasons": 17,
+          "team": "crystal-palace"
+        },
+        {
+          "stage": "retired",
+          "year": 2048,
+          "age": 40,
+          "ovr": 74.8,
+          "proSeasons": 17,
+          "team": "crystal-palace"
+        }
+      ]
+    },
+    {
+      "name": "MF",
+      "position": "MF",
+      "finalAge": 40,
+      "seasons": 17,
+      "peakOvr": 100,
+      "legacy": 6805,
+      "transfers": 5,
+      "milestonePopups": 6,
+      "reason": "39세 시즌을 마친 뒤 기량과 출전 기회를 고려해 선수 생활을 마무리했습니다.",
+      "records": 22,
+      "statistics": [
+        {
+          "year": 2026,
+          "age": 18,
+          "level": "U18",
+          "tier": "U18",
+          "goals": 2,
+          "assists": 8,
+          "awards": []
+        },
+        {
+          "year": 2027,
+          "age": 19,
+          "level": "U21",
+          "tier": "U21",
+          "goals": 2,
+          "assists": 3,
+          "awards": []
+        },
+        {
+          "year": 2028,
+          "age": 20,
+          "level": "U21",
+          "tier": "U21",
+          "goals": 3,
+          "assists": 3,
+          "awards": []
+        },
+        {
+          "year": 2029,
+          "age": 21,
+          "level": "U23",
+          "tier": "U23",
+          "goals": 3,
+          "assists": 2,
+          "awards": []
+        },
+        {
+          "year": 2030,
+          "age": 22,
+          "level": "U23",
+          "tier": "U23",
+          "goals": 2,
+          "assists": 3,
+          "awards": []
+        },
+        {
+          "year": 2031,
+          "age": 23,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 5,
+          "assists": 9,
+          "awards": []
+        },
+        {
+          "year": 2032,
+          "age": 24,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 5,
+          "assists": 9,
+          "awards": [
+            "국가대표 발탁"
+          ]
+        },
+        {
+          "year": 2033,
+          "age": 25,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 11,
+          "assists": 14,
+          "awards": []
+        },
+        {
+          "year": 2034,
+          "age": 26,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 11,
+          "assists": 23,
+          "awards": [
+            "도움왕",
+            "베스트 XI",
+            "PFA 올해의 선수",
+            "FIFPRO 월드 XI",
+            "FIFA 올해의 선수",
+            "국가대표 발탁"
+          ]
+        },
+        {
+          "year": 2035,
+          "age": 27,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 6,
+          "assists": 14,
+          "awards": []
+        },
+        {
+          "year": 2036,
+          "age": 28,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 8,
+          "assists": 18,
+          "awards": [
+            "도움왕",
+            "베스트 XI",
+            "PFA 올해의 선수",
+            "FIFPRO 월드 XI",
+            "국가대표 발탁"
+          ]
+        },
+        {
+          "year": 2037,
+          "age": 29,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 13,
+          "assists": 18,
+          "awards": [
+            "도움왕",
+            "베스트 XI",
+            "PFA 올해의 선수",
+            "FIFPRO 월드 XI",
+            "FIFA 올해의 선수"
+          ]
+        },
+        {
+          "year": 2038,
+          "age": 30,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 8,
+          "assists": 20,
+          "awards": [
+            "도움왕",
+            "국가대표 발탁"
+          ]
+        },
+        {
+          "year": 2039,
+          "age": 31,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 7,
+          "assists": 17,
+          "awards": [
+            "리그 우승",
+            "도움왕",
+            "FIFPRO 월드 XI"
+          ]
+        },
+        {
+          "year": 2040,
+          "age": 32,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 7,
+          "assists": 15,
+          "awards": [
+            "국가대표 발탁"
+          ]
+        },
+        {
+          "year": 2041,
+          "age": 33,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 11,
+          "assists": 20,
+          "awards": [
+            "도움왕",
+            "베스트 XI",
+            "PFA 올해의 선수",
+            "FIFPRO 월드 XI",
+            "FIFA 올해의 선수"
+          ]
+        },
+        {
+          "year": 2042,
+          "age": 34,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 12,
+          "assists": 15,
+          "awards": [
+            "베스트 XI",
+            "PFA 올해의 선수",
+            "FIFPRO 월드 XI",
+            "국가대표 발탁"
+          ]
+        },
+        {
+          "year": 2043,
+          "age": 35,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 7,
+          "assists": 8,
+          "awards": []
+        },
+        {
+          "year": 2044,
+          "age": 36,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 6,
+          "assists": 11,
+          "awards": [
+            "국가대표 발탁"
+          ]
+        },
+        {
+          "year": 2045,
+          "age": 37,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 4,
+          "assists": 16,
+          "awards": []
+        },
+        {
+          "year": 2046,
+          "age": 38,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 6,
+          "assists": 20,
+          "awards": [
+            "도움왕",
+            "국가대표 발탁"
+          ]
+        },
+        {
+          "year": 2047,
+          "age": 39,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 7,
+          "assists": 16,
+          "awards": []
+        }
+      ],
+      "trace": [
+        {
+          "stage": "candidates",
+          "year": 2026,
+          "age": 18,
+          "ovr": 50,
+          "proSeasons": 0,
+          "team": null
+        },
+        {
+          "stage": "growth",
+          "year": 2026,
+          "age": 18,
+          "ovr": 50.0,
+          "proSeasons": 0,
+          "team": null
+        },
+        {
+          "stage": "academyReady",
+          "year": 2026,
+          "age": 18,
+          "ovr": 50.0,
+          "proSeasons": 0,
+          "team": null
+        },
+        {
+          "stage": "review",
+          "year": 2027,
+          "age": 19,
+          "ovr": 53.6,
+          "proSeasons": 0,
+          "team": null
+        },
+        {
+          "stage": "path",
+          "year": 2027,
+          "age": 19,
+          "ovr": 53.6,
+          "proSeasons": 0,
+          "team": null
+        },
+        {
+          "stage": "review",
+          "year": 2029,
+          "age": 21,
+          "ovr": 61.9,
+          "proSeasons": 0,
+          "team": null
+        },
+        {
+          "stage": "path",
+          "year": 2029,
+          "age": 21,
+          "ovr": 61.9,
+          "proSeasons": 0,
+          "team": null
+        },
+        {
+          "stage": "review",
+          "year": 2031,
+          "age": 23,
+          "ovr": 69.8,
+          "proSeasons": 0,
+          "team": null
+        },
+        {
+          "stage": "path",
+          "year": 2031,
+          "age": 23,
+          "ovr": 69.8,
+          "proSeasons": 0,
+          "team": null
+        },
+        {
+          "stage": "offer",
+          "year": 2031,
+          "age": 23,
+          "ovr": 69.8,
+          "proSeasons": 0,
+          "team": null
+        },
+        {
+          "stage": "preseason",
+          "year": 2031,
+          "age": 23,
+          "ovr": 69.8,
+          "proSeasons": 0,
+          "team": "arsenal"
+        },
+        {
+          "stage": "review",
+          "year": 2032,
+          "age": 24,
+          "ovr": 77.4,
+          "proSeasons": 1,
+          "team": "arsenal"
+        },
+        {
+          "stage": "preseason",
+          "year": 2032,
+          "age": 24,
+          "ovr": 77.4,
+          "proSeasons": 1,
+          "team": "arsenal"
+        },
+        {
+          "stage": "review",
+          "year": 2033,
+          "age": 25,
+          "ovr": 84.3,
+          "proSeasons": 2,
+          "team": "arsenal"
+        },
+        {
+          "stage": "market",
+          "year": 2033,
+          "age": 25,
+          "ovr": 84.3,
+          "proSeasons": 2,
+          "team": "arsenal"
+        },
+        {
+          "stage": "preseason",
+          "year": 2033,
+          "age": 25,
+          "ovr": 84.3,
+          "proSeasons": 2,
+          "team": "crystal-palace"
+        },
+        {
+          "stage": "review",
+          "year": 2034,
+          "age": 26,
+          "ovr": 91.7,
+          "proSeasons": 3,
+          "team": "crystal-palace"
+        },
+        {
+          "stage": "event",
+          "year": 2034,
+          "age": 26,
+          "ovr": 91.7,
+          "proSeasons": 3,
+          "team": "crystal-palace"
+        },
+        {
+          "stage": "preseason",
+          "year": 2034,
+          "age": 26,
+          "ovr": 91.7,
+          "proSeasons": 3,
+          "team": "crystal-palace"
+        },
+        {
+          "stage": "review",
+          "year": 2035,
+          "age": 27,
+          "ovr": 95.3,
+          "proSeasons": 4,
+          "team": "crystal-palace"
+        },
+        {
+          "stage": "preseason",
+          "year": 2035,
+          "age": 27,
+          "ovr": 95.3,
+          "proSeasons": 4,
+          "team": "crystal-palace"
+        },
+        {
+          "stage": "review",
+          "year": 2036,
+          "age": 28,
+          "ovr": 98.7,
+          "proSeasons": 5,
+          "team": "crystal-palace"
+        },
+        {
+          "stage": "market",
+          "year": 2036,
+          "age": 28,
+          "ovr": 98.7,
+          "proSeasons": 5,
+          "team": "crystal-palace"
+        },
+        {
+          "stage": "preseason",
+          "year": 2036,
+          "age": 28,
+          "ovr": 98.7,
+          "proSeasons": 5,
+          "team": "leeds"
+        },
+        {
+          "stage": "review",
+          "year": 2037,
+          "age": 29,
+          "ovr": 99.8,
+          "proSeasons": 6,
+          "team": "leeds"
+        },
+        {
+          "stage": "event",
+          "year": 2037,
+          "age": 29,
+          "ovr": 99.8,
+          "proSeasons": 6,
+          "team": "leeds"
+        },
+        {
+          "stage": "preseason",
+          "year": 2037,
+          "age": 29,
+          "ovr": 100.0,
+          "proSeasons": 6,
+          "team": "leeds"
+        },
+        {
+          "stage": "review",
+          "year": 2038,
+          "age": 30,
+          "ovr": 100.0,
+          "proSeasons": 7,
+          "team": "leeds"
+        },
+        {
+          "stage": "preseason",
+          "year": 2038,
+          "age": 30,
+          "ovr": 100.0,
+          "proSeasons": 7,
+          "team": "leeds"
+        },
+        {
+          "stage": "review",
+          "year": 2039,
+          "age": 31,
+          "ovr": 100.0,
+          "proSeasons": 8,
+          "team": "leeds"
+        },
+        {
+          "stage": "market",
+          "year": 2039,
+          "age": 31,
+          "ovr": 100.0,
+          "proSeasons": 8,
+          "team": "leeds"
+        },
+        {
+          "stage": "preseason",
+          "year": 2039,
+          "age": 31,
+          "ovr": 100.0,
+          "proSeasons": 8,
+          "team": "bournemouth"
+        },
+        {
+          "stage": "review",
+          "year": 2040,
+          "age": 32,
+          "ovr": 98.4,
+          "proSeasons": 9,
+          "team": "bournemouth"
+        },
+        {
+          "stage": "event",
+          "year": 2040,
+          "age": 32,
+          "ovr": 98.4,
+          "proSeasons": 9,
+          "team": "bournemouth"
+        },
+        {
+          "stage": "preseason",
+          "year": 2040,
+          "age": 32,
+          "ovr": 98.4,
+          "proSeasons": 9,
+          "team": "bournemouth"
+        },
+        {
+          "stage": "review",
+          "year": 2041,
+          "age": 33,
+          "ovr": 96.6,
+          "proSeasons": 10,
+          "team": "bournemouth"
+        },
+        {
+          "stage": "preseason",
+          "year": 2041,
+          "age": 33,
+          "ovr": 96.6,
+          "proSeasons": 10,
+          "team": "bournemouth"
+        },
+        {
+          "stage": "review",
+          "year": 2042,
+          "age": 34,
+          "ovr": 94.6,
+          "proSeasons": 11,
+          "team": "bournemouth"
+        },
+        {
+          "stage": "market",
+          "year": 2042,
+          "age": 34,
+          "ovr": 94.6,
+          "proSeasons": 11,
+          "team": "bournemouth"
+        },
+        {
+          "stage": "preseason",
+          "year": 2042,
+          "age": 34,
+          "ovr": 94.6,
+          "proSeasons": 11,
+          "team": "nottingham"
+        },
+        {
+          "stage": "review",
+          "year": 2043,
+          "age": 35,
+          "ovr": 91.9,
+          "proSeasons": 12,
+          "team": "nottingham"
+        },
+        {
+          "stage": "event",
+          "year": 2043,
+          "age": 35,
+          "ovr": 91.9,
+          "proSeasons": 12,
+          "team": "nottingham"
+        },
+        {
+          "stage": "preseason",
+          "year": 2043,
+          "age": 35,
+          "ovr": 92.8,
+          "proSeasons": 12,
+          "team": "nottingham"
+        },
+        {
+          "stage": "review",
+          "year": 2044,
+          "age": 36,
+          "ovr": 89.9,
+          "proSeasons": 13,
+          "team": "nottingham"
+        },
+        {
+          "stage": "preseason",
+          "year": 2044,
+          "age": 36,
+          "ovr": 89.9,
+          "proSeasons": 13,
+          "team": "nottingham"
+        },
+        {
+          "stage": "review",
+          "year": 2045,
+          "age": 37,
+          "ovr": 86.5,
+          "proSeasons": 14,
+          "team": "nottingham"
+        },
+        {
+          "stage": "market",
+          "year": 2045,
+          "age": 37,
+          "ovr": 86.5,
+          "proSeasons": 14,
+          "team": "nottingham"
+        },
+        {
+          "stage": "preseason",
+          "year": 2045,
+          "age": 37,
+          "ovr": 86.5,
+          "proSeasons": 14,
+          "team": "wolves"
+        },
+        {
+          "stage": "review",
+          "year": 2046,
+          "age": 38,
+          "ovr": 82.9,
+          "proSeasons": 15,
+          "team": "wolves"
+        },
+        {
+          "stage": "event",
+          "year": 2046,
+          "age": 38,
+          "ovr": 82.9,
+          "proSeasons": 15,
+          "team": "wolves"
+        },
+        {
+          "stage": "preseason",
+          "year": 2046,
+          "age": 38,
+          "ovr": 82.9,
+          "proSeasons": 15,
+          "team": "wolves"
+        },
+        {
+          "stage": "review",
+          "year": 2047,
+          "age": 39,
+          "ovr": 79.1,
+          "proSeasons": 16,
+          "team": "wolves"
+        },
+        {
+          "stage": "preseason",
+          "year": 2047,
+          "age": 39,
+          "ovr": 79.1,
+          "proSeasons": 16,
+          "team": "wolves"
+        },
+        {
+          "stage": "review",
+          "year": 2048,
+          "age": 40,
+          "ovr": 74.8,
+          "proSeasons": 17,
+          "team": "wolves"
+        },
+        {
+          "stage": "retired",
+          "year": 2048,
+          "age": 40,
+          "ovr": 74.8,
+          "proSeasons": 17,
+          "team": "wolves"
+        }
+      ]
+    },
+    {
+      "name": "DF",
+      "position": "DF",
+      "finalAge": 40,
+      "seasons": 17,
+      "peakOvr": 100,
+      "legacy": 2547,
+      "transfers": 5,
+      "milestonePopups": 3,
+      "reason": "39세 시즌을 마친 뒤 기량과 출전 기회를 고려해 선수 생활을 마무리했습니다.",
+      "records": 22,
+      "statistics": [
+        {
+          "year": 2026,
+          "age": 18,
+          "level": "U18",
+          "tier": "U18",
+          "goals": 1,
+          "assists": 2,
+          "awards": []
+        },
+        {
+          "year": 2027,
+          "age": 19,
+          "level": "U21",
+          "tier": "U21",
+          "goals": 0,
+          "assists": 1,
+          "awards": []
+        },
+        {
+          "year": 2028,
+          "age": 20,
+          "level": "U21",
+          "tier": "U21",
+          "goals": 0,
+          "assists": 0,
+          "awards": []
+        },
+        {
+          "year": 2029,
+          "age": 21,
+          "level": "U23",
+          "tier": "U23",
+          "goals": 0,
+          "assists": 1,
+          "awards": []
+        },
+        {
+          "year": 2030,
+          "age": 22,
+          "level": "U23",
+          "tier": "U23",
+          "goals": 0,
+          "assists": 1,
+          "awards": []
+        },
+        {
+          "year": 2031,
+          "age": 23,
+          "level": "프로",
+          "tier": "육성팀",
+          "goals": 3,
+          "assists": 4,
+          "awards": []
+        },
+        {
+          "year": 2032,
+          "age": 24,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 2,
+          "assists": 2,
+          "awards": [
+            "국가대표 발탁"
+          ]
+        },
+        {
+          "year": 2033,
+          "age": 25,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 5,
+          "assists": 1,
+          "awards": []
+        },
+        {
+          "year": 2034,
+          "age": 26,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 2,
+          "assists": 2,
+          "awards": [
+            "국가대표 발탁"
+          ]
+        },
+        {
+          "year": 2035,
+          "age": 27,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 2,
+          "assists": 3,
+          "awards": []
+        },
+        {
+          "year": 2036,
+          "age": 28,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 2,
+          "assists": 4,
+          "awards": [
+            "국가대표 발탁"
+          ]
+        },
+        {
+          "year": 2037,
+          "age": 29,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 2,
+          "assists": 0,
+          "awards": []
+        },
+        {
+          "year": 2038,
+          "age": 30,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 5,
+          "assists": 6,
+          "awards": [
+            "국가대표 발탁"
+          ]
+        },
+        {
+          "year": 2039,
+          "age": 31,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 4,
+          "assists": 3,
+          "awards": []
+        },
+        {
+          "year": 2040,
+          "age": 32,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 3,
+          "assists": 3,
+          "awards": [
+            "국가대표 발탁"
+          ]
+        },
+        {
+          "year": 2041,
+          "age": 33,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 2,
+          "assists": 2,
+          "awards": []
+        },
+        {
+          "year": 2042,
+          "age": 34,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 1,
+          "assists": 5,
+          "awards": [
+            "국가대표 발탁"
+          ]
+        },
+        {
+          "year": 2043,
+          "age": 35,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 1,
+          "assists": 6,
+          "awards": []
+        },
+        {
+          "year": 2044,
+          "age": 36,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 4,
+          "assists": 3,
+          "awards": [
+            "국가대표 발탁"
+          ]
+        },
+        {
+          "year": 2045,
+          "age": 37,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 0,
+          "assists": 1,
+          "awards": []
+        },
+        {
+          "year": 2046,
+          "age": 38,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 1,
+          "assists": 3,
+          "awards": [
+            "국가대표 발탁"
+          ]
+        },
+        {
+          "year": 2047,
+          "age": 39,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 0,
+          "assists": 2,
+          "awards": []
+        }
+      ],
+      "trace": [
+        {
+          "stage": "candidates",
+          "year": 2026,
+          "age": 18,
+          "ovr": 50,
+          "proSeasons": 0,
+          "team": null
+        },
+        {
+          "stage": "growth",
+          "year": 2026,
+          "age": 18,
+          "ovr": 50.0,
+          "proSeasons": 0,
+          "team": null
+        },
+        {
+          "stage": "academyReady",
+          "year": 2026,
+          "age": 18,
+          "ovr": 50.0,
+          "proSeasons": 0,
+          "team": null
+        },
+        {
+          "stage": "review",
+          "year": 2027,
+          "age": 19,
+          "ovr": 54.3,
+          "proSeasons": 0,
+          "team": null
+        },
+        {
+          "stage": "path",
+          "year": 2027,
+          "age": 19,
+          "ovr": 54.3,
+          "proSeasons": 0,
+          "team": null
+        },
+        {
+          "stage": "review",
+          "year": 2029,
+          "age": 21,
+          "ovr": 61.5,
+          "proSeasons": 0,
+          "team": null
+        },
+        {
+          "stage": "path",
+          "year": 2029,
+          "age": 21,
+          "ovr": 61.5,
+          "proSeasons": 0,
+          "team": null
+        },
+        {
+          "stage": "review",
+          "year": 2031,
+          "age": 23,
+          "ovr": 69.6,
+          "proSeasons": 0,
+          "team": null
+        },
+        {
+          "stage": "path",
+          "year": 2031,
+          "age": 23,
+          "ovr": 69.6,
+          "proSeasons": 0,
+          "team": null
+        },
+        {
+          "stage": "offer",
+          "year": 2031,
+          "age": 23,
+          "ovr": 69.6,
+          "proSeasons": 0,
+          "team": null
+        },
+        {
+          "stage": "preseason",
+          "year": 2031,
+          "age": 23,
+          "ovr": 69.6,
+          "proSeasons": 0,
+          "team": "arsenal"
+        },
+        {
+          "stage": "review",
+          "year": 2032,
+          "age": 24,
+          "ovr": 77.0,
+          "proSeasons": 1,
+          "team": "arsenal"
+        },
+        {
+          "stage": "preseason",
+          "year": 2032,
+          "age": 24,
+          "ovr": 77.0,
+          "proSeasons": 1,
+          "team": "arsenal"
+        },
+        {
+          "stage": "review",
+          "year": 2033,
+          "age": 25,
+          "ovr": 83.9,
+          "proSeasons": 2,
+          "team": "arsenal"
+        },
+        {
+          "stage": "market",
+          "year": 2033,
+          "age": 25,
+          "ovr": 83.9,
+          "proSeasons": 2,
+          "team": "arsenal"
+        },
+        {
+          "stage": "preseason",
+          "year": 2033,
+          "age": 25,
+          "ovr": 83.9,
+          "proSeasons": 2,
+          "team": "brentford"
+        },
+        {
+          "stage": "review",
+          "year": 2034,
+          "age": 26,
+          "ovr": 91.3,
+          "proSeasons": 3,
+          "team": "brentford"
+        },
+        {
+          "stage": "event",
+          "year": 2034,
+          "age": 26,
+          "ovr": 91.3,
+          "proSeasons": 3,
+          "team": "brentford"
+        },
+        {
+          "stage": "preseason",
+          "year": 2034,
+          "age": 26,
+          "ovr": 91.3,
+          "proSeasons": 3,
+          "team": "brentford"
+        },
+        {
+          "stage": "review",
+          "year": 2035,
+          "age": 27,
+          "ovr": 94.2,
+          "proSeasons": 4,
+          "team": "brentford"
+        },
+        {
+          "stage": "preseason",
+          "year": 2035,
+          "age": 27,
+          "ovr": 94.2,
+          "proSeasons": 4,
+          "team": "brentford"
+        },
+        {
+          "stage": "review",
+          "year": 2036,
+          "age": 28,
+          "ovr": 97.6,
+          "proSeasons": 5,
+          "team": "brentford"
+        },
+        {
+          "stage": "market",
+          "year": 2036,
+          "age": 28,
+          "ovr": 97.6,
+          "proSeasons": 5,
+          "team": "brentford"
+        },
+        {
+          "stage": "preseason",
+          "year": 2036,
+          "age": 28,
+          "ovr": 97.6,
+          "proSeasons": 5,
+          "team": "nottingham"
+        },
+        {
+          "stage": "review",
+          "year": 2037,
+          "age": 29,
+          "ovr": 98.5,
+          "proSeasons": 6,
+          "team": "nottingham"
+        },
+        {
+          "stage": "event",
+          "year": 2037,
+          "age": 29,
+          "ovr": 98.5,
+          "proSeasons": 6,
+          "team": "nottingham"
+        },
+        {
+          "stage": "preseason",
+          "year": 2037,
+          "age": 29,
+          "ovr": 99.4,
+          "proSeasons": 6,
+          "team": "nottingham"
+        },
+        {
+          "stage": "review",
+          "year": 2038,
+          "age": 30,
+          "ovr": 100.0,
+          "proSeasons": 7,
+          "team": "nottingham"
+        },
+        {
+          "stage": "preseason",
+          "year": 2038,
+          "age": 30,
+          "ovr": 100.0,
+          "proSeasons": 7,
+          "team": "nottingham"
+        },
+        {
+          "stage": "review",
+          "year": 2039,
+          "age": 31,
+          "ovr": 100.0,
+          "proSeasons": 8,
+          "team": "nottingham"
+        },
+        {
+          "stage": "market",
+          "year": 2039,
+          "age": 31,
+          "ovr": 100.0,
+          "proSeasons": 8,
+          "team": "nottingham"
+        },
+        {
+          "stage": "preseason",
+          "year": 2039,
+          "age": 31,
+          "ovr": 100.0,
+          "proSeasons": 8,
+          "team": "bournemouth"
+        },
+        {
+          "stage": "review",
+          "year": 2040,
+          "age": 32,
+          "ovr": 98.4,
+          "proSeasons": 9,
+          "team": "bournemouth"
+        },
+        {
+          "stage": "event",
+          "year": 2040,
+          "age": 32,
+          "ovr": 98.4,
+          "proSeasons": 9,
+          "team": "bournemouth"
+        },
+        {
+          "stage": "preseason",
+          "year": 2040,
+          "age": 32,
+          "ovr": 98.4,
+          "proSeasons": 9,
+          "team": "bournemouth"
+        },
+        {
+          "stage": "review",
+          "year": 2041,
+          "age": 33,
+          "ovr": 96.6,
+          "proSeasons": 10,
+          "team": "bournemouth"
+        },
+        {
+          "stage": "preseason",
+          "year": 2041,
+          "age": 33,
+          "ovr": 96.6,
+          "proSeasons": 10,
+          "team": "bournemouth"
+        },
+        {
+          "stage": "review",
+          "year": 2042,
+          "age": 34,
+          "ovr": 94.6,
+          "proSeasons": 11,
+          "team": "bournemouth"
+        },
+        {
+          "stage": "market",
+          "year": 2042,
+          "age": 34,
+          "ovr": 94.6,
+          "proSeasons": 11,
+          "team": "bournemouth"
+        },
+        {
+          "stage": "preseason",
+          "year": 2042,
+          "age": 34,
+          "ovr": 94.6,
+          "proSeasons": 11,
+          "team": "brentford"
+        },
+        {
+          "stage": "review",
+          "year": 2043,
+          "age": 35,
+          "ovr": 91.9,
+          "proSeasons": 12,
+          "team": "brentford"
+        },
+        {
+          "stage": "event",
+          "year": 2043,
+          "age": 35,
+          "ovr": 91.9,
+          "proSeasons": 12,
+          "team": "brentford"
+        },
+        {
+          "stage": "preseason",
+          "year": 2043,
+          "age": 35,
+          "ovr": 92.8,
+          "proSeasons": 12,
+          "team": "brentford"
+        },
+        {
+          "stage": "review",
+          "year": 2044,
+          "age": 36,
+          "ovr": 89.9,
+          "proSeasons": 13,
+          "team": "brentford"
+        },
+        {
+          "stage": "preseason",
+          "year": 2044,
+          "age": 36,
+          "ovr": 89.9,
+          "proSeasons": 13,
+          "team": "brentford"
+        },
+        {
+          "stage": "review",
+          "year": 2045,
+          "age": 37,
+          "ovr": 86.5,
+          "proSeasons": 14,
+          "team": "brentford"
+        },
+        {
+          "stage": "market",
+          "year": 2045,
+          "age": 37,
+          "ovr": 86.5,
+          "proSeasons": 14,
+          "team": "brentford"
+        },
+        {
+          "stage": "preseason",
+          "year": 2045,
+          "age": 37,
+          "ovr": 86.5,
+          "proSeasons": 14,
+          "team": "crystal-palace"
+        },
+        {
+          "stage": "review",
+          "year": 2046,
+          "age": 38,
+          "ovr": 82.9,
+          "proSeasons": 15,
+          "team": "crystal-palace"
+        },
+        {
+          "stage": "event",
+          "year": 2046,
+          "age": 38,
+          "ovr": 82.9,
+          "proSeasons": 15,
+          "team": "crystal-palace"
+        },
+        {
+          "stage": "preseason",
+          "year": 2046,
+          "age": 38,
+          "ovr": 82.9,
+          "proSeasons": 15,
+          "team": "crystal-palace"
+        },
+        {
+          "stage": "review",
+          "year": 2047,
+          "age": 39,
+          "ovr": 79.1,
+          "proSeasons": 16,
+          "team": "crystal-palace"
+        },
+        {
+          "stage": "preseason",
+          "year": 2047,
+          "age": 39,
+          "ovr": 79.1,
+          "proSeasons": 16,
+          "team": "crystal-palace"
+        },
+        {
+          "stage": "review",
+          "year": 2048,
+          "age": 40,
+          "ovr": 74.8,
+          "proSeasons": 17,
+          "team": "crystal-palace"
+        },
+        {
+          "stage": "retired",
+          "year": 2048,
+          "age": 40,
+          "ovr": 74.8,
+          "proSeasons": 17,
+          "team": "crystal-palace"
+        }
+      ]
+    },
+    {
+      "name": "GK",
+      "position": "GK",
+      "finalAge": 43,
+      "seasons": 20,
+      "peakOvr": 99.9,
+      "legacy": 8621,
+      "transfers": 6,
+      "milestonePopups": 8,
+      "reason": "42세 시즌을 마친 뒤 기량과 출전 기회를 고려해 선수 생활을 마무리했습니다.",
+      "records": 25,
+      "statistics": [
+        {
+          "year": 2026,
+          "age": 18,
+          "level": "U18",
+          "tier": "U18",
+          "goals": 0,
+          "assists": 1,
+          "awards": []
+        },
+        {
+          "year": 2027,
+          "age": 19,
+          "level": "U21",
+          "tier": "U21",
+          "goals": 0,
+          "assists": 1,
+          "awards": []
+        },
+        {
+          "year": 2028,
+          "age": 20,
+          "level": "U21",
+          "tier": "U21",
+          "goals": 0,
+          "assists": 0,
+          "awards": []
+        },
+        {
+          "year": 2029,
+          "age": 21,
+          "level": "U23",
+          "tier": "U23",
+          "goals": 0,
+          "assists": 0,
+          "awards": []
+        },
+        {
+          "year": 2030,
+          "age": 22,
+          "level": "U23",
+          "tier": "U23",
+          "goals": 0,
+          "assists": 1,
+          "awards": []
+        },
+        {
+          "year": 2031,
+          "age": 23,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 0,
+          "assists": 1,
+          "awards": [
+            "신인상",
+            "프리미어리그 골든글러브"
+          ]
+        },
+        {
+          "year": 2032,
+          "age": 24,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 0,
+          "assists": 1,
+          "awards": [
+            "리그 우승",
+            "프리미어리그 골든글러브",
+            "FIFPRO 월드 XI",
+            "야신 트로피",
+            "FIFA 최우수 골키퍼",
+            "국가대표 발탁"
+          ]
+        },
+        {
+          "year": 2033,
+          "age": 25,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 0,
+          "assists": 0,
+          "awards": []
+        },
+        {
+          "year": 2034,
+          "age": 26,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 0,
+          "assists": 1,
+          "awards": [
+            "프리미어리그 골든글러브",
+            "국가대표 발탁"
+          ]
+        },
+        {
+          "year": 2035,
+          "age": 27,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 0,
+          "assists": 0,
+          "awards": [
+            "베스트 XI",
+            "프리미어리그 골든글러브",
+            "PFA 올해의 선수",
+            "FIFPRO 월드 XI",
+            "야신 트로피",
+            "FIFA 최우수 골키퍼"
+          ]
+        },
+        {
+          "year": 2036,
+          "age": 28,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 0,
+          "assists": 1,
+          "awards": [
+            "프리미어리그 골든글러브",
+            "FIFPRO 월드 XI",
+            "FIFA 최우수 골키퍼",
+            "국가대표 발탁"
+          ]
+        },
+        {
+          "year": 2037,
+          "age": 29,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 0,
+          "assists": 0,
+          "awards": [
+            "프리미어리그 골든글러브",
+            "FIFPRO 월드 XI",
+            "FIFA 최우수 골키퍼"
+          ]
+        },
+        {
+          "year": 2038,
+          "age": 30,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 0,
+          "assists": 0,
+          "awards": [
+            "프리미어리그 골든글러브",
+            "FIFPRO 월드 XI",
+            "FIFA 최우수 골키퍼",
+            "국가대표 발탁"
+          ]
+        },
+        {
+          "year": 2039,
+          "age": 31,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 0,
+          "assists": 1,
+          "awards": [
+            "베스트 XI",
+            "프리미어리그 골든글러브",
+            "PFA 올해의 선수",
+            "FIFPRO 월드 XI"
+          ]
+        },
+        {
+          "year": 2040,
+          "age": 32,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 0,
+          "assists": 1,
+          "awards": [
+            "프리미어리그 골든글러브",
+            "FIFPRO 월드 XI",
+            "야신 트로피",
+            "국가대표 발탁"
+          ]
+        },
+        {
+          "year": 2041,
+          "age": 33,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 0,
+          "assists": 1,
+          "awards": [
+            "베스트 XI",
+            "프리미어리그 골든글러브",
+            "PFA 올해의 선수",
+            "FIFPRO 월드 XI",
+            "발롱도르",
+            "야신 트로피",
+            "FIFA 최우수 골키퍼"
+          ]
+        },
+        {
+          "year": 2042,
+          "age": 34,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 0,
+          "assists": 0,
+          "awards": [
+            "프리미어리그 골든글러브",
+            "FIFPRO 월드 XI",
+            "국가대표 발탁"
+          ]
+        },
+        {
+          "year": 2043,
+          "age": 35,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 0,
+          "assists": 1,
+          "awards": [
+            "리그 우승",
+            "프리미어리그 골든글러브",
+            "FIFPRO 월드 XI",
+            "야신 트로피",
+            "FIFA 최우수 골키퍼"
+          ]
+        },
+        {
+          "year": 2044,
+          "age": 36,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 0,
+          "assists": 0,
+          "awards": [
+            "프리미어리그 골든글러브",
+            "FIFPRO 월드 XI",
+            "야신 트로피",
+            "FIFA 최우수 골키퍼",
+            "국가대표 발탁"
+          ]
+        },
+        {
+          "year": 2045,
+          "age": 37,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 0,
+          "assists": 0,
+          "awards": []
+        },
+        {
+          "year": 2046,
+          "age": 38,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 0,
+          "assists": 0,
+          "awards": [
+            "국가대표 발탁"
+          ]
+        },
+        {
+          "year": 2047,
+          "age": 39,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 0,
+          "assists": 0,
+          "awards": []
+        },
+        {
+          "year": 2048,
+          "age": 40,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 0,
+          "assists": 0,
+          "awards": [
+            "프리미어리그 골든글러브"
+          ]
+        },
+        {
+          "year": 2049,
+          "age": 41,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 0,
+          "assists": 1,
+          "awards": []
+        },
+        {
+          "year": 2050,
+          "age": 42,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 0,
+          "assists": 0,
+          "awards": []
+        }
+      ],
+      "trace": [
+        {
+          "stage": "candidates",
+          "year": 2026,
+          "age": 18,
+          "ovr": 50,
+          "proSeasons": 0,
+          "team": null
+        },
+        {
+          "stage": "growth",
+          "year": 2026,
+          "age": 18,
+          "ovr": 50.0,
+          "proSeasons": 0,
+          "team": null
+        },
+        {
+          "stage": "academyReady",
+          "year": 2026,
+          "age": 18,
+          "ovr": 50.0,
+          "proSeasons": 0,
+          "team": null
+        },
+        {
+          "stage": "review",
+          "year": 2027,
+          "age": 19,
+          "ovr": 54.7,
+          "proSeasons": 0,
+          "team": null
+        },
+        {
+          "stage": "path",
+          "year": 2027,
+          "age": 19,
+          "ovr": 54.7,
+          "proSeasons": 0,
+          "team": null
+        },
+        {
+          "stage": "review",
+          "year": 2029,
+          "age": 21,
+          "ovr": 63.2,
+          "proSeasons": 0,
+          "team": null
+        },
+        {
+          "stage": "path",
+          "year": 2029,
+          "age": 21,
+          "ovr": 63.2,
+          "proSeasons": 0,
+          "team": null
+        },
+        {
+          "stage": "review",
+          "year": 2031,
+          "age": 23,
+          "ovr": 71.3,
+          "proSeasons": 0,
+          "team": null
+        },
+        {
+          "stage": "path",
+          "year": 2031,
+          "age": 23,
+          "ovr": 71.3,
+          "proSeasons": 0,
+          "team": null
+        },
+        {
+          "stage": "failed",
+          "year": 2031,
+          "age": 23,
+          "ovr": 71.3,
+          "proSeasons": 0,
+          "team": null
+        },
+        {
+          "stage": "offer",
+          "year": 2031,
+          "age": 23,
+          "ovr": 71.3,
+          "proSeasons": 0,
+          "team": null
+        },
+        {
+          "stage": "preseason",
+          "year": 2031,
+          "age": 23,
+          "ovr": 71.3,
+          "proSeasons": 0,
+          "team": "arsenal"
+        },
+        {
+          "stage": "review",
+          "year": 2032,
+          "age": 24,
+          "ovr": 78.0,
+          "proSeasons": 1,
+          "team": "arsenal"
+        },
+        {
+          "stage": "preseason",
+          "year": 2032,
+          "age": 24,
+          "ovr": 78.0,
+          "proSeasons": 1,
+          "team": "arsenal"
+        },
+        {
+          "stage": "review",
+          "year": 2033,
+          "age": 25,
+          "ovr": 85.8,
+          "proSeasons": 2,
+          "team": "arsenal"
+        },
+        {
+          "stage": "market",
+          "year": 2033,
+          "age": 25,
+          "ovr": 85.8,
+          "proSeasons": 2,
+          "team": "arsenal"
+        },
+        {
+          "stage": "preseason",
+          "year": 2033,
+          "age": 25,
+          "ovr": 85.8,
+          "proSeasons": 2,
+          "team": "everton"
+        },
+        {
+          "stage": "review",
+          "year": 2034,
+          "age": 26,
+          "ovr": 92.7,
+          "proSeasons": 3,
+          "team": "everton"
+        },
+        {
+          "stage": "event",
+          "year": 2034,
+          "age": 26,
+          "ovr": 92.7,
+          "proSeasons": 3,
+          "team": "everton"
+        },
+        {
+          "stage": "preseason",
+          "year": 2034,
+          "age": 26,
+          "ovr": 92.7,
+          "proSeasons": 3,
+          "team": "everton"
+        },
+        {
+          "stage": "review",
+          "year": 2035,
+          "age": 27,
+          "ovr": 96.1,
+          "proSeasons": 4,
+          "team": "everton"
+        },
+        {
+          "stage": "preseason",
+          "year": 2035,
+          "age": 27,
+          "ovr": 96.1,
+          "proSeasons": 4,
+          "team": "everton"
+        },
+        {
+          "stage": "review",
+          "year": 2036,
+          "age": 28,
+          "ovr": 98.4,
+          "proSeasons": 5,
+          "team": "everton"
+        },
+        {
+          "stage": "market",
+          "year": 2036,
+          "age": 28,
+          "ovr": 98.4,
+          "proSeasons": 5,
+          "team": "everton"
+        },
+        {
+          "stage": "preseason",
+          "year": 2036,
+          "age": 28,
+          "ovr": 98.4,
+          "proSeasons": 5,
+          "team": "wolves"
+        },
+        {
+          "stage": "review",
+          "year": 2037,
+          "age": 29,
+          "ovr": 99.1,
+          "proSeasons": 6,
+          "team": "wolves"
+        },
+        {
+          "stage": "event",
+          "year": 2037,
+          "age": 29,
+          "ovr": 99.1,
+          "proSeasons": 6,
+          "team": "wolves"
+        },
+        {
+          "stage": "preseason",
+          "year": 2037,
+          "age": 29,
+          "ovr": 99.7,
+          "proSeasons": 6,
+          "team": "wolves"
+        },
+        {
+          "stage": "review",
+          "year": 2038,
+          "age": 30,
+          "ovr": 99.8,
+          "proSeasons": 7,
+          "team": "wolves"
+        },
+        {
+          "stage": "preseason",
+          "year": 2038,
+          "age": 30,
+          "ovr": 99.8,
+          "proSeasons": 7,
+          "team": "wolves"
+        },
+        {
+          "stage": "review",
+          "year": 2039,
+          "age": 31,
+          "ovr": 99.9,
+          "proSeasons": 8,
+          "team": "wolves"
+        },
+        {
+          "stage": "market",
+          "year": 2039,
+          "age": 31,
+          "ovr": 99.9,
+          "proSeasons": 8,
+          "team": "wolves"
+        },
+        {
+          "stage": "preseason",
+          "year": 2039,
+          "age": 31,
+          "ovr": 99.9,
+          "proSeasons": 8,
+          "team": "everton"
+        },
+        {
+          "stage": "review",
+          "year": 2040,
+          "age": 32,
+          "ovr": 98.3,
+          "proSeasons": 9,
+          "team": "everton"
+        },
+        {
+          "stage": "event",
+          "year": 2040,
+          "age": 32,
+          "ovr": 98.3,
+          "proSeasons": 9,
+          "team": "everton"
+        },
+        {
+          "stage": "preseason",
+          "year": 2040,
+          "age": 32,
+          "ovr": 98.3,
+          "proSeasons": 9,
+          "team": "everton"
+        },
+        {
+          "stage": "review",
+          "year": 2041,
+          "age": 33,
+          "ovr": 96.5,
+          "proSeasons": 10,
+          "team": "everton"
+        },
+        {
+          "stage": "preseason",
+          "year": 2041,
+          "age": 33,
+          "ovr": 96.5,
+          "proSeasons": 10,
+          "team": "everton"
+        },
+        {
+          "stage": "review",
+          "year": 2042,
+          "age": 34,
+          "ovr": 94.5,
+          "proSeasons": 11,
+          "team": "everton"
+        },
+        {
+          "stage": "market",
+          "year": 2042,
+          "age": 34,
+          "ovr": 94.5,
+          "proSeasons": 11,
+          "team": "everton"
+        },
+        {
+          "stage": "preseason",
+          "year": 2042,
+          "age": 34,
+          "ovr": 94.5,
+          "proSeasons": 11,
+          "team": "brentford"
+        },
+        {
+          "stage": "review",
+          "year": 2043,
+          "age": 35,
+          "ovr": 91.8,
+          "proSeasons": 12,
+          "team": "brentford"
+        },
+        {
+          "stage": "event",
+          "year": 2043,
+          "age": 35,
+          "ovr": 91.8,
+          "proSeasons": 12,
+          "team": "brentford"
+        },
+        {
+          "stage": "preseason",
+          "year": 2043,
+          "age": 35,
+          "ovr": 92.7,
+          "proSeasons": 12,
+          "team": "brentford"
+        },
+        {
+          "stage": "review",
+          "year": 2044,
+          "age": 36,
+          "ovr": 89.8,
+          "proSeasons": 13,
+          "team": "brentford"
+        },
+        {
+          "stage": "preseason",
+          "year": 2044,
+          "age": 36,
+          "ovr": 89.8,
+          "proSeasons": 13,
+          "team": "brentford"
+        },
+        {
+          "stage": "review",
+          "year": 2045,
+          "age": 37,
+          "ovr": 86.4,
+          "proSeasons": 14,
+          "team": "brentford"
+        },
+        {
+          "stage": "market",
+          "year": 2045,
+          "age": 37,
+          "ovr": 86.4,
+          "proSeasons": 14,
+          "team": "brentford"
+        },
+        {
+          "stage": "preseason",
+          "year": 2045,
+          "age": 37,
+          "ovr": 86.4,
+          "proSeasons": 14,
+          "team": "burnley"
+        },
+        {
+          "stage": "review",
+          "year": 2046,
+          "age": 38,
+          "ovr": 82.8,
+          "proSeasons": 15,
+          "team": "burnley"
+        },
+        {
+          "stage": "event",
+          "year": 2046,
+          "age": 38,
+          "ovr": 82.8,
+          "proSeasons": 15,
+          "team": "burnley"
+        },
+        {
+          "stage": "preseason",
+          "year": 2046,
+          "age": 38,
+          "ovr": 82.8,
+          "proSeasons": 15,
+          "team": "burnley"
+        },
+        {
+          "stage": "review",
+          "year": 2047,
+          "age": 39,
+          "ovr": 79.0,
+          "proSeasons": 16,
+          "team": "burnley"
+        },
+        {
+          "stage": "preseason",
+          "year": 2047,
+          "age": 39,
+          "ovr": 79.0,
+          "proSeasons": 16,
+          "team": "burnley"
+        },
+        {
+          "stage": "review",
+          "year": 2048,
+          "age": 40,
+          "ovr": 74.7,
+          "proSeasons": 17,
+          "team": "burnley"
+        },
+        {
+          "stage": "market",
+          "year": 2048,
+          "age": 40,
+          "ovr": 74.7,
+          "proSeasons": 17,
+          "team": "burnley"
+        },
+        {
+          "stage": "preseason",
+          "year": 2048,
+          "age": 40,
+          "ovr": 74.7,
+          "proSeasons": 17,
+          "team": "wolves"
+        },
+        {
+          "stage": "review",
+          "year": 2049,
+          "age": 41,
+          "ovr": 70.0,
+          "proSeasons": 18,
+          "team": "wolves"
+        },
+        {
+          "stage": "event",
+          "year": 2049,
+          "age": 41,
+          "ovr": 70.0,
+          "proSeasons": 18,
+          "team": "wolves"
+        },
+        {
+          "stage": "preseason",
+          "year": 2049,
+          "age": 41,
+          "ovr": 70.9,
+          "proSeasons": 18,
+          "team": "wolves"
+        },
+        {
+          "stage": "review",
+          "year": 2050,
+          "age": 42,
+          "ovr": 65.7,
+          "proSeasons": 19,
+          "team": "wolves"
+        },
+        {
+          "stage": "preseason",
+          "year": 2050,
+          "age": 42,
+          "ovr": 65.7,
+          "proSeasons": 19,
+          "team": "wolves"
+        },
+        {
+          "stage": "review",
+          "year": 2051,
+          "age": 43,
+          "ovr": 60.3,
+          "proSeasons": 20,
+          "team": "wolves"
+        },
+        {
+          "stage": "retired",
+          "year": 2051,
+          "age": 43,
+          "ovr": 60.3,
+          "proSeasons": 20,
+          "team": "wolves"
+        }
+      ]
+    },
+    {
+      "name": "online-0",
+      "position": "FW",
+      "finalAge": 40,
+      "seasons": 17,
+      "peakOvr": 99.9,
+      "legacy": 8916,
+      "transfers": 5,
+      "milestonePopups": 6,
+      "reason": "39세 시즌을 마친 뒤 기량과 출전 기회를 고려해 선수 생활을 마무리했습니다.",
+      "records": 22,
+      "statistics": [
+        {
+          "year": 2026,
+          "age": 18,
+          "level": "U18",
+          "tier": "U18",
+          "goals": 5,
+          "assists": 2,
+          "awards": []
+        },
+        {
+          "year": 2027,
+          "age": 19,
+          "level": "U21",
+          "tier": "U21",
+          "goals": 10,
+          "assists": 2,
+          "awards": []
+        },
+        {
+          "year": 2028,
+          "age": 20,
+          "level": "U21",
+          "tier": "U21",
+          "goals": 6,
+          "assists": 2,
+          "awards": []
+        },
+        {
+          "year": 2029,
+          "age": 21,
+          "level": "U23",
+          "tier": "U23",
+          "goals": 1,
+          "assists": 4,
+          "awards": []
+        },
+        {
+          "year": 2030,
+          "age": 22,
+          "level": "U23",
+          "tier": "U23",
+          "goals": 4,
+          "assists": 0,
+          "awards": []
+        },
+        {
+          "year": 2031,
+          "age": 23,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 11,
+          "assists": 5,
+          "awards": [
+            "신인상"
+          ]
+        },
+        {
+          "year": 2032,
+          "age": 24,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 23,
+          "assists": 8,
+          "awards": [
+            "리그 우승",
+            "득점왕",
+            "프리미어리그 골든부트",
+            "FIFPRO 월드 XI",
+            "국가대표 발탁"
+          ]
+        },
+        {
+          "year": 2033,
+          "age": 25,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 23,
+          "assists": 10,
+          "awards": [
+            "득점왕",
+            "프리미어리그 골든부트",
+            "FIFPRO 월드 XI"
+          ]
+        },
+        {
+          "year": 2034,
+          "age": 26,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 18,
+          "assists": 8,
+          "awards": [
+            "베스트 XI",
+            "PFA 올해의 선수",
+            "FIFPRO 월드 XI",
+            "국가대표 발탁"
+          ]
+        },
+        {
+          "year": 2035,
+          "age": 27,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 24,
+          "assists": 8,
+          "awards": [
+            "득점왕",
+            "베스트 XI",
+            "프리미어리그 골든부트",
+            "PFA 올해의 선수",
+            "FIFPRO 월드 XI",
+            "발롱도르",
+            "FIFA 올해의 선수"
+          ]
+        },
+        {
+          "year": 2036,
+          "age": 28,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 16,
+          "assists": 4,
+          "awards": [
+            "FIFPRO 월드 XI",
+            "국가대표 발탁"
+          ]
+        },
+        {
+          "year": 2037,
+          "age": 29,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 18,
+          "assists": 4,
+          "awards": [
+            "FIFPRO 월드 XI"
+          ]
+        },
+        {
+          "year": 2038,
+          "age": 30,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 30,
+          "assists": 8,
+          "awards": [
+            "득점왕",
+            "베스트 XI",
+            "프리미어리그 골든부트",
+            "PFA 올해의 선수",
+            "FIFPRO 월드 XI",
+            "발롱도르",
+            "FIFA 올해의 선수",
+            "국가대표 발탁"
+          ]
+        },
+        {
+          "year": 2039,
+          "age": 31,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 24,
+          "assists": 3,
+          "awards": [
+            "득점왕",
+            "베스트 XI",
+            "프리미어리그 골든부트",
+            "PFA 올해의 선수",
+            "FIFPRO 월드 XI",
+            "FIFA 올해의 선수"
+          ]
+        },
+        {
+          "year": 2040,
+          "age": 32,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 15,
+          "assists": 10,
+          "awards": [
+            "FIFPRO 월드 XI",
+            "국가대표 발탁"
+          ]
+        },
+        {
+          "year": 2041,
+          "age": 33,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 28,
+          "assists": 6,
+          "awards": [
+            "득점왕",
+            "베스트 XI",
+            "프리미어리그 골든부트",
+            "PFA 올해의 선수",
+            "FIFPRO 월드 XI",
+            "발롱도르",
+            "FIFA 올해의 선수"
+          ]
+        },
+        {
+          "year": 2042,
+          "age": 34,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 27,
+          "assists": 2,
+          "awards": [
+            "득점왕",
+            "프리미어리그 골든부트",
+            "FIFPRO 월드 XI",
+            "국가대표 발탁"
+          ]
+        },
+        {
+          "year": 2043,
+          "age": 35,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 19,
+          "assists": 8,
+          "awards": [
+            "베스트 XI",
+            "PFA 올해의 선수",
+            "FIFPRO 월드 XI"
+          ]
+        },
+        {
+          "year": 2044,
+          "age": 36,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 21,
+          "assists": 6,
+          "awards": [
+            "베스트 XI",
+            "PFA 올해의 선수",
+            "FIFPRO 월드 XI",
+            "국가대표 발탁"
+          ]
+        },
+        {
+          "year": 2045,
+          "age": 37,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 23,
+          "assists": 8,
+          "awards": [
+            "득점왕",
+            "프리미어리그 골든부트"
+          ]
+        },
+        {
+          "year": 2046,
+          "age": 38,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 22,
+          "assists": 8,
+          "awards": [
+            "득점왕",
+            "프리미어리그 골든부트",
+            "국가대표 발탁"
+          ]
+        },
+        {
+          "year": 2047,
+          "age": 39,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 17,
+          "assists": 5,
+          "awards": [
+            "FIFPRO 월드 XI"
+          ]
+        }
+      ],
+      "trace": [
+        {
+          "stage": "candidates",
+          "year": 2026,
+          "age": 18,
+          "ovr": 50,
+          "proSeasons": 0,
+          "team": null
+        },
+        {
+          "stage": "growth",
+          "year": 2026,
+          "age": 18,
+          "ovr": 50.0,
+          "proSeasons": 0,
+          "team": null
+        },
+        {
+          "stage": "academyReady",
+          "year": 2026,
+          "age": 18,
+          "ovr": 50.0,
+          "proSeasons": 0,
+          "team": null
+        },
+        {
+          "stage": "review",
+          "year": 2027,
+          "age": 19,
+          "ovr": 54.7,
+          "proSeasons": 0,
+          "team": null
+        },
+        {
+          "stage": "path",
+          "year": 2027,
+          "age": 19,
+          "ovr": 54.7,
+          "proSeasons": 0,
+          "team": null
+        },
+        {
+          "stage": "review",
+          "year": 2029,
+          "age": 21,
+          "ovr": 64.2,
+          "proSeasons": 0,
+          "team": null
+        },
+        {
+          "stage": "path",
+          "year": 2029,
+          "age": 21,
+          "ovr": 64.2,
+          "proSeasons": 0,
+          "team": null
+        },
+        {
+          "stage": "review",
+          "year": 2031,
+          "age": 23,
+          "ovr": 72.5,
+          "proSeasons": 0,
+          "team": null
+        },
+        {
+          "stage": "path",
+          "year": 2031,
+          "age": 23,
+          "ovr": 72.5,
+          "proSeasons": 0,
+          "team": null
+        },
+        {
+          "stage": "offer",
+          "year": 2031,
+          "age": 23,
+          "ovr": 72.5,
+          "proSeasons": 0,
+          "team": null
+        },
+        {
+          "stage": "preseason",
+          "year": 2031,
+          "age": 23,
+          "ovr": 72.5,
+          "proSeasons": 0,
+          "team": "arsenal"
+        },
+        {
+          "stage": "review",
+          "year": 2032,
+          "age": 24,
+          "ovr": 80.3,
+          "proSeasons": 1,
+          "team": "arsenal"
+        },
+        {
+          "stage": "preseason",
+          "year": 2032,
+          "age": 24,
+          "ovr": 80.3,
+          "proSeasons": 1,
+          "team": "arsenal"
+        },
+        {
+          "stage": "review",
+          "year": 2033,
+          "age": 25,
+          "ovr": 87.7,
+          "proSeasons": 2,
+          "team": "arsenal"
+        },
+        {
+          "stage": "market",
+          "year": 2033,
+          "age": 25,
+          "ovr": 87.7,
+          "proSeasons": 2,
+          "team": "arsenal"
+        },
+        {
+          "stage": "preseason",
+          "year": 2033,
+          "age": 25,
+          "ovr": 87.7,
+          "proSeasons": 2,
+          "team": "burnley"
+        },
+        {
+          "stage": "review",
+          "year": 2034,
+          "age": 26,
+          "ovr": 94.4,
+          "proSeasons": 3,
+          "team": "burnley"
+        },
+        {
+          "stage": "event",
+          "year": 2034,
+          "age": 26,
+          "ovr": 94.4,
+          "proSeasons": 3,
+          "team": "burnley"
+        },
+        {
+          "stage": "preseason",
+          "year": 2034,
+          "age": 26,
+          "ovr": 94.4,
+          "proSeasons": 3,
+          "team": "burnley"
+        },
+        {
+          "stage": "review",
+          "year": 2035,
+          "age": 27,
+          "ovr": 97.8,
+          "proSeasons": 4,
+          "team": "burnley"
+        },
+        {
+          "stage": "preseason",
+          "year": 2035,
+          "age": 27,
+          "ovr": 97.8,
+          "proSeasons": 4,
+          "team": "burnley"
+        },
+        {
+          "stage": "review",
+          "year": 2036,
+          "age": 28,
+          "ovr": 99.3,
+          "proSeasons": 5,
+          "team": "burnley"
+        },
+        {
+          "stage": "market",
+          "year": 2036,
+          "age": 28,
+          "ovr": 99.3,
+          "proSeasons": 5,
+          "team": "burnley"
+        },
+        {
+          "stage": "preseason",
+          "year": 2036,
+          "age": 28,
+          "ovr": 99.3,
+          "proSeasons": 5,
+          "team": "west-ham"
+        },
+        {
+          "stage": "review",
+          "year": 2037,
+          "age": 29,
+          "ovr": 99.8,
+          "proSeasons": 6,
+          "team": "west-ham"
+        },
+        {
+          "stage": "event",
+          "year": 2037,
+          "age": 29,
+          "ovr": 99.8,
+          "proSeasons": 6,
+          "team": "west-ham"
+        },
+        {
+          "stage": "preseason",
+          "year": 2037,
+          "age": 29,
+          "ovr": 99.9,
+          "proSeasons": 6,
+          "team": "west-ham"
+        },
+        {
+          "stage": "review",
+          "year": 2038,
+          "age": 30,
+          "ovr": 99.9,
+          "proSeasons": 7,
+          "team": "west-ham"
+        },
+        {
+          "stage": "preseason",
+          "year": 2038,
+          "age": 30,
+          "ovr": 99.9,
+          "proSeasons": 7,
+          "team": "west-ham"
+        },
+        {
+          "stage": "review",
+          "year": 2039,
+          "age": 31,
+          "ovr": 99.9,
+          "proSeasons": 8,
+          "team": "west-ham"
+        },
+        {
+          "stage": "market",
+          "year": 2039,
+          "age": 31,
+          "ovr": 99.9,
+          "proSeasons": 8,
+          "team": "west-ham"
+        },
+        {
+          "stage": "preseason",
+          "year": 2039,
+          "age": 31,
+          "ovr": 99.9,
+          "proSeasons": 8,
+          "team": "bournemouth"
+        },
+        {
+          "stage": "review",
+          "year": 2040,
+          "age": 32,
+          "ovr": 98.3,
+          "proSeasons": 9,
+          "team": "bournemouth"
+        },
+        {
+          "stage": "event",
+          "year": 2040,
+          "age": 32,
+          "ovr": 98.3,
+          "proSeasons": 9,
+          "team": "bournemouth"
+        },
+        {
+          "stage": "preseason",
+          "year": 2040,
+          "age": 32,
+          "ovr": 98.3,
+          "proSeasons": 9,
+          "team": "bournemouth"
+        },
+        {
+          "stage": "review",
+          "year": 2041,
+          "age": 33,
+          "ovr": 96.5,
+          "proSeasons": 10,
+          "team": "bournemouth"
+        },
+        {
+          "stage": "preseason",
+          "year": 2041,
+          "age": 33,
+          "ovr": 96.5,
+          "proSeasons": 10,
+          "team": "bournemouth"
+        },
+        {
+          "stage": "review",
+          "year": 2042,
+          "age": 34,
+          "ovr": 94.5,
+          "proSeasons": 11,
+          "team": "bournemouth"
+        },
+        {
+          "stage": "market",
+          "year": 2042,
+          "age": 34,
+          "ovr": 94.5,
+          "proSeasons": 11,
+          "team": "bournemouth"
+        },
+        {
+          "stage": "preseason",
+          "year": 2042,
+          "age": 34,
+          "ovr": 94.5,
+          "proSeasons": 11,
+          "team": "everton"
+        },
+        {
+          "stage": "review",
+          "year": 2043,
+          "age": 35,
+          "ovr": 91.8,
+          "proSeasons": 12,
+          "team": "everton"
+        },
+        {
+          "stage": "event",
+          "year": 2043,
+          "age": 35,
+          "ovr": 91.8,
+          "proSeasons": 12,
+          "team": "everton"
+        },
+        {
+          "stage": "preseason",
+          "year": 2043,
+          "age": 35,
+          "ovr": 92.7,
+          "proSeasons": 12,
+          "team": "everton"
+        },
+        {
+          "stage": "review",
+          "year": 2044,
+          "age": 36,
+          "ovr": 89.8,
+          "proSeasons": 13,
+          "team": "everton"
+        },
+        {
+          "stage": "preseason",
+          "year": 2044,
+          "age": 36,
+          "ovr": 89.8,
+          "proSeasons": 13,
+          "team": "everton"
+        },
+        {
+          "stage": "review",
+          "year": 2045,
+          "age": 37,
+          "ovr": 86.4,
+          "proSeasons": 14,
+          "team": "everton"
+        },
+        {
+          "stage": "market",
+          "year": 2045,
+          "age": 37,
+          "ovr": 86.4,
+          "proSeasons": 14,
+          "team": "everton"
+        },
+        {
+          "stage": "preseason",
+          "year": 2045,
+          "age": 37,
+          "ovr": 86.4,
+          "proSeasons": 14,
+          "team": "brentford"
+        },
+        {
+          "stage": "review",
+          "year": 2046,
+          "age": 38,
+          "ovr": 82.8,
+          "proSeasons": 15,
+          "team": "brentford"
+        },
+        {
+          "stage": "event",
+          "year": 2046,
+          "age": 38,
+          "ovr": 82.8,
+          "proSeasons": 15,
+          "team": "brentford"
+        },
+        {
+          "stage": "preseason",
+          "year": 2046,
+          "age": 38,
+          "ovr": 82.8,
+          "proSeasons": 15,
+          "team": "brentford"
+        },
+        {
+          "stage": "review",
+          "year": 2047,
+          "age": 39,
+          "ovr": 79.0,
+          "proSeasons": 16,
+          "team": "brentford"
+        },
+        {
+          "stage": "preseason",
+          "year": 2047,
+          "age": 39,
+          "ovr": 79.0,
+          "proSeasons": 16,
+          "team": "brentford"
+        },
+        {
+          "stage": "review",
+          "year": 2048,
+          "age": 40,
+          "ovr": 74.7,
+          "proSeasons": 17,
+          "team": "brentford"
+        },
+        {
+          "stage": "retired",
+          "year": 2048,
+          "age": 40,
+          "ovr": 74.7,
+          "proSeasons": 17,
+          "team": "brentford"
+        }
+      ]
+    },
+    {
+      "name": "online-1",
+      "position": "FW",
+      "finalAge": 40,
+      "seasons": 17,
+      "peakOvr": 100,
+      "legacy": 7380,
+      "transfers": 5,
+      "milestonePopups": 7,
+      "reason": "39세 시즌을 마친 뒤 기량과 출전 기회를 고려해 선수 생활을 마무리했습니다.",
+      "records": 22,
+      "statistics": [
+        {
+          "year": 2026,
+          "age": 18,
+          "level": "U18",
+          "tier": "U18",
+          "goals": 5,
+          "assists": 2,
+          "awards": []
+        },
+        {
+          "year": 2027,
+          "age": 19,
+          "level": "U21",
+          "tier": "U21",
+          "goals": 10,
+          "assists": 2,
+          "awards": []
+        },
+        {
+          "year": 2028,
+          "age": 20,
+          "level": "U21",
+          "tier": "U21",
+          "goals": 4,
+          "assists": 1,
+          "awards": []
+        },
+        {
+          "year": 2029,
+          "age": 21,
+          "level": "U23",
+          "tier": "U23",
+          "goals": 3,
+          "assists": 0,
+          "awards": []
+        },
+        {
+          "year": 2030,
+          "age": 22,
+          "level": "U23",
+          "tier": "U23",
+          "goals": 2,
+          "assists": 1,
+          "awards": []
+        },
+        {
+          "year": 2031,
+          "age": 23,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 8,
+          "assists": 4,
+          "awards": [
+            "리그 우승",
+            "신인상"
+          ]
+        },
+        {
+          "year": 2032,
+          "age": 24,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 14,
+          "assists": 3,
+          "awards": [
+            "리그 우승",
+            "국가대표 발탁"
+          ]
+        },
+        {
+          "year": 2033,
+          "age": 25,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 14,
+          "assists": 6,
+          "awards": []
+        },
+        {
+          "year": 2034,
+          "age": 26,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 16,
+          "assists": 7,
+          "awards": [
+            "리그 우승",
+            "FIFPRO 월드 XI",
+            "국가대표 발탁"
+          ]
+        },
+        {
+          "year": 2035,
+          "age": 27,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 20,
+          "assists": 6,
+          "awards": []
+        },
+        {
+          "year": 2036,
+          "age": 28,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 19,
+          "assists": 12,
+          "awards": [
+            "FIFPRO 월드 XI",
+            "국가대표 발탁"
+          ]
+        },
+        {
+          "year": 2037,
+          "age": 29,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 24,
+          "assists": 10,
+          "awards": [
+            "득점왕",
+            "베스트 XI",
+            "프리미어리그 골든부트",
+            "PFA 올해의 선수",
+            "FIFPRO 월드 XI"
+          ]
+        },
+        {
+          "year": 2038,
+          "age": 30,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 22,
+          "assists": 7,
+          "awards": [
+            "득점왕",
+            "베스트 XI",
+            "프리미어리그 골든부트",
+            "PFA 올해의 선수",
+            "FIFPRO 월드 XI",
+            "국가대표 발탁"
+          ]
+        },
+        {
+          "year": 2039,
+          "age": 31,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 20,
+          "assists": 7,
+          "awards": [
+            "FIFPRO 월드 XI"
+          ]
+        },
+        {
+          "year": 2040,
+          "age": 32,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 21,
+          "assists": 9,
+          "awards": [
+            "베스트 XI",
+            "PFA 올해의 선수",
+            "FIFPRO 월드 XI",
+            "국가대표 발탁"
+          ]
+        },
+        {
+          "year": 2041,
+          "age": 33,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 16,
+          "assists": 5,
+          "awards": [
+            "리그 우승",
+            "베스트 XI",
+            "PFA 올해의 선수",
+            "FIFPRO 월드 XI"
+          ]
+        },
+        {
+          "year": 2042,
+          "age": 34,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 16,
+          "assists": 6,
+          "awards": [
+            "국가대표 발탁"
+          ]
+        },
+        {
+          "year": 2043,
+          "age": 35,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 16,
+          "assists": 7,
+          "awards": [
+            "베스트 XI",
+            "PFA 올해의 선수"
+          ]
+        },
+        {
+          "year": 2044,
+          "age": 36,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 17,
+          "assists": 5,
+          "awards": [
+            "국가대표 발탁"
+          ]
+        },
+        {
+          "year": 2045,
+          "age": 37,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 19,
+          "assists": 5,
+          "awards": []
+        },
+        {
+          "year": 2046,
+          "age": 38,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 21,
+          "assists": 4,
+          "awards": [
+            "베스트 XI",
+            "PFA 올해의 선수",
+            "국가대표 발탁"
+          ]
+        },
+        {
+          "year": 2047,
+          "age": 39,
+          "level": "프로",
+          "tier": "1군",
+          "goals": 19,
+          "assists": 4,
+          "awards": []
+        }
+      ],
+      "trace": [
+        {
+          "stage": "candidates",
+          "year": 2026,
+          "age": 18,
+          "ovr": 50,
+          "proSeasons": 0,
+          "team": null
+        },
+        {
+          "stage": "growth",
+          "year": 2026,
+          "age": 18,
+          "ovr": 50.0,
+          "proSeasons": 0,
+          "team": null
+        },
+        {
+          "stage": "academyReady",
+          "year": 2026,
+          "age": 18,
+          "ovr": 50.0,
+          "proSeasons": 0,
+          "team": null
+        },
+        {
+          "stage": "review",
+          "year": 2027,
+          "age": 19,
+          "ovr": 54.7,
+          "proSeasons": 0,
+          "team": null
+        },
+        {
+          "stage": "path",
+          "year": 2027,
+          "age": 19,
+          "ovr": 54.7,
+          "proSeasons": 0,
+          "team": null
+        },
+        {
+          "stage": "review",
+          "year": 2029,
+          "age": 21,
+          "ovr": 63.5,
+          "proSeasons": 0,
+          "team": null
+        },
+        {
+          "stage": "path",
+          "year": 2029,
+          "age": 21,
+          "ovr": 63.5,
+          "proSeasons": 0,
+          "team": null
+        },
+        {
+          "stage": "review",
+          "year": 2031,
+          "age": 23,
+          "ovr": 72.5,
+          "proSeasons": 0,
+          "team": null
+        },
+        {
+          "stage": "path",
+          "year": 2031,
+          "age": 23,
+          "ovr": 72.5,
+          "proSeasons": 0,
+          "team": null
+        },
+        {
+          "stage": "offer",
+          "year": 2031,
+          "age": 23,
+          "ovr": 72.5,
+          "proSeasons": 0,
+          "team": null
+        },
+        {
+          "stage": "preseason",
+          "year": 2031,
+          "age": 23,
+          "ovr": 72.5,
+          "proSeasons": 0,
+          "team": "arsenal"
+        },
+        {
+          "stage": "review",
+          "year": 2032,
+          "age": 24,
+          "ovr": 79.4,
+          "proSeasons": 1,
+          "team": "arsenal"
+        },
+        {
+          "stage": "preseason",
+          "year": 2032,
+          "age": 24,
+          "ovr": 79.4,
+          "proSeasons": 1,
+          "team": "arsenal"
+        },
+        {
+          "stage": "review",
+          "year": 2033,
+          "age": 25,
+          "ovr": 86.8,
+          "proSeasons": 2,
+          "team": "arsenal"
+        },
+        {
+          "stage": "market",
+          "year": 2033,
+          "age": 25,
+          "ovr": 86.8,
+          "proSeasons": 2,
+          "team": "arsenal"
+        },
+        {
+          "stage": "preseason",
+          "year": 2033,
+          "age": 25,
+          "ovr": 86.8,
+          "proSeasons": 2,
+          "team": "brentford"
+        },
+        {
+          "stage": "review",
+          "year": 2034,
+          "age": 26,
+          "ovr": 94.4,
+          "proSeasons": 3,
+          "team": "brentford"
+        },
+        {
+          "stage": "event",
+          "year": 2034,
+          "age": 26,
+          "ovr": 94.4,
+          "proSeasons": 3,
+          "team": "brentford"
+        },
+        {
+          "stage": "preseason",
+          "year": 2034,
+          "age": 26,
+          "ovr": 94.4,
+          "proSeasons": 3,
+          "team": "brentford"
+        },
+        {
+          "stage": "review",
+          "year": 2035,
+          "age": 27,
+          "ovr": 97.3,
+          "proSeasons": 4,
+          "team": "brentford"
+        },
+        {
+          "stage": "preseason",
+          "year": 2035,
+          "age": 27,
+          "ovr": 97.3,
+          "proSeasons": 4,
+          "team": "brentford"
+        },
+        {
+          "stage": "review",
+          "year": 2036,
+          "age": 28,
+          "ovr": 100.0,
+          "proSeasons": 5,
+          "team": "brentford"
+        },
+        {
+          "stage": "market",
+          "year": 2036,
+          "age": 28,
+          "ovr": 100.0,
+          "proSeasons": 5,
+          "team": "brentford"
+        },
+        {
+          "stage": "preseason",
+          "year": 2036,
+          "age": 28,
+          "ovr": 100.0,
+          "proSeasons": 5,
+          "team": "west-ham"
+        },
+        {
+          "stage": "review",
+          "year": 2037,
+          "age": 29,
+          "ovr": 100.0,
+          "proSeasons": 6,
+          "team": "west-ham"
+        },
+        {
+          "stage": "event",
+          "year": 2037,
+          "age": 29,
+          "ovr": 100.0,
+          "proSeasons": 6,
+          "team": "west-ham"
+        },
+        {
+          "stage": "preseason",
+          "year": 2037,
+          "age": 29,
+          "ovr": 100.0,
+          "proSeasons": 6,
+          "team": "west-ham"
+        },
+        {
+          "stage": "review",
+          "year": 2038,
+          "age": 30,
+          "ovr": 100.0,
+          "proSeasons": 7,
+          "team": "west-ham"
+        },
+        {
+          "stage": "preseason",
+          "year": 2038,
+          "age": 30,
+          "ovr": 100.0,
+          "proSeasons": 7,
+          "team": "west-ham"
+        },
+        {
+          "stage": "review",
+          "year": 2039,
+          "age": 31,
+          "ovr": 100.0,
+          "proSeasons": 8,
+          "team": "west-ham"
+        },
+        {
+          "stage": "market",
+          "year": 2039,
+          "age": 31,
+          "ovr": 100.0,
+          "proSeasons": 8,
+          "team": "west-ham"
+        },
+        {
+          "stage": "preseason",
+          "year": 2039,
+          "age": 31,
+          "ovr": 100.0,
+          "proSeasons": 8,
+          "team": "nottingham"
+        },
+        {
+          "stage": "review",
+          "year": 2040,
+          "age": 32,
+          "ovr": 98.4,
+          "proSeasons": 9,
+          "team": "nottingham"
+        },
+        {
+          "stage": "event",
+          "year": 2040,
+          "age": 32,
+          "ovr": 98.4,
+          "proSeasons": 9,
+          "team": "nottingham"
+        },
+        {
+          "stage": "preseason",
+          "year": 2040,
+          "age": 32,
+          "ovr": 98.4,
+          "proSeasons": 9,
+          "team": "nottingham"
+        },
+        {
+          "stage": "review",
+          "year": 2041,
+          "age": 33,
+          "ovr": 96.6,
+          "proSeasons": 10,
+          "team": "nottingham"
+        },
+        {
+          "stage": "preseason",
+          "year": 2041,
+          "age": 33,
+          "ovr": 96.6,
+          "proSeasons": 10,
+          "team": "nottingham"
+        },
+        {
+          "stage": "review",
+          "year": 2042,
+          "age": 34,
+          "ovr": 94.6,
+          "proSeasons": 11,
+          "team": "nottingham"
+        },
+        {
+          "stage": "market",
+          "year": 2042,
+          "age": 34,
+          "ovr": 94.6,
+          "proSeasons": 11,
+          "team": "nottingham"
+        },
+        {
+          "stage": "preseason",
+          "year": 2042,
+          "age": 34,
+          "ovr": 94.6,
+          "proSeasons": 11,
+          "team": "brentford"
+        },
+        {
+          "stage": "review",
+          "year": 2043,
+          "age": 35,
+          "ovr": 91.9,
+          "proSeasons": 12,
+          "team": "brentford"
+        },
+        {
+          "stage": "event",
+          "year": 2043,
+          "age": 35,
+          "ovr": 91.9,
+          "proSeasons": 12,
+          "team": "brentford"
+        },
+        {
+          "stage": "preseason",
+          "year": 2043,
+          "age": 35,
+          "ovr": 92.8,
+          "proSeasons": 12,
+          "team": "brentford"
+        },
+        {
+          "stage": "review",
+          "year": 2044,
+          "age": 36,
+          "ovr": 89.9,
+          "proSeasons": 13,
+          "team": "brentford"
+        },
+        {
+          "stage": "preseason",
+          "year": 2044,
+          "age": 36,
+          "ovr": 89.9,
+          "proSeasons": 13,
+          "team": "brentford"
+        },
+        {
+          "stage": "review",
+          "year": 2045,
+          "age": 37,
+          "ovr": 86.5,
+          "proSeasons": 14,
+          "team": "brentford"
+        },
+        {
+          "stage": "market",
+          "year": 2045,
+          "age": 37,
+          "ovr": 86.5,
+          "proSeasons": 14,
+          "team": "brentford"
+        },
+        {
+          "stage": "preseason",
+          "year": 2045,
+          "age": 37,
+          "ovr": 86.5,
+          "proSeasons": 14,
+          "team": "west-ham"
+        },
+        {
+          "stage": "review",
+          "year": 2046,
+          "age": 38,
+          "ovr": 82.9,
+          "proSeasons": 15,
+          "team": "west-ham"
+        },
+        {
+          "stage": "event",
+          "year": 2046,
+          "age": 38,
+          "ovr": 82.9,
+          "proSeasons": 15,
+          "team": "west-ham"
+        },
+        {
+          "stage": "preseason",
+          "year": 2046,
+          "age": 38,
+          "ovr": 82.9,
+          "proSeasons": 15,
+          "team": "west-ham"
+        },
+        {
+          "stage": "review",
+          "year": 2047,
+          "age": 39,
+          "ovr": 79.1,
+          "proSeasons": 16,
+          "team": "west-ham"
+        },
+        {
+          "stage": "preseason",
+          "year": 2047,
+          "age": 39,
+          "ovr": 79.1,
+          "proSeasons": 16,
+          "team": "west-ham"
+        },
+        {
+          "stage": "review",
+          "year": 2048,
+          "age": 40,
+          "ovr": 74.8,
+          "proSeasons": 17,
+          "team": "west-ham"
+        },
+        {
+          "stage": "retired",
+          "year": 2048,
+          "age": 40,
+          "ovr": 74.8,
+          "proSeasons": 17,
+          "team": "west-ham"
+        }
+      ]
+    }
+  ],
+  "consoleErrors": [],
+  "forcedRetirement": false
+}
