@@ -1,4 +1,6 @@
 export const POSITIONS = { FW: '공격수', MF: '미드필더', DF: '수비수', GK: '골키퍼' };
+import { majorSeasonAwards, AWARD_CATALOG } from './awards.js';
+export { AWARD_CATALOG } from './awards.js';
 import { CLUBS, clubById, clubsInLeague, academyById, leagueById } from './data.js';
 export { CLUBS, clubById, LEAGUES, ACADEMIES, PLAYER_REFERENCES, clubsInLeague, academyById, leagueById } from './data.js';
 export const SKILLS = ['슈팅', '패스', '드리블', '수비', '피지컬'];
@@ -18,7 +20,7 @@ const int = (c, lo, hi) => Math.floor(random(c) * (hi - lo + 1)) + lo;
 const pick = (c, xs) => xs[int(c, 0, xs.length - 1)];
 function poisson(c, lambda) {
   let k = 0, product = 1;
-  do { product *= Math.max(0.000001, random(c)); k++; } while (product > Math.exp(-lambda) && k < 15);
+  do { product *= Math.max(0.000001, random(c)); k++; } while (product > Math.exp(-lambda) && k < 100);
   return k - 1;
 }
 
@@ -149,6 +151,7 @@ export function playSeason(c) {
   if (senior && actualAssists >= 17) record.awards.push('도움왕');
   if (senior && rating >= 8.2) record.awards.push('베스트 XI');
   if (senior && n.proSeasons === 0 && rating >= 7.5) record.awards.push('신인상');
+  record.awards.push(...majorSeasonAwards(n, record, ability, () => random(n)));
   if (senior && ovr(n) >= 76 && n.year % 2 === 0) { n.nationalCaps += int(n, 3, 8); record.awards.push('국가대표 발탁'); }
   if (pro) {
     n.proSeasons++; n.contractLeft = Math.max(0, n.contractLeft - 1);
@@ -247,9 +250,43 @@ export function totals(c) {
   const rows = c.records.filter(x => x.level === '프로' && x.tier !== '육성팀');
   return rows.reduce((t, r) => ({ games: t.games + r.games, goals: t.goals + r.goals, assists: t.assists + r.assists, cleanSheets: t.cleanSheets + r.cleanSheets, saves: t.saves + r.saves, minutes: t.minutes + r.minutes, rating: t.rating + r.rating * r.games }), { games: 0, goals: 0, assists: 0, cleanSheets: 0, saves: 0, minutes: 0, rating: 0 });
 }
+export function seasonMilestones(c) {
+  const last = c.records.at(-1);
+  if (last?.level !== '프로' || last.tier === '육성팀') return [];
+  const previous = totals({ ...c, records: c.records.slice(0, -1) }), current = totals(c);
+  const metrics = c.position === 'GK'
+    ? [['games', '경기', [100, 300, 500, 1000]], ['saves', '선방', [500, 1000, 1500, 2000]], ['cleanSheets', '클린시트', [50, 100, 200]]]
+    : [['games', '경기', [100, 300, 500, 1000]], ['goals', '골', [100, 200, 300, 500]], ['assists', '도움', [100, 200, 300]]];
+  return metrics.flatMap(([key, label, thresholds]) => thresholds.filter(value => previous[key] < value && current[key] >= value).map(value => ({ key, label, value })));
+}
 export function legacy(c) {
   const t = totals(c);
   return Math.round(t.games * 1.5 + t.goals * 8 + t.assists * 7 + t.cleanSheets * 9 + t.saves * 0.2 + c.trophies.length * 180 + c.nationalCaps * 12 + c.records.filter(x => x.level === '프로').reduce((a, b) => a + b.awards.filter(x => x !== '리그 우승').length * 70, 0));
+}
+export function careerAchievements(c) {
+  const t = totals(c), awards = new Set(c.records.filter(r => r.level === '프로' && r.tier !== '육성팀').flatMap(r => r.awards));
+  const entries = [
+    ['first-pro', c.proSeasons > 0, '첫 프로 시즌'], ['first-national', c.nationalCaps > 0, '첫 국가대표 발탁'],
+    ['first-title', c.trophies.length > 0, '첫 리그 우승'], ['first-legend', legacy(c) >= 4000, 'LEGACY 4,000'],
+    ['first-training', c.trainingUsed.length > 0, '특별훈련 첫 도전'], ['master-training', c.trainingUsed.length === 3, '특별훈련 3종 완료'],
+    ['perfect-training', c.lastTraining?.score === 10, '특별훈련 만점'], ['retired', c.stage === 'retired' && c.proSeasons > 0, '마지막 휘슬'],
+  ];
+  const thresholds = [
+    ['games', t.games, [100, 300, 500, 750], '통산 경기'], ['goals', t.goals, [50, 100, 200, 300, 500], '통산 골'],
+    ['assists', t.assists, [25, 50, 100, 200, 300], '통산 도움'], ['saves', t.saves, [500, 1000, 1500, 2000], '통산 선방'],
+    ['cleanSheets', t.cleanSheets, [25, 50, 100, 200], '통산 클린시트'], ['seasons', c.proSeasons, [5, 10, 15, 20], '프로 시즌'],
+    ['titles', c.trophies.length, [3, 5, 10], '리그 우승'], ['caps', c.nationalCaps, [10, 25, 50, 100], '국가대표 출전'],
+    ['prime', c.peakOvr, [80, 90, 100], 'PRIME OVR'], ['legacy', legacy(c), [1000, 8000, 12000], 'LEGACY SCORE'],
+  ];
+  for (const [metric, value, levels, label] of thresholds) for (const n of levels) {
+    const key = metric === 'goals' && n === 100 ? 'first-100-goals' : metric === 'assists' && n === 100 ? 'first-100-assists' : `${metric}-${n}`;
+    entries.push([key, value >= n, `${label} ${n.toLocaleString()}`]);
+  }
+  const teams = new Set(c.records.filter(r => r.level === '프로').map(r => r.team)), leagues = new Set(c.records.map(r => r.league?.leagueId).filter(Boolean));
+  for (const n of [2, 3, 5]) entries.push([`clubs-${n}`, teams.size >= n, `${n}개 구단에서 활약`]);
+  for (const n of [2, 3, 5]) entries.push([`leagues-${n}`, leagues.size >= n, `${n}개 유럽 리그 경험`]);
+  for (const award of AWARD_CATALOG) entries.push([award.key, awards.has(award.title), `${award.title} 수상`]);
+  return entries.map(([key, unlocked, title]) => ({ key, unlocked, title }));
 }
 export function retire(c, reason = '선수 본인의 선택으로 축구 인생을 마무리했습니다.') {
   required(!['candidates', 'growth', 'academyReady', 'retired'].includes(c.stage) && !c.pendingTraining, '지금은 은퇴할 수 없습니다.');
@@ -290,6 +327,6 @@ export function validateCareer(c) {
   if (!c.offers.every(x => x && clubById(x.team) && Number.isInteger(x.years) && x.years > 0 && x.years <= 5 && Number.isFinite(x.salary) && x.salary >= 0 && Number.isFinite(x.bonus) && text(x.role, 30))) return false;
   if (c.pendingTraining && (!Number.isInteger(c.pendingTraining.skill) || c.pendingTraining.skill < 0 || c.pendingTraining.skill > 4 || !Array.isArray(c.pendingTraining.shots) || c.pendingTraining.shots.length > 5 || !c.pendingTraining.shots.every(x => [0, 1, 2].includes(x)))) return false;
   const validLeague = (l) => l === null || l && Array.isArray(l.table) && [18, 20].includes(l.table.length) && l.table.every(t => t && text(t.id, 30) && text(t.name, 50) && ['played', 'wins', 'draws', 'losses', 'gf', 'ga', 'points'].every(k => Number.isFinite(t[k]) && t[k] >= 0)) && Number.isInteger(l.rank) && l.rank > 0 && l.rank <= l.table.length && text(l.champion, 50) && Array.isArray(l.ownMatches) && l.ownMatches.length === (l.table.length - 1) * 2 && l.ownMatches.every(m => m && Number.isInteger(m.round) && text(m.opponent, 50) && Number.isFinite(m.goalsFor) && Number.isFinite(m.goalsAgainst));
-  const validRecord = (r) => r && ['games', 'goals', 'assists', 'saves', 'minutes', 'rating', 'cleanSheets', 'year', 'age', 'passRate', 'oldOvr', 'newOvr'].every(k => Number.isFinite(r[k]) && r[k] >= 0) && r.games <= 38 && r.rating <= 10 && text(r.team, 50) && ['U18', 'U21', 'U23', '프로'].includes(r.level) && Array.isArray(r.awards) && r.awards.length < 10 && r.awards.every(x => text(x, 40)) && values(r.before) && values(r.after) && validLeague(r.league) && Array.isArray(r.tournaments) && r.tournaments.length <= 3 && r.tournaments.every(t => t && text(t.name, 50) && text(t.result, 15)) && (r.injury === null || text(r.injury, 100));
+  const validRecord = (r) => r && ['games', 'goals', 'assists', 'saves', 'minutes', 'rating', 'cleanSheets', 'year', 'age', 'passRate', 'oldOvr', 'newOvr'].every(k => Number.isFinite(r[k]) && r[k] >= 0) && r.games <= 38 && r.rating <= 10 && text(r.team, 50) && ['U18', 'U21', 'U23', '프로'].includes(r.level) && Array.isArray(r.awards) && r.awards.length < 32 && r.awards.every(x => text(x, 40)) && values(r.before) && values(r.after) && validLeague(r.league) && Array.isArray(r.tournaments) && r.tournaments.length <= 3 && r.tournaments.every(t => t && text(t.name, 50) && text(t.result, 15)) && (r.injury === null || text(r.injury, 100));
   return c.records.every(validRecord) && (!c.review || validRecord(c.review)) && (c.stage !== 'review' || !!c.review);
 }

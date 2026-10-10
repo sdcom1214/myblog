@@ -1,5 +1,5 @@
 """Run with the development server on port 4173 and Python Playwright installed."""
-import json
+import json, os
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 
@@ -21,6 +21,8 @@ with sync_playwright() as pw:
     page.on('console', lambda m: errors.append(m.text) if m.type=='error' else None)
     page.set_default_timeout(10000)
     def click(action):
+        if action != 'milestone-confirm' and page.locator('[data-action="milestone-confirm"]').count(): page.locator('[data-action="milestone-confirm"]').click()
+        if action != 'scout-confirm' and page.locator('[data-action="scout-confirm"]').count(): page.locator('[data-action="scout-confirm"]').click()
         page.locator(f'[data-action="{action}"]').first.click()
     def state():
         return page.evaluate("JSON.parse(localStorage.getItem('second-life-football-v1'))")
@@ -39,7 +41,7 @@ with sync_playwright() as pw:
         page.wait_for_timeout(600)
         click('candidate-confirm'); click('focus:0'); click('focus:2' if position!='GK' else 'focus:1')
         click('growth-confirm')
-    page.goto('http://127.0.0.1:4173/',wait_until='networkidle')
+    page.goto(os.environ.get('FOOTBALL_TEST_URL','http://127.0.0.1:4173/'),wait_until='networkidle')
     shot('home-desktop.png')
     click('new'); click('new-confirm')
     for league,size in [('premier',20),('laliga',20),('bundesliga',18),('seriea',20),('ligue1',18),('eredivisie',18),('portugal',18)]:
@@ -104,8 +106,12 @@ with sync_playwright() as pw:
     record('Contract expiry, transfer and offseason event')
     click('retire'); click('retire-confirm'); wait_stage('retired'); shot('retired-profile-mobile.png')
     click('player-card'); shot('legacy-mobile.png'); click('close')
+    click('export-career'); page.locator('.career-export-preview').wait_for()
+    with page.expect_download() as image_download: click('card-png-download')
+    image_path=Path(image_download.value.path()); assert image_path.read_bytes().startswith(b'\x89PNG\r\n\x1a\n')
+    assert image_download.value.suggested_filename.endswith('.png'); click('close')
     with page.expect_download() as download:
-        click('export-career')
+        click('export-career-data')
     career_file=OUT/'tested-career.json'; download.value.save_as(career_file)
     assert json.loads(career_file.read_text())['format']=='sfc-career'
     record('Retirement and portable career-card export')

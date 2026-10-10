@@ -68,12 +68,7 @@ export function createApp({ database = resolve('.local/server.sqlite'), staticRo
     requireValue(!previous || previous.user_id === id, '다른 계정의 선수 기록입니다.', 403);
     statement('INSERT INTO careers(id,user_id,data,verified,created,updated) VALUES(?,?,?,?,?,?) ON CONFLICT(id) DO UPDATE SET data=excluded.data,verified=excluded.verified,updated=excluded.updated').run(career.id, id, JSON.stringify(career), +verified, previous?.created || now(), now());
     if (verified && career.records.length) {
-      const t = E.totals(career), milestones = [
-        ['first-pro', career.proSeasons > 0, '첫 프로 시즌'], ['first-100-goals', t.goals >= 100, '통산 100골'],
-        ['first-100-assists', t.assists >= 100, '통산 100도움'], ['first-national', career.nationalCaps > 0, '첫 국가대표 발탁'],
-        ['first-title', career.trophies.length > 0, '첫 리그 우승'], ['first-legend', E.legacy(career) >= 4000, 'LEGACY 4,000'],
-      ];
-      for (const [key, condition, title] of milestones) if (condition) {
+      for (const { key, unlocked, title } of E.careerAchievements(career)) if (unlocked) {
         statement('INSERT OR IGNORE INTO achievements VALUES(?,?,?,?,?)').run(key, id, career.id, title, now());
         statement('INSERT OR IGNORE INTO personal_achievements VALUES(?,?,?,?,?)').run(id, key, career.id, title, now());
       }

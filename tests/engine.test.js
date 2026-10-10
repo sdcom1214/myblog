@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as E from '../src/engine.js';
+import { majorSeasonAwards } from '../src/awards.js';
 import { emptyStore, parseSave, serializeCareer, serializeSave, validateStore, loadStore } from '../src/storage.js';
 
 const profile = (position = 'FW') => ({ name: '테스트선수', number: 10, foot: '왼발', position, academy: 'hale-end', preferred: 'arsenal' });
@@ -170,4 +171,53 @@ test('valid saves round trip and malformed imported structures are rejected', ()
 test('corrupted local storage is preserved instead of silently overwritten', () => {
   const storage = { getItem: () => '{broken' };
   const loaded = loadStore(storage); assert.ok(loaded.error); assert.equal(loaded.data.current, null);
+});
+
+
+test('elite attacking seasons can reach scoring and assist awards without a sampling ceiling', () => {
+  let topScorer = false, topAssister = false;
+  for (const position of ['FW', 'MF']) {
+    for (let seed = 1; seed <= 100; seed++) {
+      const c = pro(position, seed); c.skills = position === 'FW' ? [27, 12, 27, 7, 27] : [12, 30, 25, 13, 20]; c.age = 25; c.condition = 100;
+      const r = E.playSeason(c).review;
+      if (r.goals >= 22) { assert.ok(r.awards.includes('득점왕')); topScorer = true; }
+      if (r.assists >= 17) { assert.ok(r.awards.includes('도움왕')); topAssister = true; }
+    }
+  }
+  assert.ok(topScorer, 'The 22-goal award must be reachable');
+  assert.ok(topAssister, 'The 17-assist award must be reachable');
+});
+
+test('career milestones count senior matches and appear only in the season that crosses a threshold', () => {
+  const c = pro(), row = { ...E.playSeason(c).review, tier: '1군', games: 30, goals: 30, assists: 12 };
+  c.records = [row, row, row, row];
+  assert.deepEqual(E.seasonMilestones(c).map(m => m.key), ['games', 'goals']);
+  c.records.push(row); assert.deepEqual(E.seasonMilestones(c), []);
+  c.records = [{ ...row, level: 'U18', games: 90, goals: 90 }, { ...row, tier: '육성팀', games: 90, goals: 90 }, row];
+  assert.deepEqual(E.seasonMilestones(c), []);
+  const gk = { ...c, position: 'GK', records: [{ ...row, saves: 300, cleanSheets: 30 }, { ...row, saves: 300, cleanSheets: 30 }] };
+  assert.deepEqual(E.seasonMilestones(gk).map(m => m.key), ['saves', 'cleanSheets']);
+});
+
+test('major football awards respect senior level, age, league and goalkeeper eligibility', () => {
+  const c = pro(), r = { ...E.playSeason(c).review, level: '프로', tier: '1군', age: 20, games: 34, rating: 9, goals: 34, assists: 20, tackles: 100, cleanSheets: 0, saves: 0 };
+  r.league.rank = 1;
+  const wins = majorSeasonAwards(c, r, 100, () => .3);
+  for (const award of ['발롱도르', 'FIFA 올해의 선수', '유러피언 골든슈', '코파 트로피', '골든보이', 'FIFPRO 월드 XI', '프리미어리그 골든부트']) assert.ok(wins.includes(award));
+  assert.ok(!wins.includes('야신 트로피'));
+  const older = majorSeasonAwards(c, { ...r, age: 24 }, 100, () => .3); assert.ok(!older.includes('코파 트로피') && !older.includes('골든보이'));
+  assert.deepEqual(majorSeasonAwards(c, { ...r, tier: '육성팀' }, 100, () => .3), []);
+  assert.deepEqual(majorSeasonAwards(c, { ...r, level: 'U18' }, 100, () => .3), []);
+  const gk = majorSeasonAwards({ ...c, position: 'GK' }, { ...r, goals: 0, assists: 0, cleanSheets: 20, saves: 150 }, 100, () => .3);
+  for (const award of ['야신 트로피', 'FIFA 최우수 골키퍼', '프리미어리그 골든글러브']) assert.ok(gk.includes(award));
+  assert.ok(!gk.includes('유러피언 골든슈'));
+});
+
+test('expanded achievements do not count youth statistics as senior honours', () => {
+  const c = pro(); const list = E.careerAchievements(c); assert.ok(list.length >= 80);
+  assert.equal(list.find(a => a.key === 'first-pro').unlocked, false);
+  const row = { ...E.playSeason(c).review, level: 'U18', goals: 500, assists: 300, awards: ['발롱도르'] };
+  c.records = [row];
+  assert.equal(E.careerAchievements(c).find(a => a.title === '발롱도르 수상').unlocked, false);
+  assert.equal(E.careerAchievements(c).find(a => a.key === 'first-100-goals').unlocked, false);
 });

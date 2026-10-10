@@ -2,6 +2,8 @@ import { animate, stagger } from 'animejs';
 import * as E from './engine.js';
 import { STORAGE_KEY, loadStore, parseSave, serializeSave, serializeCareer, emptyStore } from './storage.js';
 import { OnlineFeatures } from './online-ui.js';
+import { signaturePad, bindSignature } from './signature.js';
+import { careerCardBlob, downloadBlob } from './career-export.js';
 import './style.css';
 import './parity.css';
 
@@ -131,6 +133,8 @@ function seasonReview(p) {
     ${r.tournaments.length ? `<section class="panel tournaments"><h3>유소년 대회 결과</h3><div class="tournament-list">${r.tournaments.map((t, i) => `<div><small>${['리그', '컵', '초청'][i]}</small><strong>${esc(t.name)}</strong><span class="${t.result === '우승' ? 'gold' : ''}">${t.result === '우승' ? icon('trophy') : ''}${esc(t.result)}</span></div>`).join('')}</div></section>` : ''}
     ${r.league ? `<section class="panel team-summary"><small>${r.tier === '육성팀' ? '1군 구단 결과' : 'TEAM RESULT'}</small><div>${badge(p.team)}<h3>${esc(r.team)}</h3><strong>${r.league.rank}위</strong></div><p class="muted">${r.league.table.find(x => x.id === p.team).wins}승 ${r.league.table.find(x => x.id === p.team).draws}무 ${r.league.table.find(x => x.id === p.team).losses}패 · ${r.league.table.find(x => x.id === p.team).points}점</p>${btn('리그 순위표 · 경기 기록', 'league', 'soft-button')}</section>` : ''}
     <div class="ovr-banner"><h3>OVR 변화</h3><span class="ovr-change">${r.oldOvr.toFixed(1)} ${icon('arrow-right')} ${r.newOvr.toFixed(1)}</span></div><section class="panel growth-panel">${E.skillNames(p).map((s, i) => `<div class="growth-row"><span>${s}</span><small>${r.before[i].toFixed(1)} →</small><strong>${r.after[i].toFixed(1)}</strong><em class="${r.after[i] < r.before[i] ? 'decline' : ''}">${r.after[i] >= r.before[i] ? '+' : ''}${E.round(r.after[i] - r.before[i]).toFixed(1)}</em></div>`).join('')}</section>
+    ${r.level === 'U18' ? btn('스카우팅 리포트', 'scout-report', 'secondary') : ''}
+    ${E.seasonMilestones(p).length ? btn('통산 기록 달성', 'milestone-report', 'secondary') : ''}
     <section class="panel fan-feed"><small>FAN FEED</small>${[`우리 ${esc(p.name)}, ${r.rating >= 7.4 ? '공을 잡을 때마다 기대된다!' : '다음 시즌엔 더 좋은 모습을 보여줄 거야.'}`, `${esc(r.team)}에서 차근차근 성장하는 게 보인다.`, r.injury ? '몸 잘 챙겨요. 건강하게 돌아오는 게 먼저!' : `${keeper ? '끝까지 골문을 지키는' : '끝까지 뛰어주는'} 선수, 응원합니다.`].map((s, i) => `<p><span>${['M', 'J', 'K'][i]}</span>${s}</p>`).join('')}</section>
     ${primary(p.level === '프로' ? '다음 시즌 준비' : '다음 커리어 선택', 'next-season')}`;
 }
@@ -156,10 +160,10 @@ function eventScreen() {
 }
 function legacyCard(p) {
   const t = E.totals(p), goalkeeper = p.position === 'GK';
-  return `${sectionTitle('MY FOOTBALL LIFE', `${esc(p.name)}의 축구 인생`)}<div class="legacy-card"><small>${E.legacy(p) > 4000 ? 'FOOTBALL LEGEND' : E.legacy(p) > 1500 ? 'CLUB HERO' : 'MY CAREER'}</small><div class="legacy-top"><span>${p.peakOvr.toFixed(1)}<small>PRIME OVR</small></span>${icon('soccer-ball')}<span>${p.position}<small>#${p.number}</small></span></div><h2>${esc(p.name)}</h2><p>${p.team ? club(p.team).name : esc(p.school)}</p><div class="legacy-score"><small>LEGACY SCORE</small><strong>${E.legacy(p).toLocaleString()}<span>점</span></strong></div><div class="legacy-totals">${stat('경기', t.games)}${stat(goalkeeper ? '선방' : '골', goalkeeper ? t.saves : t.goals)}${stat(goalkeeper ? '클린시트' : '도움', goalkeeper ? t.cleanSheets : t.assists)}</div></div><section class="panel"><h3>마지막 휘슬, 남겨진 이야기</h3><p class="muted">${esc(p.retirementReason || '아직 당신의 축구 인생은 진행 중입니다.')}</p><p>${p.proSeasons}번의 프로 시즌. ${p.trophies.length}번의 우승.<br>그라운드에서 보낸 시간은 기록으로 남습니다.</p></section>${primary('MY CLUB에 저장', `club-save:${p.id}`)}${btn('U18로 회귀', `rebirth:${p.id}`, 'secondary')}${btn('선수 개명', `rename:${p.id}`, 'text-button')}${primary('커리어 카드 내보내기', 'export-career')}${btn('새로운 인생 시작', 'new', 'secondary')}`;
+  return `${sectionTitle('MY FOOTBALL LIFE', `${esc(p.name)}의 축구 인생`)}<div class="legacy-card"><small>${E.legacy(p) > 4000 ? 'FOOTBALL LEGEND' : E.legacy(p) > 1500 ? 'CLUB HERO' : 'MY CAREER'}</small><div class="legacy-top"><span>${p.peakOvr.toFixed(1)}<small>PRIME OVR</small></span>${icon('soccer-ball')}<span>${p.position}<small>#${p.number}</small></span></div><h2>${esc(p.name)}</h2><p>${p.team ? club(p.team).name : esc(p.school)}</p><div class="legacy-score"><small>LEGACY SCORE</small><strong>${E.legacy(p).toLocaleString()}<span>점</span></strong></div><div class="legacy-totals">${stat('경기', t.games)}${stat(goalkeeper ? '선방' : '골', goalkeeper ? t.saves : t.goals)}${stat(goalkeeper ? '클린시트' : '도움', goalkeeper ? t.cleanSheets : t.assists)}</div></div><section class="panel"><h3>마지막 휘슬, 남겨진 이야기</h3><p class="muted">${esc(p.retirementReason || '아직 당신의 축구 인생은 진행 중입니다.')}</p><p>${p.proSeasons}번의 프로 시즌. ${p.trophies.length}번의 우승.<br>그라운드에서 보낸 시간은 기록으로 남습니다.</p></section>${primary('MY CLUB에 저장', `club-save:${p.id}`)}${btn('U18로 회귀', `rebirth:${p.id}`, 'secondary')}${btn('선수 개명', `rename:${p.id}`, 'text-button')}${primary('커리어 카드 이미지 저장', 'export-career')+btn('커리어 데이터 백업 (JSON)', 'export-career-data', 'text-button')}${btn('새로운 인생 시작', 'new', 'secondary')}`;
 }
 function retiredProfile(p) {
-  return `${profileScreen(p)}${primary('선수 카드 보기', 'player-card')}${primary('MY CLUB에 저장', `club-save:${p.id}`)}${btn('U18로 회귀', `rebirth:${p.id}`, 'secondary')}${btn('선수 개명', `rename:${p.id}`, 'text-button')}${primary('커리어 카드 내보내기', 'export-career')}${btn('새로운 인생 시작', 'new', 'secondary')}`;
+  return `${profileScreen(p)}<section class="panel retirement-summary"><small>FINAL WHISTLE</small><h3>선수 생활을 마무리했습니다</h3><p class="muted">${esc(p.retirementReason || '마지막 시즌을 마치고 은퇴했습니다.')}</p><p>${p.proSeasons}시즌 · LEGACY SCORE ${E.legacy(p).toLocaleString()}점</p></section>${primary('선수 카드 보기', 'player-card')}${primary('MY CLUB에 저장', `club-save:${p.id}`)}${btn('U18로 회귀', `rebirth:${p.id}`, 'secondary')}${btn('선수 개명', `rename:${p.id}`, 'text-button')}${primary('커리어 카드 이미지 저장', 'export-career')+btn('커리어 데이터 백업 (JSON)', 'export-career-data', 'text-button')}${btn('새로운 인생 시작', 'new', 'secondary')}`;
 }
 function careerScreen(p) {
   const t = E.totals(p), rating = t.games ? (t.rating / t.games).toFixed(2) : '–';
@@ -167,11 +171,11 @@ function careerScreen(p) {
   return `${sectionTitle('CAREER', p.stage === 'retired' ? '완성된 커리어' : '진행 중 커리어')}<div class="stats-grid three">${stat('프로 경력', `${p.proSeasons}시즌`)}${stat('거친 구단', new Set(pro.map(x => x.team)).size)}${stat('국가대표', `${p.nationalCaps}경기`)}</div><h3 class="subheading"><small>CAREER TOTALS · FIRST TEAM</small>1군 통산 핵심 기록</h3><div class="stats-grid three">${stat('경기', t.games)}${stat(p.position === 'GK' ? '선방' : '골', p.position === 'GK' ? t.saves : t.goals)}${stat(p.position === 'GK' ? '클린시트' : '도움', p.position === 'GK' ? t.cleanSheets : t.assists)}${stat('평균 평점', rating)}${stat('우승', p.trophies.length)}${stat('전성기 OVR', p.peakOvr.toFixed(1))}</div>
     <h3 class="subheading"><small>RECENT FORM</small>최근 5시즌 평점</h3><div class="form-chart">${pro.slice(-5).map(r => `<div><strong>${r.rating.toFixed(1)}</strong><i style="height:${(r.rating - 4) * 22}px"></i><small>${r.year}</small></div>`).join('') || '<p class="muted">첫 프로 시즌을 마치면 기록이 표시됩니다.</p>'}</div>
     <h3 class="subheading"><small>SEASON LOG</small>전체 시즌 기록</h3><div class="season-log">${[...p.records].reverse().map(r => `<div><span>${r.year}</span><p><strong>${esc(r.team)}</strong><small>${esc(r.tier || r.level)} · ${r.games}경기 · ${p.position === 'GK' ? `${r.saves}선방` : `${r.goals}골 ${r.assists}도움`}</small></p><b>${r.rating.toFixed(1)}</b></div>`).join('') || '<p class="muted">아직 시즌 기록이 없습니다.</p>'}</div>
-    <h3 class="subheading"><small>CAREER MOMENTS</small>커리어의 순간들</h3>${p.events.map(e => `<div class="timeline"><small>${e.year}</small><strong>${esc(e.title)}</strong><p>${esc(e.description)}</p></div>`).join('') || '<p class="muted">당신의 이야기가 곧 시작됩니다.</p>'}${primary('커리어 카드 내보내기', 'export-career')}`;
+    <h3 class="subheading"><small>CAREER MOMENTS</small>커리어의 순간들</h3>${p.events.map(e => `<div class="timeline"><small>${e.year}</small><strong>${esc(e.title)}</strong><p>${esc(e.description)}</p></div>`).join('') || '<p class="muted">당신의 이야기가 곧 시작됩니다.</p>'}${primary('커리어 카드 이미지 저장', 'export-career')+btn('커리어 데이터 백업 (JSON)', 'export-career-data', 'text-button')}`;
 }
 function profileScreen(p) {
   const names = E.skillNames(p), order = p.skills.map((v, i) => ({ v, i })).sort((a,b) => b.v-a.v);
-  return `${sectionTitle('PLAYER', '선수 프로필')}<section class="profile-archetype"><h2>${esc(p.style)}</h2><p>${names[order[0].i]} 능력이 돋보이는 ${E.POSITIONS[p.position]}입니다.</p><div class="profile-strength"><small>강점</small><strong>${order.slice(0,3).map(x => names[x.i]).join(' · ')}</strong></div><div class="profile-strength"><small>약점</small><strong>${names[order.at(-1).i]}</strong></div></section>
+  return `${sectionTitle('PLAYER', '선수 프로필')}${btn('수상·업적 보기', 'honours', 'secondary')}<section class="profile-archetype"><h2>${esc(p.style)}</h2><p>${names[order[0].i]} 능력이 돋보이는 ${E.POSITIONS[p.position]}입니다.</p><div class="profile-strength"><small>강점</small><strong>${order.slice(0,3).map(x => names[x.i]).join(' · ')}</strong></div><div class="profile-strength"><small>약점</small><strong>${names[order.at(-1).i]}</strong></div></section>
     <section class="panel profile-table source-profile"><div>${p.birthYear || p.year-p.age}년생 · ${esc(p.school)}</div><div><span>${p.height || (p.position === 'GK' ? 190 : 180)}cm / ${p.weight || 78}kg</span><span>${p.foot}</span></div><div><span>${E.POSITIONS[p.position]}</span><span>${esc(p.role)}</span></div><div class="profile-focus"><small>집중 육성</small><strong>${p.focus.map(i => names[i]).join(' · ') || '미선택'}</strong></div><div class="profile-club"><small>소속팀</small><strong>${p.team ? `${badge(p.team)} ${club(p.team).name} · ${p.proSeasons}시즌` : p.level}</strong></div><div><small>국가대표</small><strong>${p.nationalCaps ? p.nationalCaps+'경기' : '–'}</strong></div><div class="profile-relations">${progress('구단 신뢰', p.trust)}${progress('인기도', p.popularity)}${progress('컨디션', p.condition)}</div></section><p class="helper career-id">Career ID · ${esc(p.id)}</p>`;
 }
 
@@ -228,8 +232,26 @@ function modalContent() {
   }
   let body = '', title = '', small = '';
   if (modal.type === 'new') { small = 'NEW LIFE'; title = '새로 시작하시겠습니까?'; body = `<p>완료한 시즌이 있는 이전 커리어는 클럽하우스에 보관합니다.</p><div class="modal-actions">${btn('취소', 'close', 'secondary')}${primary('새로운 인생 시작', 'new-confirm')}</div>`; }
+  if (modal.type === 'card-export') {
+    small = 'CAREER CARD'; title = '커리어 카드 이미지 저장';
+    body = `<img class="career-export-preview" src="${modal.url}" alt="${esc(modal.name)}의 커리어 카드">${primary('PNG 이미지 저장', 'card-png-download')}${typeof navigator.share === 'function' && navigator.canShare?.({ files: [new File([modal.blob], modal.filename, { type: 'image/png' })] }) ? btn('공유 · 사진에 저장', 'card-png-share', 'secondary') : ''}<p class="helper">인스타그램 등 내장 브라우저에서는 이미지를 길게 눌러 사진에 저장할 수 있습니다.</p>`;
+  }
+  if (modal.type === 'milestones') {
+    small = 'CAREER MILESTONE'; title = '통산 기록 달성';
+    body = `<div class="milestone-list">${E.seasonMilestones(p).map(m => `<div>${icon('trophy')}<strong>${m.value.toLocaleString()}</strong><span>${m.label} 달성!!</span></div>`).join('')}</div>${primary('시즌 결과 보기', 'milestone-confirm')}`;
+  }
+  if (modal.type === 'honours') {
+    const achievements = E.careerAchievements(p), awards = [...new Set(p.records.flatMap(r => r.awards))];
+    small = 'HONOURS & ACHIEVEMENTS'; title = '수상·업적';
+    body = `<p class="muted">${achievements.filter(a => a.unlocked).length} / ${achievements.length} 업적 달성</p><div class="award-chips">${awards.map(a => `<span>${icon('trophy')}${esc(a)}</span>`).join('') || '<p>프로 시즌부터 수상에 도전할 수 있습니다.</p>'}</div><p class="helper">주요 축구상의 이름을 사용하며, 게임의 시즌 기록으로 수상자를 결정합니다.</p><div class="honours-list">${achievements.map(a => `<div class="${a.unlocked ? 'unlocked' : 'locked'}">${icon('trophy')}<span>${esc(a.title)}</span><small>${a.unlocked ? '달성' : '도전 중'}</small></div>`).join('')}</div>`;
+  }
+  if (modal.type === 'scout-report') {
+    const r = p.review, names = E.skillNames(p), order = p.skills.map((v, i) => ({ v, i })).sort((a,b) => b.v-a.v);
+    small = `${r.year} · ${r.level} SCOUT REPORT`; title = '스카우팅 리포트';
+    body = `<div class="scout-player"><h3>${esc(p.name)}</h3><p class="muted">${esc(p.school)} · ${E.POSITIONS[p.position]} · ${p.height || 180}cm / ${p.weight || 78}kg</p></div><div class="scout-report-body"><section class="scout-section"><h3>선수 유형</h3><p>${esc(p.role)} 역할의 ${E.POSITIONS[p.position]}로, ${names[order[0].i]}과 ${names[order[1].i]}에서 강점을 보였습니다. ${names[order.at(-1).i]}를 더 다듬으면 플레이의 균형을 높일 수 있습니다.</p></section><section class="scout-section"><h3>이번 시즌</h3><p>${r.games}경기 · ${p.position === 'GK' ? `${r.saves}선방 · ${r.cleanSheets}클린시트` : `${r.goals}골 · ${r.assists}도움`} · 평점 ${r.rating.toFixed(1)}</p><p>OVR ${r.oldOvr.toFixed(1)} → ${r.newOvr.toFixed(1)}. ${r.newOvr > r.oldOvr ? '경기 경험이 능력 성장으로 이어졌습니다.' : '다음 시즌에는 컨디션과 출전 기회를 살펴보세요.'}</p></section><section class="scout-section"><h3>육성 전망</h3><p>${p.focus.map(i => names[i]).join(' · ')} 중심의 육성을 선택했습니다. 현재 프로 입단 평가 확률은 ${E.trialChance(p)}%이며, U21·U23에서 두 시즌씩 성장한 뒤 다시 평가받을 수 있습니다.</p><p class="helper">현재 경기 기록에 따른 평가이며 입단 결과를 보장하지 않습니다.</p></section></div>${primary('확인', 'scout-confirm')}`;
+  }
   if (modal.type === 'retire') { small = 'CAREER DECISION'; title = '현역 은퇴하시겠습니까?'; body = `<p>${esc(p.name)}의 커리어를 마무리합니다. 은퇴한 선수의 시즌은 다시 진행할 수 없습니다.</p><div class="modal-actions">${btn('계속 선수 생활', 'close', 'secondary')}${primary('은퇴 확정', 'retire-confirm')}</div>`; }
-  if (modal.type === 'contract') { const o = p.offers[modal.index]; small = o.rookie ? 'ROOKIE CONTRACT' : 'FA CONTRACT'; title = '프로 계약서에 사인하시겠습니까?'; body = `<p>${club(o.team).name} · ${o.years}년 계약 · 연봉 ${money(o.salary)}원</p><div class="signature">${modal.signed ? esc(p.name) : '선수가 사용할 가상 사인'}</div>${btn('이름 사인 사용', 'signature', 'secondary')}${primary('사인하고 프로 입단', 'sign', modal.signed ? '' : 'disabled')}`; }
+  if (modal.type === 'contract') { const o = p.offers[modal.index]; small = o.rookie ? 'ROOKIE CONTRACT' : 'FA CONTRACT'; title = o.rookie ? '프로 계약서에 사인하시겠습니까?' : '새 계약서에 사인하시겠습니까?'; body = `<p>${club(o.team).name} · ${o.years}년 계약 · 연봉 ${money(o.salary)}원</p>${signaturePad(modal, esc(p.name))}<p class="helper">직접 사인하거나 이름 사인을 사용할 수 있습니다.</p><div class="signature-actions">${btn('이름 사인 사용', 'signature', 'secondary')}${btn('다시 사인', 'signature-clear', 'secondary')}</div>${primary(o.rookie ? '사인하고 프로 입단' : '사인하고 계약 체결', 'sign', modal.signed ? '' : 'disabled')}`; }
   if (modal.type === 'training-select') { small = `OFFSEASON · 잔여 ${3 - p.trainingUsed.length}회`; title = '특별훈련'; body = `<div class="info-banner">시즌당 1회 · 커리어 전체 3회<br>능력치마다 1회만 훈련할 수 있습니다.</div>${E.skillNames(p).map((s, i) => btn(`<span>${s} 강화 훈련</span><strong>${p.skills[i].toFixed(1)}</strong>`, `train-skill:${i}`, 'training-choice', p.trainingUsed.includes(i) ? 'disabled' : '')).join('')}<p class="helper">5번의 타이밍 시도 · 획득 점수 × 0.4 능력 상승</p>`; }
   if (modal.type === 'training') { small = 'SPECIAL TRAINING'; title = `${E.skillNames(p)[p.pendingTraining.skill]} 강화 훈련`; const shots = p.pendingTraining.shots; body = `<div class="training-score"><strong>특별훈련 · ${Math.min(shots.length + 1, 5)} / 5</strong><b>${shots.reduce((a, b) => a + b, 0)} / 10점</b></div><div class="shot-list">${Array.from({ length: 5 }, (_, i) => `<span class="${i === shots.length ? 'active' : ''}">${i + 1}회 <b>${shots[i] === undefined ? '—' : `${shots[i]}점`}</b></span>`).join('')}</div><div class="timing-board"><div class="timing-zone"><i id="timing-marker" style="left:${markerPosition}%"></i></div><div><small>실패</small><small>1점 · 중앙 2점</small><small>실패</small></div></div><p class="centered">${shots.length === 5 ? '5번의 시도를 모두 마쳤습니다!' : '노란 중앙에 왔을 때 공을 차세요.'}</p>${shots.length === 5 ? primary('결과 보기', 'training-finish') : btn(`${icon('soccer-ball')} ${markerRunning ? '지금 슛!' : shots.length ? '다음 시도' : '훈련 시작'}<small>스페이스 / Enter로도 플레이</small>`, markerRunning ? 'shoot' : 'training-start', 'shoot-button')}<p class="helper">키보드와 터치의 점수 계산은 같습니다.</p>`; }
   if (modal.type === 'training-result') { small = 'TRAINING RESULT'; title = '훈련 결과'; body = `<div class="training-bonus"><small>${E.skillNames(p)[p.lastTraining.skill]}</small><strong>+${p.lastTraining.bonus.toFixed(1)}</strong><p>${p.lastTraining.score}점 × 0.4</p></div>${primary('스토브리그로', 'close')}`; }
@@ -238,7 +260,7 @@ function modalContent() {
   if (modal.type === 'import-confirm') { small = 'IMPORT SAVE'; title = '저장 파일로 교체할까요?'; body = `<p>현재 기록을 파일로 백업한 뒤, 선택한 저장 파일을 불러옵니다.</p>${btn('현재 기록 백업', 'export-save', 'secondary')}${primary('백업하고 불러오기', 'import-apply')}`; }
   if (modal.type === 'notice') { small = 'WELCOME TO THE PITCH'; title = '새로운 무대, 새로운 축구 인생'; body = `<p>유소년 선수 생성 → 후보 3장 → 집중 육성 → U18 시즌 → 프로 계약 또는 U21·U23 육성 → 프로 시즌 → 계약·이적 → 은퇴.</p><p>공격수·미드필더·수비수·골키퍼는 서로 다른 능력과 기록으로 평가됩니다.</p><p class="helper">7개 유럽 리그와 유명 아카데미에서 시작하세요. 구단 목록은 2025/26 기준이며, 이후 시즌의 성적과 이적은 시뮬레이션입니다.</p>${primary('그라운드로', 'close')}`; }
   if (modal.type === 'league') { const r = p.review; small = `${club(p.team).league} · ${r.year}/${String(r.year + 1).slice(-2)}`; title = '리그 순위표'; body = `<div class="league-table"><div class="league-row heading"><span>순위</span><b>구단</b><span>경기</span><span>득실</span><strong>승점</strong></div>${r.league.table.map((t, i) => `<div class="league-row ${t.id === p.team ? 'own' : ''}"><span>${i + 1}</span><b>${esc(t.name)}</b><span>${t.played}</span><span>${t.gf - t.ga}</span><strong>${t.points}</strong></div>`).join('')}</div><h3>우리 팀 경기 기록</h3><div class="match-log">${r.league.ownMatches.map(m => `<div><small>${m.round}R</small><span>${esc(m.opponent)}</span><b>${m.goalsFor} : ${m.goalsAgainst}</b></div>`).join('')}</div>`; }
-  return `<div class="modal-backdrop"><section class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">${close}<small>${small}</small><h2 id="modal-title">${title}</h2>${body}</section></div>`;
+  return `<div class="modal-backdrop"><section class="modal ${modal.type === 'scout-report' ? 'scout-report-modal' : ''}" role="dialog" aria-modal="true" aria-labelledby="modal-title">${close}<small>${small}</small><h2 id="modal-title">${title}</h2>${body}</section></div>`;
 }
 
 function render(preserveScroll = false) {
@@ -268,7 +290,10 @@ async function simulate(operation, command, args = {}) {
   await new Promise(r => setTimeout(r, matchMedia('(prefers-reduced-motion: reduce)').matches ? 50 : 1150));
   let failure;
   try { await changeCareer(command, args, operation); tab = 'season'; } catch (error) { failure = error.message; }
-  busy = false; render(); if (failure) toast(failure);
+  busy = false;
+  if (!failure && command === 'season' && data.current?.review?.level === 'U18') modal = { type: 'scout-report' };
+  else if (!failure && command === 'season' && E.seasonMilestones(data.current).length) modal = { type: 'milestones' };
+  render(); if (failure) toast(failure);
 }
 function stopMarker() { cancelAnimationFrame(markerFrame); markerRunning = false; }
 function startMarker() {
@@ -283,7 +308,7 @@ function startMarker() {
   markerFrame = requestAnimationFrame(tick);
 }
 function exportFile(text, filename) {
-  const url = URL.createObjectURL(new Blob([text], { type: 'application/json' }));
+  const url = URL.createObjectURL(new Blob([text], { type: 'application/json;charset=utf-8' }));
   const a = document.createElement('a'); a.href = url; a.download = filename; a.click(); setTimeout(() => URL.revokeObjectURL(url), 2000);
 }
 async function pickFile(mode) {
@@ -323,9 +348,14 @@ async function action(value) {
     if (a === 'new') { if (data.current?.pendingTraining) { screen = 'game'; viewing = null; tab = 'season'; modal = { type: 'training' }; render(); toast('진행 중인 훈련을 먼저 마쳐주세요.'); return; } modal = { type: 'new' }; }
     if (a === 'new-confirm') { screen = 'create'; modal = null; viewing = null; form = defaultForm(); }
     if (a === 'continue') { screen = 'game'; viewing = null; tab = 'season'; modal = data.current?.pendingTraining ? { type: 'training' } : null; }
+    if (a === 'scout-report') modal = { type: 'scout-report' };
+    if (a === 'scout-confirm') modal = null;
+    if (a === 'milestone-report') modal = { type: 'milestones' };
+    if (a === 'milestone-confirm') modal = null;
+    if (a === 'honours') modal = { type: 'honours' };
     if (a === 'player-card') modal = { type: 'player-card' };
     if (a === 'card-records') { modal = null; tab = 'career'; }
-    if (a === 'close') { if (modal?.type === 'training' && data.current.pendingTraining) { stopMarker(); modal = null; } else modal = null; }
+    if (a === 'close') { if (modal?.type === 'card-export') URL.revokeObjectURL(modal.url); if (modal?.type === 'training' && data.current.pendingTraining) { stopMarker(); modal = null; } else modal = null; }
     if (a === 'settings' || a === 'notice') modal = { type: a };
     if (a === 'random') { const ref = E.PLAYER_REFERENCES[Math.floor(Math.random() * E.PLAYER_REFERENCES.length)]; const academy = E.academyById(ref.academy); form = { ...defaultForm(), ...ref, reference: ref.name, leagueId: academy.leagueId, preferred: academy.club }; }
     if (a === 'foot' || a === 'position') { getForm(); form[a] = raw; }
@@ -342,8 +372,9 @@ async function action(value) {
     if (a === 'trial') return simulate(E.trial, 'trial');
     if (a === 'semipro') return simulate(x => E.trial(x, true), 'trial', { retry: true });
     if (a === 'offer') modal = { type: 'contract', index: i, signed: false };
-    if (a === 'signature') modal.signed = true;
-    if (a === 'sign') { const index = modal.index; await changeCareer('sign', { index }, x => E.signOffer(x, index)); modal = null; sound(); }
+    if (a === 'signature' && modal?.type === 'contract') { modal.signed = true; modal.signatureMode = 'name'; modal.strokes = []; }
+    if (a === 'signature-clear' && modal?.type === 'contract') { modal.signed = false; modal.signatureMode = 'pen'; modal.strokes = []; }
+    if (a === 'sign') { if (modal?.type !== 'contract' || !modal.signed) { toast('계약서에 먼저 사인해 주세요.'); return; } const index = modal.index; await changeCareer('sign', { index }, x => E.signOffer(x, index)); modal = null; sound(); }
     if (a === 'event') await changeCareer('event', { choice: i }, x => E.chooseEvent(x, i));
     if (a === 'tab') { tab = raw; modal = null; }
     if (a === 'training') modal = { type: data.current.pendingTraining ? 'training' : 'training-select' };
@@ -360,7 +391,10 @@ async function action(value) {
     if (a === 'theme') { data.theme = raw; save(); }
     if (a === 'mute') { data.muted = !data.muted; save(); sound(); }
     if (a === 'export-save') { exportFile(serializeSave(data), 'football-save.json'); toast('전체 저장 파일을 내보냈습니다.'); return; }
-    if (a === 'export-career' || a === 'export-own') { const target = a === 'export-own' ? validCards()[0] : p; exportFile(serializeCareer(target), `football-career-${target.id}.json`); toast('커리어 카드를 내보냈습니다.'); return; }
+    if (a === 'export-career') { const blob = await careerCardBlob(p, p.team ? club(p.team).name : p.school); if (modal?.type === 'card-export') URL.revokeObjectURL(modal.url); modal = { type: 'card-export', blob, url: URL.createObjectURL(blob), filename: `football-career-${p.id}.png`, name: p.name }; render(); return; }
+    if (a === 'card-png-download' && modal?.type === 'card-export') { downloadBlob(modal.blob, modal.filename); toast('카드 이미지를 저장했습니다.'); return; }
+    if (a === 'card-png-share' && modal?.type === 'card-export') { try { await navigator.share({ files: [new File([modal.blob], modal.filename, { type: 'image/png' })], title: `${modal.name}의 축구 커리어` }); } catch (error) { if (error.name !== 'AbortError') toast('PNG 이미지 저장을 이용해 주세요.'); } return; }
+    if (a === 'export-career-data' || a === 'export-own') { const target = a === 'export-own' ? validCards()[0] : p; exportFile(serializeCareer(target), `football-career-${target.id}.json`); toast('커리어 데이터 백업을 내보냈습니다.'); return; }
     if (a === 'export-raw') { exportFile(localStorage.getItem(STORAGE_KEY) || '{}', 'football-original-backup.json'); return; }
     if (a === 'reset-storage') { localStorage.setItem(`${STORAGE_KEY}-backup`, localStorage.getItem(STORAGE_KEY) || '{}'); storageBlocked = false; save(); modal = null; }
     if (a === 'import-save') return pickFile('save');
@@ -441,6 +475,7 @@ document.addEventListener('keydown', (event) => {
   }
   if (modal?.type === 'training' && markerRunning && [' ', 'Enter'].includes(event.key)) { event.preventDefault(); if (!event.repeat) action('shoot'); }
 });
+bindSignature(app, () => modal, render);
 render();
 if (loaded.error) toast(loaded.error);
 features.init();
