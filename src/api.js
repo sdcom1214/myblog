@@ -23,6 +23,12 @@ export class OnlineClient {
   }
   command(command, args = {}) { return this.enqueue(async () => { if (this.error) throw this.error; return this.adopt(await this.request('/career/action', 'POST', { command, args, revision: this.revision })); }); }
   async restore() { await this.pending.catch(() => {}); return this.adopt(await this.request('/save')); }
-  async authenticate(mode, fields) { await this.pending.catch(() => {}); this.generation++; return this.adopt(await this.request(`/auth/${mode}`, 'POST', fields)); }
+  async authenticate(mode, fields) {
+    await this.pending.catch(() => {}); this.generation++;
+    const result = await this.request(`/auth/${mode}`, 'POST', fields);
+    const session = await this.request('/auth/session');
+    if (session.user?.id !== result.user.id) throw new Error('로그인 쿠키를 사용할 수 없습니다. Safari 또는 Chrome에서 같은 계정으로 로그인해 주세요.');
+    return this.adopt(result);
+  }
   async logout() { await this.pending.catch(() => {}); await this.request('/auth/logout', 'POST', {}); this.generation++; this.user = null; this.verified = false; this.wallet = null; this.error = null; }
 }

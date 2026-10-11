@@ -2,10 +2,18 @@ import * as E from './engine.js';
 
 // Render pixels, never navigate to a JSON blob when someone saves a career card.
 export async function careerCardBlob(career, teamName) {
-  await document.fonts.ready;
+  await Promise.race([document.fonts?.ready || Promise.resolve(), new Promise(resolve => setTimeout(resolve, 2500))]);
   const canvas = document.createElement('canvas'); canvas.width = 780; canvas.height = 1180;
-  const ctx = canvas.getContext('2d'); ctx.scale(2, 2);
-  const box = (x, y, w, h, radius, color) => { ctx.fillStyle = color; ctx.beginPath(); ctx.roundRect(x, y, w, h, radius); ctx.fill(); };
+  const ctx = canvas.getContext('2d');
+  if (!ctx) throw new Error('카드 이미지를 만들 수 없습니다. Safari 또는 Chrome에서 다시 시도해 주세요.');
+  ctx.scale(2, 2);
+  const box = (x, y, w, h, radius, color) => {
+    const r = Math.min(radius, w / 2, h / 2); ctx.fillStyle = color; ctx.beginPath();
+    ctx.moveTo(x + r, y); ctx.lineTo(x + w - r, y); ctx.arcTo(x + w, y, x + w, y + r, r);
+    ctx.lineTo(x + w, y + h - r); ctx.arcTo(x + w, y + h, x + w - r, y + h, r);
+    ctx.lineTo(x + r, y + h); ctx.arcTo(x, y + h, x, y + h - r, r);
+    ctx.lineTo(x, y + r); ctx.arcTo(x, y, x + r, y, r); ctx.closePath(); ctx.fill();
+  };
   const text = (value, x, y, size, color = '#263796', weight = 600, align = 'left', width) => {
     ctx.fillStyle = color; ctx.textAlign = align; ctx.font = `${weight} ${size}px Pretendard, sans-serif`;
     if (width) while (ctx.measureText(String(value)).width > width && size > 11) ctx.font = `${weight} ${--size}px Pretendard, sans-serif`;
@@ -15,7 +23,11 @@ export async function careerCardBlob(career, teamName) {
   box(24, 25, 72, 72, 12, '#ffffff');
   const club = E.clubById(career.team || career.preferred);
   if (club) {
-    const logo = await new Promise(resolve => { const img = new Image(); img.onload = () => resolve(img); img.onerror = () => resolve(null); img.src = `/clubs/${club.id}.png`; });
+    const logo = await new Promise(resolve => {
+      const img = new Image(), timeout = setTimeout(() => resolve(null), 2500);
+      const finish = value => { clearTimeout(timeout); resolve(value); };
+      img.onload = () => finish(img); img.onerror = () => finish(null); img.src = `/clubs/${club.id}.png`;
+    });
     if (logo) { const ratio = Math.min(54 / logo.width, 54 / logo.height); ctx.drawImage(logo, 60 - logo.width * ratio / 2, 61 - logo.height * ratio / 2, logo.width * ratio, logo.height * ratio); }
     else text(club.initials, 60, 65, 20, '#263796', 800, 'center');
   }
@@ -41,6 +53,14 @@ export async function careerCardBlob(career, teamName) {
   text(`${career.proSeasons}번의 프로 시즌 · ${career.trophies.length}번의 리그 우승`, 195, 545, 12, '#ffffff', 600, 'center');
   text('SECOND LIFE FOOTBALL', 195, 567, 10, '#c8d3ff', 700, 'center');
   return new Promise((resolve, reject) => canvas.toBlob(blob => blob ? resolve(blob) : reject(new Error('카드 이미지를 만들지 못했습니다. 다시 시도해 주세요.')), 'image/png'));
+}
+
+export function imageDataURL(blob) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader(); reader.onload = () => resolve(reader.result);
+    reader.onerror = () => reject(new Error('카드 이미지를 열지 못했습니다. 다시 시도해 주세요.'));
+    reader.readAsDataURL(blob);
+  });
 }
 
 export function downloadBlob(blob, filename) {

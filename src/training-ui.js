@@ -1,25 +1,33 @@
 import { TRAINING_GAMES } from './training.js';
+import { bindPointerInput, capturePointer } from './browser.js';
 
 const button = (text, action, disabled = false, cls = '') => `<button type="button" class="${cls}" data-action="${action}" ${disabled ? 'disabled' : ''}>${text}</button>`;
 export class TrainingGame {
   constructor({ career, render, submit, toast, root, isOpen }) {
     Object.assign(this, { career, render, submit, toast, isOpen }); this.active = false; this.frame = 0; this.key = ''; this.aim = { x: 50, y: 50 };
-    root.addEventListener('pointerup', event => {
-      const goal = event.target.closest('.training-goal');
-      if (goal && this.active && this.isOpen()) { const r = goal.getBoundingClientRect(); this.finish({ x: Math.max(0, Math.min(100, (event.clientX - r.left) / r.width * 100)), y: Math.max(0, Math.min(100, (event.clientY - r.top) / r.height * 100)) }); }
-      if (this.held && this.isOpen()) this.releasePower();
+    bindPointerInput(root, {
+      start: event => {
+        const target = event.target.closest('.training-goal, [data-action="training-hold"]');
+        if (!target || !this.active || !this.isOpen()) return false;
+        event.preventDefault(); capturePointer(target, event);
+        this.pointerGoal = target.matches('.training-goal') ? target : null;
+        if (!this.pointerGoal) this.holdPower();
+        return true;
+      },
+      end: event => {
+        const goal = this.pointerGoal; this.pointerGoal = null;
+        if (goal?.isConnected && this.active && this.isOpen()) { const r = goal.getBoundingClientRect(); this.finish({ x: Math.max(0, Math.min(100, (event.clientX - r.left) / r.width * 100)), y: Math.max(0, Math.min(100, (event.clientY - r.top) / r.height * 100)) }); }
+        if (this.held && this.isOpen()) this.releasePower();
+      },
+      cancel: () => { this.pointerGoal = null; this.held = false; this.value = 0; },
     });
-    root.addEventListener('pointerdown', event => {
-      const hold = event.target.closest('[data-action="training-hold"]');
-      if (hold && this.active && this.isOpen()) { event.preventDefault(); hold.setPointerCapture(event.pointerId); this.holdPower(); }
-    });
-    root.addEventListener('pointercancel', () => { if (this.held) this.releasePower(); });
     document.addEventListener('keyup', event => { if (this.isOpen() && this.held && [' ', 'Enter'].includes(event.key)) { event.preventDefault(); this.releasePower(); } });
+    document.addEventListener('visibilitychange', () => { if (document.hidden && this.active) { this.stop(); if (this.isOpen()) this.render(true); } });
   }
   get pending() { return this.career()?.pendingTraining; }
   get mode() { return this.pending?.mode || 'legacy'; }
   get round() { return this.pending?.rounds?.[this.pending.shots.length] || { target: 50 }; }
-  stop() { cancelAnimationFrame(this.frame); this.active = false; this.held = false; }
+  stop() { cancelAnimationFrame(this.frame); this.active = false; this.held = false; this.pointerGoal = null; }
   sync() {
     const p = this.pending, next = p ? `${this.career().id}:${this.career().trainedYear}:${p.skill}:${p.shots.length}` : '';
     if (next !== this.key) { this.stop(); this.key = next; this.sequence = []; this.taps = 0; this.value = 0; this.aim = { x: 50, y: 50 }; }

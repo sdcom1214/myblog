@@ -28,6 +28,10 @@ node tests/browser-server.mjs tests/browser-training.py
 node tests/browser-server.mjs tests/browser-urgent.py
 # 악성 저장 파일·공개 프로필·브라우저 보안 정책:
 node tests/browser-server.mjs tests/browser-security.py
+# Instagram UA, 저장 차단, 터치 입력, PNG와 쿠키 거부 조건:
+node tests/browser-server.mjs tests/browser-instagram.py
+# 설치된 Playwright WebKit에서도 같은 조건 검증:
+FOOTBALL_WEBKIT=1 node tests/browser-server.mjs tests/browser-instagram.py
 ```
 
 클라우드 설치 스크립트는 [docs/setup.sh](docs/setup.sh), 시작 지침은 [docs/cloud-start.md](docs/cloud-start.md)에 있습니다. Vite와 animejs를 사용하며, 글꼴·아이콘·일러스트는 로컬 파일로 제공됩니다.
@@ -74,6 +78,8 @@ node tests/browser-server.mjs tests/browser-security.py
 
 비회원은 브라우저에 자동 저장하고, 로그인하면 SQLite 서버에 계정별 진행을 저장합니다. 이메일 가입·로그인·로그아웃과 저장 복구를 지원하며, 설정에서 전체 저장 파일을 내보내거나 가져올 수 있습니다. 수정하거나 가져온 기록은 온라인 랭킹에서 제외합니다.
 
+인스타그램 내장 브라우저에서는 커리어 카드의 PNG 이미지를 길게 눌러 저장합니다. 사진 저장 메뉴나 로그인 쿠키가 제한된 경우에는 화면의 안내에 따라 Safari 또는 Chrome에서 열어 주세요. Google 로그인은 외부 브라우저를 사용하고, 내장 브라우저에서는 이메일 로그인을 제공합니다. 기기 저장이 차단되면 임시 플레이를 안내하며 계정의 서버 저장은 계속 사용합니다. 같은 계정으로 재접속하면 서버 기록을 복원합니다. WebGL을 사용할 수 없어도 모든 특훈과 카드 생성이 동작합니다. [호환성 검증 범위와 결과](docs/audit/instagram/review.md)에 브라우저 엔진 검증과 실기기 검증의 차이를 기록했습니다.
+
 친구 닉네임 검색·초대·수락 또는 같은 포지션의 랜덤 매칭으로 커리어 매치를 시작합니다. 두 선수가 같은 후보에서 새 커리어를 진행한 뒤 양쪽 은퇴 시 LEGACY SCORE로 결과를 집계합니다. MY CLUB에는 은퇴 선수를 직접 보관하고, 온라인 보관 선수로 11인 팀을 만들어 도장깨기·ELO 랭킹전을 플레이합니다. 슬롯·회귀권·개명권은 서버 FC 잔액으로 구매하며 사용 내역을 저장합니다.
 
 서버 데이터는 `.local/server.sqlite`에 보관합니다. 배포에서는 `FOOTBALL_DB`를 지속 가능한 저장소 경로로 지정하세요. `npm run build` 후 `PORT=4173 npm start`로 빌드된 화면과 API를 함께 제공합니다. HTTPS 역프록시를 사용하는 운영 환경에서는 `NODE_ENV=production COOKIE_SECURE=true PORT=4173 npm start`로 Secure 쿠키와 HSTS를 활성화합니다. 개발 API는 기본적으로 127.0.0.1에서만 열리며 Vite의 `/api` 프록시를 통해 접근합니다. `npm run preview`는 정적 화면 미리보기이므로 온라인 기능 검증에는 개발 서버 또는 `npm start`를 사용합니다.
@@ -82,7 +88,7 @@ Google OAuth는 환경 변수 연결 후 사용할 수 있으며 현재 실제 �
 
 ## 검증과 자료
 
-- 엔진 테스트 26개 + 서버 테스트 26개: 리그 경기·통계·성장·계약·이적·은퇴·주요상 자격·통산 기록·9종 특훈 입력·기존 저장 호환·계정 분리·대전·업적·팀 ELO·거래 제한·보안 회귀.
+- 엔진 테스트 26개 + 서버 테스트 26개 + 브라우저 호환성 로직 6개: 리그 경기·통계·성장·계약·이적·은퇴·주요상 자격·통산 기록·9종 특훈 입력·기존 저장 호환·계정 분리·대전·업적·팀 ELO·거래 제한·보안 회귀·저장 차단·로그인 쿠키 거부.
 - 실제 Chromium 브라우저 검증 14개: 전체 플레이 경로, 리그·아카데미·참고 선수 선택, 파일 가져오기·내보내기, 새로고침 복구, 메뉴와 상점, 모바일 크기 320/390/430 및 데스크톱.
 - 온라인 브라우저 검증 11개: 독립된 두 계정으로 가입, 친구 매치, 은퇴 결과, 보관, 업적, 팀 배틀, 구매, 개명, 재로그인 복구.
 - 자연 은퇴까지 여섯 커리어: 네 포지션과 온라인 두 선수의 육성·계약·훈련·이적·저장 복구·최종 기록·대전 점수와 승패. [끝까지 플레이한 검수](docs/playthrough/review.md)에 원본 관찰과 결과를 기록했습니다.

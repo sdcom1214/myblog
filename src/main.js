@@ -1,16 +1,22 @@
 import { animate, stagger } from 'animejs';
 import * as E from './engine.js';
-import { STORAGE_KEY, loadStore, parseSave, serializeSave, serializeCareer, emptyStore } from './storage.js';
+import { STORAGE_KEY, loadStore, loadGuestStore, parseSave, serializeSave, serializeCareer } from './storage.js';
 import { OnlineFeatures } from './online-ui.js';
 import { signaturePad, bindSignature } from './signature.js';
-import { careerCardBlob, downloadBlob } from './career-export.js';
+import { careerCardBlob, downloadBlob, imageDataURL } from './career-export.js';
 import { TrainingGame } from './training-ui.js';
 import { escapeHTML as esc } from './html.js';
+import { browserStorage, isInAppBrowser, canShareFile, fitMobileViewport } from './browser.js';
 import './style.css';
 import './parity.css';
 
-const loaded = loadStore(localStorage);
-let data = loaded.data, screen = 'home', tab = 'season', modal = null, viewing = null;
+const deviceStorage = browserStorage();
+const loaded = loadStore(deviceStorage);
+fitMobileViewport();
+// A cached account must never become a guest save when the WebView drops its
+// cookies or cannot remove old storage. Restore account data only via /api/save.
+let data = deviceStorage.getItem(`${STORAGE_KEY}-account`) ? loadGuestStore(deviceStorage) : loaded.data;
+let screen = 'home', tab = 'season', modal = null, viewing = null;
 const defaultForm = () => ({ name: '', number: 10, foot: '오른발', position: 'FW', leagueId: 'premier', preferred: 'arsenal', academy: 'hale-end', reference: '' });
 let selectedCard = 0, focus = [], growthRole = null, growthTechnique = '균형', form = defaultForm();
 let duelResult = null, friend = null, squad = [], teamResult = null, busy = false;
@@ -34,14 +40,15 @@ const progress = (label, value, max = 100) => `<div class="progress-row"><span>$
 const features = new OnlineFeatures({
   btn, esc, icon, badge, nav: homeNav, navigate, render, toast, save,
   getData: () => data, getScreen: () => screen, setModal: value => { modal = value; },
+  deviceStorageAvailable: () => deviceStorage.persistent,
   commitLocal: commit,
   acceptServer: (result, login = false) => {
-    if (login && !localStorage.getItem(`${STORAGE_KEY}-account`)) localStorage.setItem(`${STORAGE_KEY}-guest`, JSON.stringify(data));
-    if (result.data) { data = result.data; storageBlocked = false; localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
-    if (features.user) localStorage.setItem(`${STORAGE_KEY}-account`, features.user.id);
+    if (login && !deviceStorage.getItem(`${STORAGE_KEY}-account`)) deviceStorage.setItem(`${STORAGE_KEY}-guest`, JSON.stringify(data));
+    if (result.data) { data = result.data; storageBlocked = false; deviceStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
+    if (features.user) deviceStorage.setItem(`${STORAGE_KEY}-account`, features.user.id);
     viewing = null;
   },
-  logout: () => { const guest = localStorage.getItem(`${STORAGE_KEY}-guest`); try { data = guest ? parseSave(JSON.stringify({ format: 'sfc-save', data: JSON.parse(guest) })).value : emptyStore(); } catch { data = emptyStore(); } localStorage.removeItem(`${STORAGE_KEY}-account`); localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); navigate('home'); },
+  logout: () => { data = loadGuestStore(deviceStorage); deviceStorage.removeItem(`${STORAGE_KEY}-account`); deviceStorage.setItem(STORAGE_KEY, JSON.stringify(data)); navigate('home'); },
   backup: () => exportFile(serializeSave(data), 'football-before-cloud-restore.json'),
   resume: () => { screen = 'game'; viewing = null; tab = 'season'; modal = null; selectedCard = 0; focus = []; growthRole = null; render(); },
   viewCareer: player => { viewing = player; screen = 'game'; tab = 'career'; modal = null; render(); },
@@ -53,8 +60,8 @@ const trainingGame = new TrainingGame({
 
 function save() {
   if (storageBlocked) { toast('기존 저장 파일 보존을 위해 저장이 중단됐습니다. 설정에서 백업 후 새 저장을 시작해 주세요.'); return; }
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); if (features.user) features.client.save(data).catch(error => toast(error.message)); }
-  catch { toast('이 브라우저에 저장할 수 없습니다. 설정에서 파일로 내보내 주세요.'); }
+  deviceStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  if (features.user) features.client.save(data).catch(error => toast(error.message));
 }
 function commit(career) { data.current = career; data.coins = career.coins; data.inventory = [...career.inventory]; save(); }
 function toast(text) {
@@ -78,7 +85,7 @@ function home() {
   const resumable = p && p.stage !== 'retired';
   return `<main class="home-screen"><img class="stadium-art" src="/stadium.png" alt=""><header class="home-tools">${btn(features.user ? esc(features.user.nickname) : '로그인', features.user ? 'settings' : 'auth', 'glass-button')}${btn(icon('gear'), 'settings', 'glass-button square', 'aria-label="환경설정"')}</header>
     <div class="home-logo"><img src="/logo.png" alt="이번 생은 축구다! FOOTBALL CAREER SIMULATION"></div>
-    <div class="home-bottom">${p ? `<div class="life-preview">${badge(p.team || p.preferred)}<div><strong>${esc(p.name)} <span>#${p.number}</span></strong><small>${p.age}세 · ${E.POSITIONS[p.position]} · OVR ${E.ovr(p).toFixed(1)}</small></div><span class="save-dot" title="${features.user ? '계정에 자동 저장' : '이 브라우저에 자동 저장'}">${features.user && features.client.verified ? '온라인' : '자동 저장'}</span></div>` : ''}
+    <div class="home-bottom">${p ? `<div class="life-preview">${badge(p.team || p.preferred)}<div><strong>${esc(p.name)} <span>#${p.number}</span></strong><small>${p.age}세 · ${E.POSITIONS[p.position]} · OVR ${E.ovr(p).toFixed(1)}</small></div><span class="save-dot" title="${features.user ? '계정에 자동 저장' : deviceStorage.persistent ? '이 브라우저에 자동 저장' : '앱을 닫으면 기록이 사라질 수 있습니다'}">${features.user && features.client.verified ? '온라인' : deviceStorage.persistent ? '자동 저장' : '임시 저장'}</span></div>` : ''}
       ${btn(`${p ? resumable ? '이어서 플레이' : `${esc(p.name)} 기록 보기` : '새로운 인생 시작'} ${arrow()}`, p ? 'continue' : 'new', 'home-start')}
       ${p ? btn(`새로운 인생 시작 ${arrow()}`, 'new', 'home-secondary-new') : ''}
       <div class="home-versus">${btn('1:1 커리어 매치', 'duel', 'home-secondary')}${btn('친구와 커리어 매치', 'friend', 'home-secondary')}</div>
@@ -239,7 +246,11 @@ function modalContent() {
   if (modal.type === 'new') { small = 'NEW LIFE'; title = '새로 시작하시겠습니까?'; body = `<p>완료한 시즌이 있는 이전 커리어는 클럽하우스에 보관합니다.</p><div class="modal-actions">${btn('취소', 'close', 'secondary')}${primary('새로운 인생 시작', 'new-confirm')}</div>`; }
   if (modal.type === 'card-export') {
     small = 'CAREER CARD'; title = '커리어 카드 이미지 저장';
-    body = `<img class="career-export-preview" src="${modal.url}" alt="${esc(modal.name)}의 커리어 카드">${primary('PNG 이미지 저장', 'card-png-download')}${typeof navigator.share === 'function' && navigator.canShare?.({ files: [new File([modal.blob], modal.filename, { type: 'image/png' })] }) ? btn('공유 · 사진에 저장', 'card-png-share', 'secondary') : ''}<p class="helper">인스타그램 등 내장 브라우저에서는 이미지를 길게 눌러 사진에 저장할 수 있습니다.</p>`;
+    body = `<img class="career-export-preview" src="${modal.url}" alt="${esc(modal.name)}의 커리어 카드">${isInAppBrowser() ? `${primary('사진 저장 안내', 'card-save-help')}<p class="helper card-save-instructions">위 이미지를 길게 눌러 ‘사진에 저장’ 또는 ‘이미지 다운로드’를 선택하세요. 저장 메뉴가 없으면 Safari 또는 Chrome에서 열어 주세요.</p>${btn('외부 브라우저에서 열기 안내', 'browser-help', 'secondary')}` : primary('PNG 이미지 저장', 'card-png-download')}${canShareFile(modal.blob, modal.filename) ? btn('공유 · 사진에 저장', 'card-png-share', 'secondary') : ''}<p class="helper">카드는 PNG 이미지입니다. 데이터 백업은 별도 메뉴에서 내보낼 수 있습니다.</p>`;
+  }
+  if (modal.type === 'browser-help') {
+    small = 'BROWSER'; title = 'Safari · Chrome에서 열기';
+    body = `<p class="helper">인스타그램의 ⋯ 메뉴에서 ‘외부 브라우저에서 열기’를 선택하세요. 메뉴가 없으면 아래 주소를 복사해 Safari 또는 Chrome에 붙여 넣으세요.</p><label class="field-label" for="browser-page-url">게임 주소</label><input id="browser-page-url" readonly value="${esc(location.origin + location.pathname)}">${primary('게임 주소 복사', 'copy-page-url')}<p class="helper">로그인한 기록은 같은 계정으로 불러올 수 있습니다. 비회원 기록은 설정에서 저장 파일을 백업해 주세요.</p>`;
   }
   if (modal.type === 'milestones') {
     small = 'CAREER MILESTONE'; title = '통산 기록 달성';
@@ -272,7 +283,9 @@ function render(preserveScroll = false) {
   const scroll = document.querySelector('.game-content, .menu-content')?.scrollTop || 0;
   const oldFocus = document.activeElement?.dataset?.action;
   app.dataset.theme = data.theme;
-  app.innerHTML = `<div class="app-frame">${features.renderScreen(screen) ?? ({ home, create: creation, game, club: clubhouse, ranking, shop, duel: matchPage, friend: matchPage, team: teamBattle, play: () => home() }[screen] || home)()}${modalContent()}${busy ? `<div class="loading-scene" role="status"><div>${icon('soccer-ball')}<small>SEASON SIMULATION</small><h2>당신의 시즌을 만들고 있습니다</h2><p>경기 일정 · 선수 기록 · 성장 · 구단 순위</p><div class="loading-dots"><i></i><i></i><i></i></div></div></div>` : ''}</div>`;
+  const temporary = !deviceStorage.persistent;
+  const notice = temporary ? `<div class="storage-notice" role="status">${features.user ? '기기 저장이 제한되어 계정에 기록을 저장합니다.' : `임시 플레이 중 · 앱을 닫으면 기록이 사라질 수 있습니다. ${btn('로그인', 'auth', 'text-button')}`}</div>` : '';
+  app.innerHTML = `<div class="app-frame" data-temporary-storage="${temporary}">${notice}${features.renderScreen(screen) ?? ({ home, create: creation, game, club: clubhouse, ranking, shop, duel: matchPage, friend: matchPage, team: teamBattle, play: () => home() }[screen] || home)()}${modalContent()}${busy ? `<div class="loading-scene" role="status"><div>${icon('soccer-ball')}<small>SEASON SIMULATION</small><h2>당신의 시즌을 만들고 있습니다</h2><p>경기 일정 · 선수 기록 · 성장 · 구단 순위</p><div class="loading-dots"><i></i><i></i><i></i></div></div></div>` : ''}</div>`;
   if (preserveScroll) document.querySelector('.game-content, .menu-content')?.scrollTo(0, scroll);
   if (modal) { document.querySelector('[role="dialog"] button:not([disabled]), [role="dialog"] input')?.focus({ preventScroll: true }); }
   else if (oldFocus && preserveScroll) [...document.querySelectorAll('[data-action]')].find(el => el.dataset.action === oldFocus)?.focus({ preventScroll: true });
@@ -350,7 +363,9 @@ async function action(value) {
     if (a === 'honours') modal = { type: 'honours' };
     if (a === 'player-card') modal = { type: 'player-card' };
     if (a === 'card-records') { modal = null; tab = 'career'; }
-    if (a === 'close') { if (modal?.type === 'card-export') URL.revokeObjectURL(modal.url); if (modal?.type === 'training' && data.current.pendingTraining) { stopMarker(); modal = null; } else modal = null; }
+    if (a === 'close') { if (modal?.type === 'training' && data.current.pendingTraining) { stopMarker(); modal = null; } else modal = null; }
+    if (a === 'browser-help') modal = { type: 'browser-help' };
+    if (a === 'copy-page-url') { try { await navigator.clipboard.writeText(location.origin + location.pathname); toast('게임 주소를 복사했습니다. Safari 또는 Chrome에 붙여 넣어 주세요.'); } catch { const input = document.querySelector('#browser-page-url'); input?.focus(); input?.select(); toast('주소를 길게 눌러 복사해 주세요.'); } return; }
     if (a === 'settings' || a === 'notice') modal = { type: a };
     if (a === 'random') { const ref = E.PLAYER_REFERENCES[Math.floor(Math.random() * E.PLAYER_REFERENCES.length)]; const academy = E.academyById(ref.academy); form = { ...defaultForm(), ...ref, reference: ref.name, leagueId: academy.leagueId, preferred: academy.club }; }
     if (a === 'foot' || a === 'position') { getForm(); form[a] = raw; }
@@ -384,12 +399,13 @@ async function action(value) {
     if (a === 'theme') { data.theme = raw; save(); }
     if (a === 'mute') { data.muted = !data.muted; save(); sound(); }
     if (a === 'export-save') { exportFile(serializeSave(data), 'football-save.json'); toast('전체 저장 파일을 내보냈습니다.'); return; }
-    if (a === 'export-career') { const blob = await careerCardBlob(p, p.team ? club(p.team).name : p.school); if (modal?.type === 'card-export') URL.revokeObjectURL(modal.url); modal = { type: 'card-export', blob, url: URL.createObjectURL(blob), filename: `football-career-${p.id}.png`, name: p.name }; render(); return; }
-    if (a === 'card-png-download' && modal?.type === 'card-export') { downloadBlob(modal.blob, modal.filename); toast('카드 이미지를 저장했습니다.'); return; }
+    if (a === 'export-career') { const blob = await careerCardBlob(p, p.team ? club(p.team).name : p.school); modal = { type: 'card-export', blob, url: await imageDataURL(blob), filename: `football-career-${p.id}.png`, name: p.name }; render(); return; }
+    if (a === 'card-save-help' && modal?.type === 'card-export') { document.querySelector('.career-export-preview')?.scrollIntoView({ block: 'center' }); toast('카드 이미지를 길게 눌러 사진에 저장하세요. 메뉴가 없으면 외부 브라우저에서 열어 주세요.'); return; }
+    if (a === 'card-png-download' && modal?.type === 'card-export') { downloadBlob(modal.blob, modal.filename); toast('PNG 파일 저장을 요청했습니다. 다운로드 목록을 확인해 주세요.'); return; }
     if (a === 'card-png-share' && modal?.type === 'card-export') { try { await navigator.share({ files: [new File([modal.blob], modal.filename, { type: 'image/png' })], title: `${modal.name}의 축구 커리어` }); } catch (error) { if (error.name !== 'AbortError') toast('PNG 이미지 저장을 이용해 주세요.'); } return; }
     if (a === 'export-career-data' || a === 'export-own') { const target = a === 'export-own' ? validCards()[0] : p; exportFile(serializeCareer(target), `football-career-${target.id}.json`); toast('커리어 데이터 백업을 내보냈습니다.'); return; }
-    if (a === 'export-raw') { exportFile(localStorage.getItem(STORAGE_KEY) || '{}', 'football-original-backup.json'); return; }
-    if (a === 'reset-storage') { localStorage.setItem(`${STORAGE_KEY}-backup`, localStorage.getItem(STORAGE_KEY) || '{}'); storageBlocked = false; save(); modal = null; }
+    if (a === 'export-raw') { exportFile(deviceStorage.getItem(STORAGE_KEY) || '{}', 'football-original-backup.json'); return; }
+    if (a === 'reset-storage') { deviceStorage.setItem(`${STORAGE_KEY}-backup`, deviceStorage.getItem(STORAGE_KEY) || '{}'); storageBlocked = false; save(); modal = null; }
     if (a === 'import-save') return pickFile('save');
     if (a === 'import-friend') return pickFile('friend');
     if (a === 'import-apply') { exportFile(serializeSave(data), 'football-before-import.json'); data = modal.incoming; storageBlocked = false; save(); modal = null; viewing = null; screen = 'home'; }
@@ -468,7 +484,7 @@ document.addEventListener('keydown', (event) => {
   }
   if (trainingGame.keydown(event)) event.preventDefault();
 });
-bindSignature(app, () => modal, render);
+bindSignature(app, () => modal);
 render();
 if (loaded.error) toast(loaded.error);
 features.init();

@@ -26,5 +26,9 @@ export function loadStore(storage) {
     return { data, error: null };
   } catch { return { data: emptyStore(), error: '저장 기록을 읽을 수 없습니다. 기존 파일은 보존됩니다. 새 기록을 만들기 전에 설정에서 백업해 주세요.' }; }
 }
+export function loadGuestStore(storage) {
+  try { const value = JSON.parse(storage.getItem(`${STORAGE_KEY}-guest`)); return validateStore(value) ? value : emptyStore(); }
+  catch { return emptyStore(); }
+}
 export function serializeSave(data) { return JSON.stringify({ format: 'sfc-save', version: 1, data }, null, 2); }
 export function serializeCareer(career) { return JSON.stringify({ format: 'sfc-career', version: 1, career }, null, 2); }

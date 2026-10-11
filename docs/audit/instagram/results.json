@@ -1,0 +1,316 @@
+{
+  "checks": [
+    "chromium android: signup, youth career and freehand contract with unavailable pointer capture",
+    "chromium android: all skill attempts, server restoration, PNG-only preview and resized viewport",
+    "chromium: logout with unwritable device storage keeps the cached account out of guest play after reload",
+    "chromium denied: signup, youth career and freehand contract with unavailable pointer capture",
+    "chromium denied: all skill attempts, server restoration, PNG-only preview and resized viewport",
+    "chromium legacy: signup, youth career and freehand contract with unavailable pointer capture",
+    "chromium legacy: all skill attempts, server restoration, PNG-only preview and resized viewport",
+    "chromium quota: signup, youth career and freehand contract with unavailable pointer capture",
+    "chromium quota: all skill attempts, server restoration, PNG-only preview and resized viewport",
+    "chromium: rejected session cookie has actionable error; embedded Google login offers external-browser guidance",
+    "webkit android: signup, youth career and freehand contract with unavailable pointer capture",
+    "webkit android: all skill attempts, server restoration, PNG-only preview and resized viewport",
+    "webkit: logout with unwritable device storage keeps the cached account out of guest play after reload",
+    "webkit denied: signup, youth career and freehand contract with unavailable pointer capture",
+    "webkit denied: all skill attempts, server restoration, PNG-only preview and resized viewport",
+    "webkit ios: signup, youth career and freehand contract with unavailable pointer capture",
+    "webkit ios: all skill attempts, server restoration, PNG-only preview and resized viewport",
+    "webkit quota: signup, youth career and freehand contract with unavailable pointer capture",
+    "webkit quota: all skill attempts, server restoration, PNG-only preview and resized viewport",
+    "webkit: rejected session cookie has actionable error; embedded Google login offers external-browser guidance"
+  ],
+  "games": [
+    {
+      "engine": "chromium",
+      "case": "android",
+      "position": "FW",
+      "skill": 0,
+      "mode": "finish",
+      "scores": [
+        2,
+        2,
+        2,
+        2,
+        2
+      ]
+    },
+    {
+      "engine": "chromium",
+      "case": "android",
+      "position": "FW",
+      "skill": 1,
+      "mode": "passing",
+      "scores": [
+        2,
+        2,
+        2,
+        2,
+        2
+      ]
+    },
+    {
+      "engine": "chromium",
+      "case": "android",
+      "position": "FW",
+      "skill": 2,
+      "mode": "dribble",
+      "scores": [
+        2,
+        2,
+        2,
+        2,
+        2
+      ]
+    },
+    {
+      "engine": "chromium",
+      "case": "denied",
+      "position": "GK",
+      "skill": 0,
+      "mode": "reflex",
+      "scores": [
+        2,
+        2,
+        2,
+        2,
+        2
+      ]
+    },
+    {
+      "engine": "chromium",
+      "case": "denied",
+      "position": "GK",
+      "skill": 1,
+      "mode": "position",
+      "scores": [
+        2,
+        2,
+        2,
+        2,
+        2
+      ]
+    },
+    {
+      "engine": "chromium",
+      "case": "denied",
+      "position": "GK",
+      "skill": 2,
+      "mode": "catch",
+      "scores": [
+        2,
+        2,
+        2,
+        2,
+        2
+      ]
+    },
+    {
+      "engine": "chromium",
+      "case": "legacy",
+      "position": "GK",
+      "skill": 3,
+      "mode": "kicking",
+      "scores": [
+        1,
+        2,
+        2,
+        2,
+        1
+      ]
+    },
+    {
+      "engine": "chromium",
+      "case": "legacy",
+      "position": "GK",
+      "skill": 4,
+      "mode": "sprint",
+      "scores": [
+        2,
+        2,
+        2,
+        2,
+        2
+      ]
+    },
+    {
+      "engine": "chromium",
+      "case": "quota",
+      "position": "FW",
+      "skill": 3,
+      "mode": "tackle",
+      "scores": [
+        2,
+        2,
+        2,
+        2,
+        2
+      ]
+    },
+    {
+      "engine": "chromium",
+      "case": "quota",
+      "position": "FW",
+      "skill": 4,
+      "mode": "sprint",
+      "scores": [
+        2,
+        2,
+        2,
+        2,
+        2
+      ]
+    },
+    {
+      "engine": "webkit",
+      "case": "android",
+      "position": "FW",
+      "skill": 0,
+      "mode": "finish",
+      "scores": [
+        2,
+        2,
+        2,
+        2,
+        2
+      ]
+    },
+    {
+      "engine": "webkit",
+      "case": "android",
+      "position": "FW",
+      "skill": 1,
+      "mode": "passing",
+      "scores": [
+        2,
+        2,
+        2,
+        2,
+        2
+      ]
+    },
+    {
+      "engine": "webkit",
+      "case": "android",
+      "position": "FW",
+      "skill": 2,
+      "mode": "dribble",
+      "scores": [
+        2,
+        2,
+        2,
+        2,
+        2
+      ]
+    },
+    {
+      "engine": "webkit",
+      "case": "denied",
+      "position": "GK",
+      "skill": 0,
+      "mode": "reflex",
+      "scores": [
+        2,
+        2,
+        2,
+        2,
+        2
+      ]
+    },
+    {
+      "engine": "webkit",
+      "case": "denied",
+      "position": "GK",
+      "skill": 1,
+      "mode": "position",
+      "scores": [
+        2,
+        2,
+        2,
+        2,
+        2
+      ]
+    },
+    {
+      "engine": "webkit",
+      "case": "denied",
+      "position": "GK",
+      "skill": 2,
+      "mode": "catch",
+      "scores": [
+        2,
+        2,
+        2,
+        2,
+        2
+      ]
+    },
+    {
+      "engine": "webkit",
+      "case": "ios",
+      "position": "GK",
+      "skill": 3,
+      "mode": "kicking",
+      "scores": [
+        2,
+        2,
+        1,
+        2,
+        1
+      ]
+    },
+    {
+      "engine": "webkit",
+      "case": "ios",
+      "position": "GK",
+      "skill": 4,
+      "mode": "sprint",
+      "scores": [
+        2,
+        2,
+        2,
+        2,
+        2
+      ]
+    },
+    {
+      "engine": "webkit",
+      "case": "quota",
+      "position": "FW",
+      "skill": 3,
+      "mode": "tackle",
+      "scores": [
+        2,
+        2,
+        2,
+        2,
+        2
+      ]
+    },
+    {
+      "engine": "webkit",
+      "case": "quota",
+      "position": "FW",
+      "skill": 4,
+      "mode": "sprint",
+      "scores": [
+        2,
+        2,
+        2,
+        2,
+        2
+      ]
+    }
+  ],
+  "consoleErrors": [],
+  "realInstagramDeviceTest": false,
+  "date": "2026-10-11",
+  "unitAndServerTests": 58,
+  "existingBrowserChecks": {
+    "guest": 14,
+    "online": 11,
+    "securityScenarios": 3,
+    "mouseAndTouchPngFlows": 2
+  }
+}
