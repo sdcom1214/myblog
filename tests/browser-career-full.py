@@ -5,7 +5,7 @@ from playwright.sync_api import sync_playwright
 from browser_training_helpers import play_attempt
 
 BASE=os.environ.get('FOOTBALL_TEST_URL','http://127.0.0.1:4173')
-OUT=Path('docs/playthrough/implementation');OUT.mkdir(parents=True,exist_ok=True)
+OUT=Path(os.environ.get('FOOTBALL_EVIDENCE_DIR','docs/playthrough/implementation'));OUT.mkdir(parents=True,exist_ok=True)
 results=[]
 with sync_playwright() as pw:
  browser=pw.chromium.launch(executable_path='/usr/bin/chromium',args=['--no-sandbox'])

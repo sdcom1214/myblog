@@ -1,0 +1,9 @@
+{
+  "checks": [
+    "Club names, imported injury/role, career IDs and candidate labels render as text with CSP disabled",
+    "Projected public profile, achievements and PNG export work under enforced CSP with no console errors",
+    "The built-page CSP blocks injected inline scripts"
+  ],
+  "unexpectedDialogs": 0,
+  "uncaughtErrors": 0
+}

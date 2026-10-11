@@ -26,6 +26,8 @@ node tests/browser-server.mjs tests/browser-career-full.py
 # 모든 능력치의 특훈 게임과 터치 사인·PNG 저장:
 node tests/browser-server.mjs tests/browser-training.py
 node tests/browser-server.mjs tests/browser-urgent.py
+# 악성 저장 파일·공개 프로필·브라우저 보안 정책:
+node tests/browser-server.mjs tests/browser-security.py
 ```
 
 클라우드 설치 스크립트는 [docs/setup.sh](docs/setup.sh), 시작 지침은 [docs/cloud-start.md](docs/cloud-start.md)에 있습니다. Vite와 animejs를 사용하며, 글꼴·아이콘·일러스트는 로컬 파일로 제공됩니다.
@@ -74,17 +76,18 @@ node tests/browser-server.mjs tests/browser-urgent.py
 
 친구 닉네임 검색·초대·수락 또는 같은 포지션의 랜덤 매칭으로 커리어 매치를 시작합니다. 두 선수가 같은 후보에서 새 커리어를 진행한 뒤 양쪽 은퇴 시 LEGACY SCORE로 결과를 집계합니다. MY CLUB에는 은퇴 선수를 직접 보관하고, 온라인 보관 선수로 11인 팀을 만들어 도장깨기·ELO 랭킹전을 플레이합니다. 슬롯·회귀권·개명권은 서버 FC 잔액으로 구매하며 사용 내역을 저장합니다.
 
-서버 데이터는 `.local/server.sqlite`에 보관합니다. 배포에서는 `FOOTBALL_DB`를 지속 가능한 저장소 경로로 지정하세요. `npm run build` 후 `PORT=4173 npm start`로 빌드된 화면과 API를 함께 제공합니다. `npm run preview`는 정적 화면 미리보기이므로 온라인 기능 검증에는 개발 서버 또는 `npm start`를 사용합니다.
+서버 데이터는 `.local/server.sqlite`에 보관합니다. 배포에서는 `FOOTBALL_DB`를 지속 가능한 저장소 경로로 지정하세요. `npm run build` 후 `PORT=4173 npm start`로 빌드된 화면과 API를 함께 제공합니다. HTTPS 역프록시를 사용하는 운영 환경에서는 `NODE_ENV=production COOKIE_SECURE=true PORT=4173 npm start`로 Secure 쿠키와 HSTS를 활성화합니다. 개발 API는 기본적으로 127.0.0.1에서만 열리며 Vite의 `/api` 프록시를 통해 접근합니다. `npm run preview`는 정적 화면 미리보기이므로 온라인 기능 검증에는 개발 서버 또는 `npm start`를 사용합니다.
 
 Google OAuth는 환경 변수 연결 후 사용할 수 있으며 현재 실제 로그인은 미검증입니다. 상점은 게임 보상 코인을 사용하고 실제 현금 결제는 연결되지 않았습니다. [서버 기능·원본 대응·남은 차이](docs/online-server.md)에 상세 내용을 기록했습니다.
 
 ## 검증과 자료
 
-- 엔진 테스트 26개 + 서버 테스트 14개: 리그 경기·통계·성장·계약·이적·은퇴·주요상 자격·통산 기록·9종 특훈 입력·기존 저장 호환·계정 분리·대전·업적·팀 ELO·거래 제한.
+- 엔진 테스트 26개 + 서버 테스트 26개: 리그 경기·통계·성장·계약·이적·은퇴·주요상 자격·통산 기록·9종 특훈 입력·기존 저장 호환·계정 분리·대전·업적·팀 ELO·거래 제한·보안 회귀.
 - 실제 Chromium 브라우저 검증 14개: 전체 플레이 경로, 리그·아카데미·참고 선수 선택, 파일 가져오기·내보내기, 새로고침 복구, 메뉴와 상점, 모바일 크기 320/390/430 및 데스크톱.
 - 온라인 브라우저 검증 11개: 독립된 두 계정으로 가입, 친구 매치, 은퇴 결과, 보관, 업적, 팀 배틀, 구매, 개명, 재로그인 복구.
 - 자연 은퇴까지 여섯 커리어: 네 포지션과 온라인 두 선수의 육성·계약·훈련·이적·저장 복구·최종 기록·대전 점수와 승패. [끝까지 플레이한 검수](docs/playthrough/review.md)에 원본 관찰과 결과를 기록했습니다.
 - 10개 능력치 매핑의 특훈 9종을 각 5회 플레이하고, 비회원 마우스·온라인 터치 사인과 PNG 실제 다운로드를 검증했습니다. [긴급 카드 저장 수정](docs/audit/urgent/review.md)에 원인과 증거가 있습니다.
+- [보안 검토](docs/audit/security/review.md): HTML 주입, 온라인 장비·코인 변조, 난수 예측·공개 범위, 비정상 URL, 의존성을 수정하고 보안 브라우저 3개 시나리오·개발 서버 접근 차단을 검증했습니다. `npm audit`의 알려진 취약점은 0개입니다.
 - [원본 플레이 분석](docs/source-analysis.md), [화면 검수](design-qa.md), [원본과 축구 버전 비교](docs/qa/home-mobile.png).
 
 원본 사이트의 서버 계산식과 계정 데이터는 사용하지 않습니다. 능력치 성장과 경기 결과는 독립적으로 구현한 축구 엔진이 계산합니다. 이 작업 공간에는 처음에 애플리케이션 파일이나 Git 커밋이 없었으며, 현재 결과는 작업 공간에 생성된 상태입니다.

@@ -15,7 +15,7 @@ export function trainingChallenge(mode, random) {
   return { x: integer(18, 82), y: integer(22, 70), lane: integer(0, 2), sequence: Array.from({ length: 3 }, () => random() < .5 ? 'left' : 'right'), signalAfter: integer(600, 1200), target: mode === 'catch' ? 72 : mode === 'kicking' ? integer(55, 80) : 68 };
 }
 export function trainingInputScore(mode, round, input) {
-  const invalid = () => { throw new Error('올바른 훈련 입력이 필요합니다.'); };
+  const invalid = () => { const error = new Error('올바른 훈련 입력이 필요합니다.'); error.status = 400; throw error; };
   if (!input || typeof input !== 'object' || Array.isArray(input)) return invalid();
   const number = (key, lo, hi) => { const value = input[key]; if (!Number.isFinite(value) || value < lo || value > hi) invalid(); return value; };
   if (mode === 'finish') { const d = Math.hypot(number('x', 0, 100) - round.x, number('y', 0, 100) - round.y); return d <= 9 ? 2 : d <= 24 ? 1 : 0; }

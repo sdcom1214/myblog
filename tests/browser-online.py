@@ -58,7 +58,7 @@ with sync_playwright() as pw:
     record('Friend polling preserves the input DOM, typed nickname, focus and selection')
     friend = a.locator('[data-action^="friend-select:"]').first
     friend.click(); click(a, 'friend-request')
-    a.wait_for_function("document.querySelector('.duel-status-card')?.innerText.includes('신청 대기')")
+    a.wait_for_function("() => (document.querySelector('.duel-status-card')?.innerText.includes('신청 대기'))")
     click(b, 'friend'); b.locator('[data-action^="duel-accept:"]').click(); stage(b, 'candidates')
     click(a, 'duel-refresh'); click(a, 'duel-resume'); stage(a, 'candidates')
     assert state(a)['current']['candidates'] == state(b)['current']['candidates']
@@ -73,7 +73,7 @@ with sync_playwright() as pw:
         click(p, 'develop'); stage(p, 'review'); click(p, 'next-season')
         click(p, 'develop'); stage(p, 'review'); click(p, 'next-season')
         click(p, 'trial')
-        p.wait_for_function("['offer','failed'].includes(JSON.parse(localStorage.getItem('second-life-football-v1')).current.stage)")
+        p.wait_for_function("() => (['offer','failed'].includes(JSON.parse(localStorage.getItem('second-life-football-v1')).current.stage))")
         p.locator('.loading-scene').wait_for(state='hidden')
         if state(p)['current']['stage']=='failed': click(p, 'semipro')
         stage(p, 'offer')
@@ -96,7 +96,7 @@ with sync_playwright() as pw:
         click(p,'nav:home');click(p,'team')
         p.locator('#online-team-name').fill('Browser FC '+str(index))
         p.locator('[data-action^="online-squad:"]').first.click();click(p,'online-team-save')
-        p.wait_for_function("document.querySelector('#online-team')?.options.length === 1")
+        p.wait_for_function("() => (document.querySelector('#online-team')?.options.length === 1)")
     record('Explicit MY CLUB storage, personal achievements and owned team squads')
     a.locator('#online-team-name').fill('입력 유지 FC')
     for mode in ['challenge', 'edit', 'ranked']:
@@ -114,14 +114,14 @@ with sync_playwright() as pw:
     click(a,'nav:shop');click(a,'online-buy:rename');click(a,'online-buy-confirm:rename')
     click(a,'nav:home');click(a,'continue');a.locator('[data-action^="rename:"]').click()
     a.locator('#rename-player').fill('새로운 사카');a.locator('[data-action^="rename-confirm:"]').click()
-    a.wait_for_function("JSON.parse(localStorage.getItem('second-life-football-v1')).current.name==='새로운 사카'")
+    a.wait_for_function("() => (JSON.parse(localStorage.getItem('second-life-football-v1')).current.name==='새로운 사카')")
     click(a,'home');click(a,'nav:shop');click(a,'ledger');assert '개명권' in a.locator('.modal').inner_text();click(a,'close')
     click(a,'nav:ranking');click(a,'rank-type:live');a.locator('.public-rank-row').first.wait_for()
     assert '새로운 사카' in a.locator('.rank-list').inner_text()
     record('Server wallet purchase, persistent rename, ledger and shared ranking')
     a.reload(wait_until='networkidle');click(a,'continue');assert state(a)['current']['name']=='새로운 사카'
     click(a,'home');click(a,'settings');click(a,'logout')
-    a.wait_for_function("JSON.parse(localStorage.getItem('second-life-football-v1')).current===null")
+    a.wait_for_function("() => (JSON.parse(localStorage.getItem('second-life-football-v1')).current===null)")
     click(a,'auth');a.locator('#auth-email').fill(names[0]+'@example.test');a.locator('#auth-password').fill('browser-football-123')
     click(a,'auth-submit');a.locator('#auth-form').wait_for(state='hidden');assert state(a)['current']['name']=='새로운 사카'
     record('Reload synchronization, logout isolation and login restores server career')

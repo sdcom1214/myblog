@@ -3,17 +3,19 @@ import assert from 'node:assert/strict';
 import { mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { request as httpRequest } from 'node:http';
 import { createApp } from '../server/app.js';
 import { trainingInput } from './training-input.mjs';
+import { playSeason } from '../src/engine.js';
 
 const profile = { name: '부카요 사카', number: 7, position: 'FW', foot: '왼발', preferred: 'arsenal', academy: 'hale-end' };
-async function fixture(t) {
+async function fixture(t, options = {}) {
   const dir = await mkdtemp(join(tmpdir(), 'football-server-'));
-  const state = { dir, app: createApp({ database: join(dir, 'game.sqlite') }) };
+  const state = { dir, app: createApp({ database: join(dir, 'game.sqlite'), ...options }) };
   async function listen() { await new Promise(r => state.app.server.listen(0, '127.0.0.1', r)); state.url = `http://127.0.0.1:${state.app.server.address().port}`; }
   await listen();
   t.after(async () => { await state.app.close(); await rm(dir, { recursive: true, force: true }); });
-  state.restart = async () => { await state.app.close(); state.app = createApp({ database: join(dir, 'game.sqlite') }); await listen(); };
+  state.restart = async () => { await state.app.close(); state.app = createApp({ database: join(dir, 'game.sqlite'), ...options }); await listen(); };
   state.client = () => {
     const client = { cookie: '', revision: 0, data: null };
     client.request = async (path, method = 'GET', body, expected = 200, headers = {}) => {
@@ -204,4 +206,149 @@ test('same-named teams get wins, losses and ELO from the score rather than their
   assert.equal(teams.find(x => x.id === teamA.id).wins, wins);
   assert.equal(teams.find(x => x.id === teamB.id).wins, 12 - wins);
   assert.equal(teams.reduce((sum, x) => sum + x.elo, 0), 2400);
+});
+
+test('imported store equipment and coins cannot enter verified careers through creation or progression', async t => {
+  const f = await fixture(t), a = f.client(); await a.signup('economy'); await professional(a);
+  const trusted = structuredClone(a.data.current);
+  const forged = structuredClone(a.data); forged.inventory = ['boots', 'kit']; forged.coins = 999999;
+  await a.request('/save', 'PUT', { data: forged, revision: a.revision });
+  await a.command('season'); assert.deepEqual(a.data.current.inventory, trusted.inventory);
+  assert.equal(a.data.coins, a.data.current.coins); assert.ok(a.data.coins < 999999);
+  const expectedCoins = a.data.coins;
+  const again = structuredClone(a.data); again.inventory = ['boots']; again.coins = 888888;
+  await a.request('/save', 'PUT', { data: again, revision: a.revision });
+  await a.command('create', { profile });
+  assert.deepEqual(a.data.current.inventory, trusted.inventory); assert.deepEqual(a.data.inventory, trusted.inventory);
+  assert.equal(a.data.coins, expectedCoins);
+});
+
+test('duels and rebirth inherit server equipment rather than imported store equipment', async t => {
+  const f = await fixture(t), a = f.client(), b = f.client(); await a.signup('economyA'); await b.signup('economyB');
+  for (const client of [a, b]) {
+    await client.command('create', { profile });
+    const forged = structuredClone(client.data); forged.inventory = ['boots', 'kit']; forged.coins = 999999;
+    await client.request('/save', 'PUT', { data: forged, revision: client.revision });
+  }
+  const invite = await a.request('/duels', 'POST', { mode: 'friend', position: 'FW', opponentId: b.user.id }, 201);
+  await b.request(`/duels/${invite.duel.id}/respond`, 'POST', { accept: true }); await a.request('/save');
+  for (const client of [a, b]) { assert.deepEqual(client.data.inventory, []); assert.deepEqual(client.data.current.inventory, []); assert.equal(client.data.coins, 100); }
+  await youth(a, false); await a.command('retire');
+  const coins = a.data.coins, forged = structuredClone(a.data); forged.coins = 999999; forged.inventory = ['boots'];
+  await a.request('/save', 'PUT', { data: forged, revision: a.revision });
+  await a.request('/shop/buy', 'POST', { item: 'rebirth' }); await a.request('/club/rebirth', 'POST', { id: a.data.current.id });
+  assert.deepEqual(a.data.current.inventory, []); assert.deepEqual(a.data.inventory, []); assert.equal(a.data.coins, coins);
+});
+
+test('verified commands reject a save that disagrees with the canonical server career', async t => {
+  const f = await fixture(t), a = f.client(); await a.signup('canonical'); await a.command('create', { profile });
+  const damaged = structuredClone(a.data); damaged.current.skills[0] += 1;
+  f.app.db.prepare('UPDATE saves SET data=? WHERE user_id=?').run(JSON.stringify(damaged), a.user.id);
+  await a.command('reveal', {}, 409);
+  assert.deepEqual(JSON.parse(f.app.db.prepare('SELECT data FROM careers WHERE id=?').get(a.data.current.id).data).skills, a.data.current.skills);
+});
+
+test('public career records omit random state, training challenges, equipment and contract offers', async t => {
+  const f = await fixture(t), a = f.client(), anonymous = f.client(); await a.signup('publicsafe'); await professional(a);
+  await a.command('train', { skill: 0 });
+  const result = await anonymous.request(`/careers/public?id=${a.data.current.id}`);
+  for (const key of ['rng', 'coins', 'inventory', 'pendingTraining', 'candidates', 'offers', 'duelId', 'lastTraining', 'trainingUsed']) assert.equal(Object.hasOwn(result.career, key), false, key);
+  assert.equal(result.career.public, true); assert.equal(result.career.name, profile.name);
+  assert.ok(result.career.achievements.length >= 80);
+  assert.deepEqual(result.career.records, a.data.current.records);
+  const publicJSON = JSON.stringify(result); assert.ok(!publicJSON.includes(a.user.email)); assert.ok(!publicJSON.includes('football-password'));
+  await anonymous.request('/save', 'GET', undefined, 401);
+});
+
+test('an online season cannot be replayed from the client-visible offline random state', async t => {
+  const f = await fixture(t), a = f.client(); await a.signup('unpredictable'); await professional(a);
+  const prediction = playSeason(structuredClone(a.data.current));
+  await a.command('season');
+  assert.notEqual(a.data.current.rng, prediction.rng);
+});
+
+test('malformed URLs, encoded traversal and invalid JSON fail without crashing the server', async t => {
+  const f = await fixture(t);
+  const raw = path => new Promise((resolve, reject) => {
+    const request = httpRequest(f.url, { path }, response => {
+      let text = ''; response.setEncoding('utf8'); response.on('data', chunk => { text += chunk; });
+      response.on('end', () => resolve({ status: response.statusCode, text }));
+    }); request.on('error', reject); request.end();
+  });
+  assert.equal((await raw('http://[')).status, 400);
+  assert.equal((await raw('/%2e%2e%2fserver/app.js')).status, 403);
+  assert.equal((await raw('/%ZZ')).status, 400);
+  for (const payload of ['null', '[]', '{']) {
+    const r = await fetch(f.url + '/api/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: payload }); assert.equal(r.status, 400);
+  }
+  assert.equal((await fetch(f.url + '/api/health')).status, 200);
+});
+
+test('malformed command and database identifiers do not leak internal errors or change saves', async t => {
+  const f = await fixture(t), a = f.client(); await a.signup('invalidsafe');
+  const before = await a.request('/save');
+  await a.command('create', { profile: null }, 400); await a.command('create', { profile: [] }, 400);
+  await a.request('/career/action', 'POST', { command: 'create', args: 'invalid', revision: a.revision }, 400);
+  await a.request('/teams', 'POST', { id: {}, name: 'Unsafe FC', squad: [] }, 400);
+  await a.request('/teams', 'POST', { id: '"><svg/onload=alert(1)>', name: 'Unsafe FC', squad: [] }, 400);
+  await a.request('/teams', 'POST', { name: 'Unsafe FC', squad: [{}] }, 400);
+  await a.request('/club/rename', 'POST', { id: {}, name: 'A' }, 400);
+  assert.deepEqual(await a.request('/save'), before);
+  await a.command('create', { profile }); await a.command('choose', { index: 0 });
+  await a.command('growth', { focus: null, role: '중앙' }, 400);
+});
+
+test('other accounts cannot edit teams, rename players or consume tickets through foreign IDs', async t => {
+  const f = await fixture(t), a = f.client(), b = f.client(); await a.signup('ownerA'); await b.signup('ownerB');
+  await youth(a); await a.command('retire');
+  const team = (await a.request('/teams', 'POST', { name: 'Owner FC', squad: [] })).team;
+  await b.request('/shop/buy', 'POST', { item: 'rename' }); await b.request('/shop/buy', 'POST', { item: 'rebirth' });
+  const before = (await b.request('/shop')).wallet;
+  await b.request('/teams', 'POST', { id: team.id, name: 'Stolen FC', squad: [] }, 403);
+  await b.request(`/teams/${team.id}`, 'DELETE', {}, 404);
+  await b.request('/club/rename', 'POST', { id: a.data.current.id, name: 'Stolen' }, 404);
+  await b.request('/club/rebirth', 'POST', { id: a.data.current.id }, 404);
+  assert.deepEqual((await b.request('/shop')).wallet, before);
+  assert.equal((await a.request('/club')).teams[0].name, 'Owner FC');
+});
+
+test('CSRF origins, forged sessions, auth throttling and SQL-like searches are rejected', async t => {
+  const f = await fixture(t), a = f.client(), anonymous = f.client(); await a.signup('authsafe');
+  await a.request('/shop/reward', 'POST', {}, 403, { Origin: 'null' });
+  await a.request('/shop/reward', 'POST', {}, 403, { Origin: 'https://evil.example', 'Sec-Fetch-Site': 'same-site' });
+  await a.request('/save', 'GET', undefined, 401, { Cookie: 'fc_session=forged' });
+  const users = await a.request('/users?q=' + encodeURIComponent("%' OR 1=1--")); assert.deepEqual(users.users, []);
+  for (let i = 0; i < 14; i++) await anonymous.request('/auth/login', 'POST', { email: 'authsafe@example.test', password: 'wrong-password' }, 401);
+  await anonymous.request('/auth/login', 'POST', { email: 'authsafe@example.test', password: 'wrong-password' }, 429);
+  assert.equal((await a.request('/auth/session')).user.id, a.user.id);
+});
+
+test('large bodies and internal database errors expose no stack, SQL or filesystem details', async t => {
+  const f = await fixture(t), a = f.client(); await a.signup('errorsafe');
+  const large = await fetch(f.url + '/api/save', { method: 'PUT', headers: { 'Content-Type': 'application/json', Cookie: a.cookie }, body: ' '.repeat(5_000_001) }); assert.equal(large.status, 413);
+  f.app.db.exec('DROP TABLE teams');
+  const r = await a.request('/teams', 'POST', { name: 'A FC', squad: [] }, 500);
+  assert.equal(r.code, null); assert.equal(r.error, '서버 요청을 처리하지 못했습니다.');
+  assert.equal((await a.request('/health')).ok, true);
+});
+
+test('built pages and API errors include an enforced security policy', async t => {
+  const f = await fixture(t);
+  for (const path of ['/', '/api/save', '/%ZZ']) {
+    const r = await fetch(f.url + path);
+    assert.match(r.headers.get('content-security-policy'), /script-src 'self';/);
+    assert.match(r.headers.get('content-security-policy'), /object-src 'none';/);
+    assert.match(r.headers.get('content-security-policy'), /frame-ancestors 'none'/);
+    assert.equal(r.headers.get('x-content-type-options'), 'nosniff'); assert.equal(r.headers.get('x-frame-options'), 'DENY');
+    assert.equal(r.headers.get('permissions-policy'), 'camera=(), microphone=(), geolocation=()');
+  }
+});
+
+test('HTTPS mode uses secure cookies, HSTS and rejects same-host HTTP mutation origins', async t => {
+  const f = await fixture(t, { secureCookies: true }), a = f.client(); await a.signup('httpssafe');
+  const login = await fetch(f.url + '/api/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: 'httpssafe@example.test', password: 'football-password-123' }) });
+  assert.equal(login.status, 200); assert.match(login.headers.get('set-cookie'), /; Secure/);
+  assert.match(login.headers.get('strict-transport-security'), /max-age=31536000/);
+  await a.request('/shop/reward', 'POST', {}, 403, { Origin: f.url });
+  await a.request('/shop/reward', 'POST', {}, 200, { Origin: f.url.replace('http:', 'https:') });
 });

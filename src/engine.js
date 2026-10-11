@@ -12,7 +12,7 @@ export const clamp = (x, lo, hi) => Math.max(lo, Math.min(hi, x));
 export const round = (x) => Math.round(x * 10) / 10;
 export const ovr = (c) => round(c.skills.reduce((a, b) => a + b, 0));
 const copy = (x) => structuredClone(x);
-const required = (condition, message) => { if (!condition) throw new Error(message); };
+const required = (condition, message) => { if (!condition) { const error = new Error(message); error.status = 400; throw error; } };
 
 export function random(c) {
   c.rng = (Math.imul(c.rng, 1664525) + 1013904223) >>> 0;
@@ -27,6 +27,7 @@ function poisson(c, lambda) {
 }
 
 export function newCareer(profile, seed = Date.now() >>> 0) {
+  required(profile && typeof profile === 'object' && !Array.isArray(profile), '선수 정보를 확인해 주세요.');
   required(typeof profile.name === 'string' && profile.name.trim().length > 0 && profile.name.trim().length <= 16, '이름은 1~16자로 입력해 주세요.');
   required(Object.hasOwn(POSITIONS, profile.position), '포지션을 선택해 주세요.');
   required(Number.isInteger(profile.number) && profile.number >= 0 && profile.number <= 99, '등번호는 0~99입니다.');
@@ -65,7 +66,7 @@ export function chooseCandidate(c, index) {
   n.selectedCandidate = index; n.stage = 'growth'; n.peakSkills = [...n.skills]; return n;
 }
 export function setGrowth(c, focus, role, technique = '균형') {
-  required(c.stage === 'growth' && focus.length > 0 && focus.length <= 2 && new Set(focus).size === focus.length && focus.every(x => Number.isInteger(x) && x >= 0 && x < 5), '집중 육성 능력치를 1~2개 선택해 주세요.');
+  required(c.stage === 'growth' && Array.isArray(focus) && focus.length > 0 && focus.length <= 2 && new Set(focus).size === focus.length && focus.every(x => Number.isInteger(x) && x >= 0 && x < 5), '집중 육성 능력치를 1~2개 선택해 주세요.');
   const roles = { FW: ['중앙', '왼쪽', '오른쪽'], MF: ['공격형', '중앙', '수비형'], DF: ['중앙', '왼쪽', '오른쪽'], GK: ['스위퍼', '수문장'] };
   required(roles[c.position].includes(role), '선호 역할을 선택해 주세요.');
   required((c.position === 'GK' ? ['빌드업', '반응형', '활동량', '균형'] : ['패스 중심', '개인기', '활동량', '균형']).includes(technique), '플레이 스타일을 선택해 주세요.');

@@ -14,7 +14,7 @@ def play_attempt(page, click, keyboard=False):
     elif mode=='dribble':
         sequence=page.locator('.training-slalom>div:first-child>span').all_inner_texts()
         for step in sequence:click('training-step:'+('left' if step.startswith('←') else 'right'))
-    elif mode=='reflex':page.wait_for_function("document.querySelector('.training-reaction')?.classList.contains('ready')");click('shoot')
+    elif mode=='reflex':page.wait_for_function("() => (document.querySelector('.training-reaction')?.classList.contains('ready'))");click('shoot')
     elif mode in ['tackle','catch']:
         axis='top' if mode=='catch' else 'left'
         page.wait_for_function("axis=>{const e=document.querySelector('#training-mover');return e&&parseFloat(e.style[axis])>=65&&parseFloat(e.style[axis])<=76}",arg=axis)

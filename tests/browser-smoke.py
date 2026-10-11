@@ -73,11 +73,11 @@ with sync_playwright() as pw:
     click('next-season'); wait_stage('path'); click('develop'); wait_stage('review')
     assert state()['current']['developmentSeasons']==2
     click('next-season'); click('trial')
-    page.wait_for_function("['offer','failed'].includes(JSON.parse(localStorage.getItem('second-life-football-v1')).current.stage)")
+    page.wait_for_function("() => (['offer','failed'].includes(JSON.parse(localStorage.getItem('second-life-football-v1')).current.stage))")
     page.locator('.loading-scene').wait_for(state='hidden')
     if state()['current']['stage']=='failed':
         click('develop'); wait_stage('review'); click('next-season'); click('trial')
-        page.wait_for_function("['offer','failed'].includes(JSON.parse(localStorage.getItem('second-life-football-v1')).current.stage)")
+        page.wait_for_function("() => (['offer','failed'].includes(JSON.parse(localStorage.getItem('second-life-football-v1')).current.stage))")
         page.locator('.loading-scene').wait_for(state='hidden')
         if state()['current']['stage']=='failed': click('semipro'); wait_stage('offer')
     click('offer:0'); shot('contract-mobile.png'); assert page.locator('[data-action="sign"]').is_disabled()

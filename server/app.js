@@ -7,6 +7,7 @@ import { dirname, resolve, extname, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import * as E from '../src/engine.js';
 import { emptyStore, validateStore } from '../src/storage.js';
+import { securityHeaders } from './security.js';
 
 const hashPassword = promisify(scrypt);
 const hash = text => createHash('sha256').update(text).digest('hex');
@@ -27,7 +28,7 @@ const catalogue = [
   { id: 'rename', name: '개명권', cost: 10, renames: 1 },
 ];
 
-export function createApp({ database = resolve('.local/server.sqlite'), staticRoot = resolve('dist'), secureCookies = process.env.COOKIE_SECURE === 'true', google = null } = {}) {
+export function createApp({ database = resolve('.local/server.sqlite'), staticRoot = resolve('dist'), secureCookies = process.env.COOKIE_SECURE === undefined ? process.env.NODE_ENV === 'production' : process.env.COOKIE_SECURE === 'true', google = null } = {}) {
   if (database !== ':memory:') mkdirSync(dirname(database), { recursive: true });
   const db = new DatabaseSync(database);
   db.exec(`PRAGMA foreign_keys=ON; PRAGMA journal_mode=WAL;
@@ -54,6 +55,11 @@ export function createApp({ database = resolve('.local/server.sqlite'), staticRo
     if (rate.size > 3000) for (const [k, v] of rate) if (v.until < now()) rate.delete(k);
   }
   const wallet = id => statement('SELECT coins, player_slots AS playerSlots, team_slots AS teamSlots, tickets, renames, reward_day AS rewardDay FROM wallets WHERE user_id=?').get(id);
+  function trustedEconomy(id) {
+    const row = statement('SELECT data FROM careers WHERE user_id=? AND verified=1 ORDER BY updated DESC,created DESC LIMIT 1').get(id);
+    const c = row && json(row.data);
+    return { coins: c?.coins ?? 100, inventory: c?.inventory ?? [] };
+  }
   function getSave(id) {
     const row = statement('SELECT * FROM saves WHERE user_id=?').get(id);
     return row ? { data: json(row.data), revision: row.revision, updated: row.updated } : { data: emptyStore(), revision: 0, updated: null };
@@ -110,15 +116,21 @@ export function createApp({ database = resolve('.local/server.sqlite'), staticRo
   }
   async function body(req) {
     requireValue(req.headers['content-type']?.split(';')[0] === 'application/json', 'JSON 요청이 필요합니다.', 415);
-    let text = '', size = 0;
-    for await (const chunk of req) { size += chunk.length; if (size > 5_000_000) fail(413, '요청 크기는 5MB 이하여야 합니다.'); text += chunk; }
-    try { const value = json(text || '{}'); requireValue(value && typeof value === 'object' && !Array.isArray(value), '올바른 요청이 아닙니다.'); return value; } catch (e) { if (e.status) throw e; fail(400, '올바른 JSON 요청이 아닙니다.'); }
+    if (Number(req.headers['content-length']) > 5_000_000) { req.resume(); fail(413, '요청 크기는 5MB 이하여야 합니다.'); }
+    const chunks = []; let size = 0;
+    for await (const chunk of req) { size += chunk.length; if (size > 5_000_000) fail(413, '요청 크기는 5MB 이하여야 합니다.'); chunks.push(chunk); }
+    try {
+      const value = json(Buffer.concat(chunks).toString('utf8') || '{}');
+      requireValue(value && typeof value === 'object' && !Array.isArray(value), '올바른 요청이 아닙니다.');
+      for (const key of ['id', 'teamId', 'opponentId']) if (value[key] !== undefined && value[key] !== null) requireValue(typeof value[key] === 'string' && /^[A-Za-z0-9_-]{1,100}$/.test(value[key]), '올바른 식별자가 필요합니다.');
+      return value;
+    } catch (e) { if (e.status) throw e; fail(400, '올바른 JSON 요청이 아닙니다.'); }
   }
   function authorizeMutation(req) {
     if (req.headers['sec-fetch-site'] === 'cross-site') fail(403, '다른 사이트에서 보낸 요청입니다.');
     if (req.headers.origin) {
       let origin; try { origin = new URL(req.headers.origin); } catch { fail(403, '올바른 출처가 아닙니다.'); }
-      requireValue(origin.host === req.headers.host, '다른 사이트에서 보낸 요청입니다.', 403);
+      requireValue(origin.host === req.headers.host && (!secureCookies || origin.protocol === 'https:'), '다른 사이트에서 보낸 요청입니다.', 403);
     }
   }
   const archive = data => {
@@ -130,6 +142,7 @@ export function createApp({ database = resolve('.local/server.sqlite'), staticRo
   };
   function runCareer(id, command, args) {
     const saved = getSave(id), data = saved.data, c = data.current;
+    const economy = trustedEconomy(id);
     let next;
     if (command === 'create') {
       archive(data); next = E.newCareer(args.profile, seed()); next.id = `FC-${randomUUID()}`;
@@ -137,6 +150,9 @@ export function createApp({ database = resolve('.local/server.sqlite'), staticRo
       requireValue(c, '진행 중인 선수가 없습니다.');
       const row = statement('SELECT * FROM careers WHERE id=? AND user_id=?').get(c.id, id);
       requireValue(row?.verified, '이 선수는 기기 저장 기록입니다. 온라인 커리어를 새로 시작해 주세요.', 409);
+      requireValue(row.data === JSON.stringify(c), '서버 기록을 다시 불러와 주세요.', 409);
+      // The offline save includes RNG state. Online outcomes need fresh server entropy.
+      if (['season', 'next', 'develop', 'trial', 'event', 'train'].includes(command)) c.rng = seed();
       switch (command) {
         case 'choose': next = E.chooseCandidate(c, args.index); break;
         case 'growth': next = E.setGrowth(c, args.focus, args.role, args.technique); break;
@@ -158,8 +174,8 @@ export function createApp({ database = resolve('.local/server.sqlite'), staticRo
         default: fail(400, '알 수 없는 진행 명령입니다.');
       }
     }
-    next.coins = data.coins + Math.max(0, next.coins - (c?.coins ?? 100)); next.inventory = [...data.inventory];
-    data.current = next; data.coins = next.coins;
+    if (command === 'create') { next.coins = economy.coins; next.inventory = [...economy.inventory]; }
+    data.current = next; data.coins = next.coins; data.inventory = [...next.inventory];
     transaction(() => { for (const previous of data.archives) { const r = statement('SELECT verified FROM careers WHERE id=? AND user_id=?').get(previous.id, id); careerRow(id, previous, !!r?.verified); } careerRow(id, next, true); persist(id, data, saved.revision + 1); if (command === 'season') statement('UPDATE wallets SET coins=coins+5 WHERE user_id=?').run(id); });
     return { ...getSave(id), verified: true, wallet: wallet(id) };
   }
@@ -167,12 +183,13 @@ export function createApp({ database = resolve('.local/server.sqlite'), staticRo
     transaction(() => {
       for (const [side, id] of [['host', d.host_id], ['guest', d.guest_id]]) {
         const old = getSave(id), data = old.data, previous = data.current;
+        const economy = trustedEconomy(id);
         requireValue(!previous?.pendingTraining, '참가자의 특별훈련이 진행 중입니다.');
         archive(data);
         const preferred = previous?.preferred || 'arsenal', academy = previous?.academy || 'hale-end';
         const nickname = statement('SELECT nickname FROM users WHERE id=?').get(id).nickname;
         const career = E.newCareer({ name: nickname.slice(0, 16), position: d.position, number: 10, foot: '오른발', preferred, academy }, d.seed);
-        career.id = `FC-${d.id}-${side}`; career.duelId = d.id; career.coins = data.coins; career.inventory = [...data.inventory]; data.current = career;
+        career.id = `FC-${d.id}-${side}`; career.duelId = d.id; career.coins = economy.coins; career.inventory = [...economy.inventory]; data.current = career; data.coins = economy.coins; data.inventory = [...economy.inventory];
         for (const item of data.archives) { const r = statement('SELECT verified FROM careers WHERE id=?').get(item.id); careerRow(id, item, !!r?.verified); }
         careerRow(id, career, true); persist(id, data, old.revision + 1);
         statement(`UPDATE duels SET ${side}_career=? WHERE id=?`).run(career.id, d.id);
@@ -193,12 +210,18 @@ export function createApp({ database = resolve('.local/server.sqlite'), staticRo
     const c = json(row.data), t = E.totals(c);
     return { id: c.id, userId: row.user_id, nickname: row.nickname, name: c.name, position: c.position, team: c.team || c.preferred, age: c.age, stage: c.stage, score: E.legacy(c), ovr: E.ovr(c), peakOvr: c.peakOvr, seasons: c.proSeasons, goals: t.goals, assists: t.assists, saves: t.saves, cleanSheets: t.cleanSheets, rating: t.games ? E.round(t.rating / t.games) : 0, updated: row.updated };
   }
+  function publicDetails(c) {
+    const fields = ['id', 'name', 'number', 'foot', 'position', 'school', 'academy', 'leagueId', 'preferred', 'age', 'year', 'stage', 'level', 'skills', 'focus', 'style', 'role', 'technique', 'height', 'weight', 'birthYear', 'team', 'condition', 'trust', 'popularity', 'peakOvr', 'peakSkills', 'proSeasons', 'nationalCaps', 'trophies', 'records', 'events', 'leagueHistory', 'retirementReason'];
+    return { ...Object.fromEntries(fields.filter(key => c[key] !== undefined).map(key => [key, c[key]])), public: true, achievements: E.careerAchievements(c) };
+  }
 
   async function handle(req, res) {
-    const url = new URL(req.url, 'http://football.internal'), path = url.pathname, method = req.method;
     const send = (status, data) => { res.writeHead(status, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' }); res.end(JSON.stringify(data)); };
-    res.setHeader('X-Content-Type-Options', 'nosniff'); res.setHeader('Referrer-Policy', 'same-origin');
+    for (const [name, value] of Object.entries(securityHeaders())) res.setHeader(name, value);
+    if (secureCookies) res.setHeader('Strict-Transport-Security', 'max-age=31536000');
     try {
+      let url; try { url = new URL(req.url, 'http://football.internal'); } catch { fail(400, '올바른 요청 경로가 아닙니다.'); }
+      const path = url.pathname, method = req.method;
       if (!['GET', 'HEAD', 'POST', 'PUT', 'DELETE'].includes(method)) fail(405, '지원하지 않는 요청입니다.');
       if (['POST', 'PUT', 'DELETE'].includes(method)) authorizeMutation(req);
       if (path === '/api/health') return send(200, { ok: true, persistence: 'sqlite' });
@@ -214,7 +237,7 @@ export function createApp({ database = resolve('.local/server.sqlite'), staticRo
       }
       if (path === '/api/auth/login' && method === 'POST') {
         limit(req, 'auth', 15, 15 * 60_000); const b = await body(req);
-        requireValue(typeof b.email === 'string' && typeof b.password === 'string' && b.password.length <= 128, '이메일과 비밀번호를 확인해 주세요.');
+        requireValue(typeof b.email === 'string' && b.email.length <= 200 && typeof b.password === 'string' && b.password.length <= 128, '이메일과 비밀번호를 확인해 주세요.');
         const u = statement('SELECT * FROM users WHERE email=?').get(b.email.trim().toLowerCase()), password = u?.password || `${'0'.repeat(32)}:${'0'.repeat(128)}`;
         const [salt, expected] = password.split(':'), actual = await hashPassword(b.password, salt, 64);
         if (!u?.password || !timingSafeEqual(Buffer.from(expected, 'hex'), actual)) fail(401, '이메일 또는 비밀번호가 일치하지 않습니다.');
@@ -227,6 +250,7 @@ export function createApp({ database = resolve('.local/server.sqlite'), staticRo
       }
       if (path === '/api/auth/google' && method === 'GET') {
         requireValue(google, 'Google 로그인 연결 설정이 필요합니다.', 503);
+        limit(req, 'oauth', 15, 60_000); statement('DELETE FROM oauth WHERE expires<=?').run(now());
         const state = token(), verifier = token(); statement('INSERT INTO oauth VALUES(?,?,?)').run(hash(state), verifier, now() + 600_000);
         res.setHeader('Set-Cookie', `fc_oauth=${state}; HttpOnly; SameSite=Lax; Path=/; Max-Age=600${secureCookies ? '; Secure' : ''}`);
         const params = new URLSearchParams({ client_id: google.clientId, redirect_uri: google.redirectUri, response_type: 'code', scope: 'openid email profile', state, code_challenge: createHash('sha256').update(verifier).digest('base64url'), code_challenge_method: 'S256' });
@@ -239,13 +263,15 @@ export function createApp({ database = resolve('.local/server.sqlite'), staticRo
         const response = await fetch('https://oauth2.googleapis.com/token', { method: 'POST', body: new URLSearchParams({ client_id: google.clientId, client_secret: google.clientSecret, code: url.searchParams.get('code'), redirect_uri: google.redirectUri, grant_type: 'authorization_code', code_verifier: flow.verifier }), signal: AbortSignal.timeout(15_000) });
         const auth = await response.json(); requireValue(response.ok && auth.access_token, 'Google 로그인 연결에 실패했습니다.', 502);
         const infoResponse = await fetch('https://openidconnect.googleapis.com/v1/userinfo', { headers: { Authorization: `Bearer ${auth.access_token}` }, signal: AbortSignal.timeout(15_000) });
-        const info = await infoResponse.json(); requireValue(infoResponse.ok && info.email_verified && typeof info.sub === 'string' && typeof info.email === 'string', 'Google 계정을 확인하지 못했습니다.', 502);
+        const info = await infoResponse.json(); requireValue(infoResponse.ok && info.email_verified === true && typeof info.sub === 'string' && info.sub.length > 0 && info.sub.length <= 255 && typeof info.email === 'string' && info.email.length <= 200, 'Google 계정을 확인하지 못했습니다.', 502);
         let u = statement('SELECT * FROM users WHERE google_id=? OR email=?').get(info.sub, info.email.toLowerCase());
+        requireValue(!u?.google_id || u.google_id === info.sub, '다른 Google 계정이 연결되어 있습니다.', 403);
         if (!u) u = newAccount(info.email.toLowerCase(), `선수${randomBytes(4).toString('hex')}`, null, info.sub);
         else if (!u.google_id) statement('UPDATE users SET google_id=? WHERE id=?').run(info.sub, u.id);
         setSession(res, u); res.writeHead(302, { Location: '/?login=success' }); return res.end();
       }
       if (path === '/api/rankings' && method === 'GET') {
+        limit(req, 'public', 180);
         const type = url.searchParams.get('type') || 'live';
         if (type === 'firsts') return send(200, { rows: statement('SELECT achievements.*,users.nickname FROM achievements JOIN users ON users.id=achievements.user_id ORDER BY created').all() });
         if (type === 'teams') return send(200, { rows: statement('SELECT teams.id,teams.name,teams.strength,teams.elo,teams.wins,teams.losses,teams.challenge,users.nickname FROM teams JOIN users ON users.id=teams.user_id ORDER BY elo DESC LIMIT 100').all().map((t, i) => ({ ...t, rank: i + 1 })) });
@@ -257,8 +283,9 @@ export function createApp({ database = resolve('.local/server.sqlite'), staticRo
         const page = Math.max(1, Number(url.searchParams.get('page')) || 1); return send(200, { rows: rows.slice((page - 1) * 20, page * 20).map((c, i) => ({ ...c, rank: (page - 1) * 20 + i + 1 })), total: rows.length, page });
       }
       if (path === '/api/careers/public' && method === 'GET') {
+        limit(req, 'public', 180);
         const row = statement('SELECT careers.*,users.nickname FROM careers JOIN users ON users.id=careers.user_id WHERE careers.id=? AND verified=1').get(url.searchParams.get('id'));
-        requireValue(row, '공개된 선수 기록이 없습니다.', 404); return send(200, { summary: publicCareer(row), career: json(row.data) });
+        requireValue(row, '공개된 선수 기록이 없습니다.', 404); return send(200, { summary: publicCareer(row), career: publicDetails(json(row.data)) });
       }
       if (path === '/api/notices' && method === 'GET') return send(200, { notices: [{ id: 'football', title: '유럽 축구 커리어 안내', body: 'U18 아카데미부터 U21·U23 성장, 프로 계약과 은퇴까지. 로그인하면 온라인 커리어와 MY CLUB 기록을 계정에 저장합니다.' }, { id: 'duels', title: '친구와 커리어 매치', body: '같은 초기 능력치 후보로 시작해 두 선수의 은퇴 후 LEGACY SCORE를 비교합니다. 팀 배틀에서는 보관한 선수로 스쿼드를 편성합니다.' }] });
       if (!path.startsWith('/api/')) return serveStatic(path, method, res);
@@ -291,6 +318,7 @@ export function createApp({ database = resolve('.local/server.sqlite'), staticRo
       }
       if (path === '/api/career/action' && method === 'POST') {
         limit(req, `career-${id}`, 240); const b = await body(req), saved = getSave(id);
+        requireValue(b.args === undefined || b.args === null || typeof b.args === 'object' && !Array.isArray(b.args), '진행 명령의 입력을 확인해 주세요.');
         requireValue(b.revision === saved.revision, '다른 기기의 진행 기록을 먼저 불러와 주세요.', 409);
         return send(200, runCareer(id, b.command, b.args || {}));
       }
@@ -314,7 +342,8 @@ export function createApp({ database = resolve('.local/server.sqlite'), staticRo
         let result;
         transaction(() => {
           const old = getSave(id), data = old.data; archive(data);
-          const next = E.newCareer(c, seed()); next.id = `FC-${randomUUID()}`; next.candidates = structuredClone(c.candidates).map(x => ({ ...x, opened: false })); next.rebornFrom = c.id; next.reborn = true; next.coins = data.coins; next.inventory = [...data.inventory];
+          const economy = trustedEconomy(id);
+          const next = E.newCareer(c, seed()); next.id = `FC-${randomUUID()}`; next.candidates = structuredClone(c.candidates).map(x => ({ ...x, opened: false })); next.rebornFrom = c.id; next.reborn = true; next.coins = economy.coins; next.inventory = [...economy.inventory]; data.coins = next.coins; data.inventory = [...next.inventory];
           c.reborn = true; data.archives = data.archives.map(x => x.id === c.id ? c : x);
           for (const archived of data.archives) { const row = statement('SELECT verified FROM careers WHERE id=? AND user_id=?').get(archived.id, id); careerRow(id, archived, !!row?.verified); }
           careerRow(id, c, !!previous.verified); data.current = next; careerRow(id, next, true); result = persist(id, data, old.revision + 1);
@@ -356,7 +385,7 @@ export function createApp({ database = resolve('.local/server.sqlite'), staticRo
       }
       if (path === '/api/teams' && method === 'POST') {
         const b = await body(req); requireValue(typeof b.name === 'string' && b.name.trim().length > 0 && b.name.length <= 24, '팀 이름은 1~24자로 입력해 주세요.');
-        requireValue(Array.isArray(b.squad) && b.squad.length <= 11 && new Set(b.squad).size === b.squad.length, '선수는 최대 11명입니다.');
+        requireValue(Array.isArray(b.squad) && b.squad.length <= 11 && new Set(b.squad).size === b.squad.length && b.squad.every(playerId => typeof playerId === 'string' && playerId.length > 0 && playerId.length <= 70), '선수는 최대 11명입니다.');
         const players = b.squad.map(playerId => { const r = statement('SELECT data FROM careers WHERE id=? AND user_id=? AND saved=1 AND verified=1').get(playerId, id); requireValue(r, 'MY CLUB에 보관한 본인의 온라인 선수로 팀을 구성해 주세요.'); return json(r.data); });
         const strength = (players.reduce((sum, c) => sum + c.peakOvr, 0) + (11 - players.length) * 50) / 11;
         const teamId = b.id || randomUUID(), previous = statement('SELECT * FROM teams WHERE id=?').get(teamId);
@@ -392,13 +421,14 @@ export function createApp({ database = resolve('.local/server.sqlite'), staticRo
       }
       fail(404, '요청한 기능을 찾을 수 없습니다.');
     } catch (error) {
-      const status = error.status || (error.message && !error.code ? 400 : 500);
-      if (!res.headersSent) send(status, { error: status === 500 ? '서버 요청을 처리하지 못했습니다.' : error.message, code: error.code || null }); else res.end();
+      const status = error.status || 500;
+      if (!res.headersSent) send(status, { error: status === 500 ? '서버 요청을 처리하지 못했습니다.' : error.message, code: status === 500 ? null : error.code || null }); else res.end();
     }
   }
   function serveStatic(path, method, res) {
     if (!['GET', 'HEAD'].includes(method)) fail(405, '지원하지 않는 요청입니다.');
-    const requested = resolve(staticRoot, `.${decodeURIComponent(path)}`); requireValue(requested === staticRoot || requested.startsWith(staticRoot + sep), '올바른 경로가 아닙니다.', 403);
+    let decoded; try { decoded = decodeURIComponent(path); } catch { fail(400, '올바른 경로가 아닙니다.'); }
+    const requested = resolve(staticRoot, `.${decoded}`); requireValue(requested === staticRoot || requested.startsWith(staticRoot + sep), '올바른 경로가 아닙니다.', 403);
     if (extname(requested) && !existsSync(requested)) fail(404, '파일을 찾을 수 없습니다.');
     const file = extname(requested) ? requested : resolve(staticRoot, 'index.html'); requireValue(existsSync(file), '먼저 npm run build를 실행해 주세요.', 404);
     const types = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json', '.png': 'image/png', '.svg': 'image/svg+xml', '.woff2': 'font/woff2', '.ttf': 'font/ttf' };

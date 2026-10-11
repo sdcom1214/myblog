@@ -1,0 +1,46 @@
+{
+  "date": "2026-10-11",
+  "baselineCommit": "101f4f75cdafe8753ddc9e1acadfcc8f70506047",
+  "isolatedBefore": {
+    "fiveRegressionChecks": "all 5 failed as expected",
+    "svgEventExecution": "confirmed",
+    "malformedURL": {
+      "exitCode": 1,
+      "error": "ERR_INVALID_URL"
+    }
+  },
+  "after": {
+    "unitTests": {
+      "engine": 26,
+      "server": 26,
+      "passed": 52,
+      "failed": 0
+    },
+    "guestBrowserChecks": 14,
+    "onlineBrowserChecks": 11,
+    "securityBrowserScenarios": 3,
+    "devFileAndHostChecks": 4,
+    "fullCareers": 6,
+    "browserConsoleErrors": 0,
+    "npmAudit": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 0,
+      "critical": 0,
+      "total": 0
+    }
+  },
+  "npmAuditBefore": {
+    "info": 0,
+    "low": 1,
+    "moderate": 0,
+    "high": 1,
+    "critical": 0,
+    "total": 2
+  },
+  "versions": {
+    "vite": "7.3.7",
+    "esbuild": "0.28.2"
+  }
+}

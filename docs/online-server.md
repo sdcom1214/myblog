@@ -1,6 +1,6 @@
 # 온라인 서버와 1:1 구현 범위
 
-Node.js 24 내장 SQLite와 HTTP 서버를 사용합니다. `npm run dev`는 API(4174)와 Vite(4173)를 함께 시작합니다. 서버 데이터는 `.local/server.sqlite`에 저장하며 Git에 포함되지 않습니다. 클라우드 실행 환경에서는 지속되지만 별도 배포의 재시작·교체에 대비하려면 `FOOTBALL_DB`를 영구 볼륨 경로로 지정해야 합니다.
+Node.js 24 내장 SQLite와 HTTP 서버를 사용합니다. `npm run dev`는 API(127.0.0.1:4174)와 Vite(4173)를 함께 시작합니다. 개발 API는 Vite의 `/api` 프록시로 접근하며, 별도 접근이 필요하면 `API_HOST`를 명시합니다. 서버 데이터는 `.local/server.sqlite`에 저장하며 Git에 포함되지 않습니다. 클라우드 실행 환경에서는 지속되지만 별도 배포의 재시작·교체에 대비하려면 `FOOTBALL_DB`를 영구 볼륨 경로로 지정해야 합니다.
 
 ## 구현한 기능
 
@@ -38,8 +38,16 @@ Google OAuth 코드는 연결되어 있지만 현재 세 가지 설정이 없어
 
 ## 검증
 
-`npm test`: 엔진 26개 + 서버 14개. `python tests/browser-smoke.py`: 비회원 14개 검증. `npm run build` 후 `node tests/browser-server.mjs`: 임시 메모리 DB와 빌드된 실제 HTTP 서버에 두 브라우저 계정으로 온라인 11개 검증을 수행합니다. 개발 DB에 테스트 계정을 남기지 않습니다.
+`npm test`: 엔진 26개 + 서버 26개. `python tests/browser-smoke.py`: 비회원 14개 검증. `npm run build` 후 `node tests/browser-server.mjs`: 임시 메모리 DB와 빌드된 실제 HTTP 서버에 두 브라우저 계정으로 온라인 11개 검증을 수행합니다. 개발 DB에 테스트 계정을 남기지 않습니다.
 
 `node tests/browser-server.mjs tests/browser-career-full.py`는 네 포지션과 온라인 두 선수의 여섯 커리어를 화면 조작으로 자연 은퇴까지 진행합니다. 수동 은퇴나 저장 데이터 수정 없이 최종 시즌 기록·은퇴 사유·새로고침 복구·내보내기·동일 후보와 대전 점수·승패를 확인합니다. 원본 플레이 관찰과 수정 근거는 [완주 검수](playthrough/review.md)에 있습니다.
 
 `node tests/browser-server.mjs tests/browser-training.py`는 10개 능력치에 연결된 9종 게임을 실제 화면 조작으로 각 5회 완료하고 점수·능력 상승·진행 복구·수상/업적 화면을 확인합니다. `node tests/browser-server.mjs tests/browser-urgent.py`는 마우스 비회원·터치 온라인 계정의 사인과 PNG 저장을 확인합니다. 카드 이미지와 JSON 백업은 분리되어 있습니다.
+
+## 보안 검토 반영
+
+온라인 진행은 현재 저장과 서버 선수 원본이 같은지 확인하며, 장비·엔진 코인 상속은 검증된 서버 선수 기록에서 가져옵니다. 저장 파일의 전역 장비/코인 값을 바꿔 온라인 생성·대전·회귀에 넘길 수 없습니다. 온라인의 무작위 진행 명령은 서버에서 새 시드를 받아 클라이언트의 이전 난수 상태로 다음 결과를 재현할 수 없도록 합니다. 대전의 초기 후보는 계속 동일합니다.
+
+공개 선수 API는 프로필·기록·계산된 업적만 반환합니다. 난수 상태, 후보 배열, 진행 중 훈련 과제, 계약 제안, 장비·엔진 코인을 포함하지 않습니다. 공개 화면에는 선수·커리어·우승 연혁과 PNG 카드만 제공합니다. JSON 백업과 시즌 진행은 본인의 저장에서 사용합니다.
+
+HTML 출력 처리, CSP, 요청 오류 처리, 개발 서버 파일 접근, HTTPS 설정과 검증 범위는 [보안 검토 보고서](audit/security/review.md)에 있습니다. 운영 모드에서 `COOKIE_SECURE`를 생략하면 Secure 쿠키와 HSTS가 활성화됩니다. 로컬 HTTP에서 명시적으로 꺼야 할 때만 `COOKIE_SECURE=false`를 사용합니다.
