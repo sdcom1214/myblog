@@ -7,8 +7,10 @@ import { careerCardBlob, downloadBlob, imageDataURL } from './career-export.js';
 import { TrainingGame } from './training-ui.js';
 import { escapeHTML as esc } from './html.js';
 import { browserStorage, isInAppBrowser, canShareFile, fitMobileViewport } from './browser.js';
+import { RetirementSequence, endingCard } from './retirement-ui.js';
 import './style.css';
 import './parity.css';
+import './retirement.css';
 
 const deviceStorage = browserStorage();
 const loaded = loadStore(deviceStorage);
@@ -16,7 +18,7 @@ fitMobileViewport();
 // A cached account must never become a guest save when the WebView drops its
 // cookies or cannot remove old storage. Restore account data only via /api/save.
 let data = deviceStorage.getItem(`${STORAGE_KEY}-account`) ? loadGuestStore(deviceStorage) : loaded.data;
-let screen = 'home', tab = 'season', modal = null, viewing = null;
+let screen = 'home', tab = 'season', modal = null, viewing = null, endingFace = 'front';
 const defaultForm = () => ({ name: '', number: 10, foot: '오른발', position: 'FW', leagueId: 'premier', preferred: 'arsenal', academy: 'hale-end', reference: '' });
 let selectedCard = 0, focus = [], growthRole = null, growthTechnique = '균형', form = defaultForm();
 let duelResult = null, friend = null, squad = [], teamResult = null, busy = false;
@@ -50,9 +52,10 @@ const features = new OnlineFeatures({
   },
   logout: () => { data = loadGuestStore(deviceStorage); deviceStorage.removeItem(`${STORAGE_KEY}-account`); deviceStorage.setItem(STORAGE_KEY, JSON.stringify(data)); navigate('home'); },
   backup: () => exportFile(serializeSave(data), 'football-before-cloud-restore.json'),
-  resume: () => { screen = 'game'; viewing = null; tab = 'season'; modal = null; selectedCard = 0; focus = []; growthRole = null; render(); },
+  resume: () => { screen = 'game'; viewing = null; tab = 'season'; modal = null; selectedCard = 0; focus = []; growthRole = null; if (data.current?.stage === 'retired') retirement.start(data.current); render(); },
   viewCareer: player => { viewing = player; screen = 'game'; tab = 'career'; modal = null; render(); },
 });
+const retirement = new RetirementSequence({ root:app, storage:deviceStorage, account:() => features.user?.id || 'guest', render, finish:() => { tab = 'season'; endingFace = 'front'; modal = null; render(true); } });
 const trainingGame = new TrainingGame({
   root: app, career: () => data.current, render, toast, isOpen: () => modal?.type === 'training',
   submit: async input => { await changeCareer('shot', typeof input === 'number' ? { marker: input } : { input }, x => E.trainingShot(x, input)); sound(); },
@@ -175,7 +178,7 @@ function legacyCard(p) {
   return `${sectionTitle('MY FOOTBALL LIFE', `${esc(p.name)}의 축구 인생`)}<div class="legacy-card"><small>${E.legacy(p) > 4000 ? 'FOOTBALL LEGEND' : E.legacy(p) > 1500 ? 'CLUB HERO' : 'MY CAREER'}</small><div class="legacy-top"><span>${p.peakOvr.toFixed(1)}<small>PRIME OVR</small></span>${icon('soccer-ball')}<span>${p.position}<small>#${p.number}</small></span></div><h2>${esc(p.name)}</h2><p>${p.team ? esc(club(p.team).name) : esc(p.school)}</p><div class="legacy-score"><small>LEGACY SCORE</small><strong>${E.legacy(p).toLocaleString()}<span>점</span></strong></div><div class="legacy-totals">${stat('경기', t.games)}${stat(goalkeeper ? '선방' : '골', goalkeeper ? t.saves : t.goals)}${stat(goalkeeper ? '클린시트' : '도움', goalkeeper ? t.cleanSheets : t.assists)}</div></div><section class="panel"><h3>마지막 휘슬, 남겨진 이야기</h3><p class="muted">${esc(p.retirementReason || '아직 당신의 축구 인생은 진행 중입니다.')}</p><p>${p.proSeasons}번의 프로 시즌. ${p.trophies.length}번의 우승.<br>그라운드에서 보낸 시간은 기록으로 남습니다.</p></section>${primary('MY CLUB에 저장', `club-save:${p.id}`)}${btn('U18로 회귀', `rebirth:${p.id}`, 'secondary')}${btn('선수 개명', `rename:${p.id}`, 'text-button')}${primary('커리어 카드 이미지 저장', 'export-career')+(p.public ? '' : btn('커리어 데이터 백업 (JSON)', 'export-career-data', 'text-button'))}${btn('새로운 인생 시작', 'new', 'secondary')}`;
 }
 function retiredProfile(p) {
-  return `${profileScreen(p)}<section class="panel retirement-summary"><small>FINAL WHISTLE</small><h3>선수 생활을 마무리했습니다</h3><p class="muted">${esc(p.retirementReason || '마지막 시즌을 마치고 은퇴했습니다.')}</p><p>${p.proSeasons}시즌 · LEGACY SCORE ${E.legacy(p).toLocaleString()}점</p></section>${primary('선수 카드 보기', 'player-card')}${primary('MY CLUB에 저장', `club-save:${p.id}`)}${btn('U18로 회귀', `rebirth:${p.id}`, 'secondary')}${btn('선수 개명', `rename:${p.id}`, 'text-button')}${primary('커리어 카드 이미지 저장', 'export-career')+(p.public ? '' : btn('커리어 데이터 백업 (JSON)', 'export-career-data', 'text-button'))}${btn('새로운 인생 시작', 'new', 'secondary')}`;
+  return `${endingCard(p, { face:endingFace, interactive:true, teamName:p.team ? club(p.team).name : p.school })}<p class="ending-flip-hint">${icon('arrows-counter-clockwise')} 카드를 눌러 ${endingFace === 'front' ? '뒷면' : '앞면'} 보기</p><div class="ending-value-strip"><div><small>프로 경력</small><strong>${p.proSeasons}시즌</strong></div><div><small>전성기 OVR</small><strong>${p.peakOvr.toFixed(1)}</strong></div></div><section class="panel retirement-summary"><small>FINAL WHISTLE</small><p class="muted">${esc(p.retirementReason || '마지막 시즌을 마치고 은퇴했습니다.')}</p></section>${btn('은퇴 연출 다시 보기', 'ending-replay', 'text-button')}${primary('전체 시즌 기록 보기', 'ending-season-records')}${primary('선수 카드 보기', 'player-card')}${primary('MY CLUB에 저장', `club-save:${p.id}`)}${btn('U18로 회귀', `rebirth:${p.id}`, 'secondary')}${btn('선수 개명', `rename:${p.id}`, 'text-button')}${primary('커리어 카드 이미지 저장', 'export-career')+(p.public ? '' : btn('커리어 데이터 백업 (JSON)', 'export-career-data', 'text-button'))}${btn('새로운 인생 시작', 'new', 'secondary')}`;
 }
 function careerScreen(p) {
   const t = E.totals(p), rating = t.games ? (t.rating / t.games).toFixed(2) : '–';
@@ -239,6 +242,7 @@ function modalContent() {
   const extended = features.renderModal(modal); if (extended !== null) return extended;
   const p = c(), close = btn(icon('x'), 'close', 'icon-button modal-close', 'aria-label="닫기"');
   if (modal.type === 'player-card') {
+    if (p.stage === 'retired') return `<div class="modal-backdrop"><section class="modal ending-card-modal" role="dialog" aria-modal="true" aria-label="${esc(p.name)}의 최종 선수 카드">${close}${endingCard(p, { face:'back', teamName:p.team ? club(p.team).name : p.school })}${primary('통산 기록 보기', 'card-records')}</section></div>`;
     const pro = p.records.filter(r => r.level === '프로'), from = pro[0]?.year || 2026, until = pro.at(-1)?.year || from;
     return `<div class="modal-backdrop"><section class="modal prime-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">${close}<div class="prime-player-card"><header>${badge(p.team || p.preferred)}<div><h2 id="modal-title">${esc(p.name)}</h2><strong>${p.team ? esc(club(p.team).name) : esc(p.school)}</strong><small>${E.POSITIONS[p.position]} · No.${p.number} · 은퇴 ${p.age}세</small></div></header><div class="prime-score"><b>LEGACY SCORE</b><strong>${E.legacy(p).toLocaleString()}점</strong></div><section class="prime-abilities"><header><b>PRIME ABILITY</b><strong>${from}–${until}</strong></header>${E.skillNames(p).map((name,i) => { const value = Math.min(100, Math.round(p.peakSkills[i] * 5)), grade = value >= 90 ? 'S' : value >= 80 ? 'A' : value >= 70 ? 'B' : value >= 60 ? 'C' : value >= 50 ? 'D' : 'E'; return `<div><span>${name}</span><strong>${value}</strong><b class="grade grade-${grade}">${grade}</b><i><em style="width:${value}%"></em></i></div>`; }).join('')}</section></div>${primary('통산 기록 보기', 'card-records')}</section></div>`;
   }
@@ -285,23 +289,29 @@ function render(preserveScroll = false) {
   app.dataset.theme = data.theme;
   const temporary = !deviceStorage.persistent;
   const notice = temporary ? `<div class="storage-notice" role="status">${features.user ? '기기 저장이 제한되어 계정에 기록을 저장합니다.' : `임시 플레이 중 · 앱을 닫으면 기록이 사라질 수 있습니다. ${btn('로그인', 'auth', 'text-button')}`}</div>` : '';
-  app.innerHTML = `<div class="app-frame" data-temporary-storage="${temporary}">${notice}${features.renderScreen(screen) ?? ({ home, create: creation, game, club: clubhouse, ranking, shop, duel: matchPage, friend: matchPage, team: teamBattle, play: () => home() }[screen] || home)()}${modalContent()}${busy ? `<div class="loading-scene" role="status"><div>${icon('soccer-ball')}<small>SEASON SIMULATION</small><h2>당신의 시즌을 만들고 있습니다</h2><p>경기 일정 · 선수 기록 · 성장 · 구단 순위</p><div class="loading-dots"><i></i><i></i><i></i></div></div></div>` : ''}</div>`;
+  app.innerHTML = `<div class="app-frame" data-temporary-storage="${temporary}">${notice}${features.renderScreen(screen) ?? ({ home, create: creation, game, club: clubhouse, ranking, shop, duel: matchPage, friend: matchPage, team: teamBattle, play: () => home() }[screen] || home)()}${modalContent()}${retirement.markup()}${busy ? `<div class="loading-scene" role="status"><div>${icon('soccer-ball')}<small>SEASON SIMULATION</small><h2>당신의 시즌을 만들고 있습니다</h2><p>경기 일정 · 선수 기록 · 성장 · 구단 순위</p><div class="loading-dots"><i></i><i></i><i></i></div></div></div>` : ''}</div>`;
   if (preserveScroll) document.querySelector('.game-content, .menu-content')?.scrollTo(0, scroll);
   if (modal) { document.querySelector('[role="dialog"] button:not([disabled]), [role="dialog"] input')?.focus({ preventScroll: true }); }
   else if (oldFocus && preserveScroll) [...document.querySelectorAll('[data-action]')].find(el => el.dataset.action === oldFocus)?.focus({ preventScroll: true });
+  if (retirement.active) {
+    const main = app.querySelector('.app-frame>main'); if (main) { main.inert = true; main.setAttribute('aria-hidden', 'true'); }
+    app.querySelector('.retirement-layer')?.focus({ preventScroll:true });
+  }
+  retirement.afterRender();
 }
 function revealAnimation() {
   if (!matchMedia('(prefers-reduced-motion: reduce)').matches) animate('.candidate.revealed', { opacity: [0.2, 1], y: [12, 0], duration: 450, delay: stagger(90), ease: 'outCubic' });
 }
-function navigate(next) { stopMarker(); screen = next; modal = null; viewing = null; duelResult = null; teamResult = null; render(); }
+function navigate(next) { stopMarker(); retirement.stop(); endingFace = 'front'; screen = next; modal = null; viewing = null; duelResult = null; teamResult = null; render(); }
 function getForm() {
   const f = document.querySelector('#player-form'); if (!f) return;
   const values = new FormData(f); form.name = String(values.get('name')); form.number = Number(values.get('number')); form.preferred = String(values.get('preferred')); form.academy = String(values.get('academy')); form.leagueId = String(values.get('leagueId'));
 }
 async function changeCareer(command, args, operation) {
-  const alreadyBusy = busy; busy = true;
+  const alreadyBusy = busy, previous = data.current; busy = true;
   try { await features.command(command, args, () => operation(data.current)); }
   finally { busy = alreadyBusy; }
+  if (previous?.stage !== 'retired' && data.current?.stage === 'retired' && data.current.id === previous?.id) { modal = null; endingFace = 'front'; retirement.start(data.current); }
 }
 async function simulate(operation, command, args = {}) {
   if (busy) return; busy = true; render();
@@ -346,6 +356,8 @@ function archiveCurrent() {
 }
 
 async function action(value) {
+  if (retirement.handle(value)) return;
+  if (retirement.active) return;
   if (busy) return;
   const [a, raw] = value.split(':'), i = Number(raw), p = c();
   try {
@@ -355,14 +367,16 @@ async function action(value) {
     if (a === 'nav') { if (raw === 'play') return data.current ? action('continue') : action('new'); return navigate(raw); }
     if (a === 'new') { if (data.current?.pendingTraining) { screen = 'game'; viewing = null; tab = 'season'; modal = { type: 'training' }; render(); toast('진행 중인 훈련을 먼저 마쳐주세요.'); return; } modal = { type: 'new' }; }
     if (a === 'new-confirm') { screen = 'create'; modal = null; viewing = null; form = defaultForm(); }
-    if (a === 'continue') { screen = 'game'; viewing = null; tab = 'season'; modal = data.current?.pendingTraining ? { type: 'training' } : null; }
+    if (a === 'continue') { screen = 'game'; viewing = null; tab = 'season'; modal = data.current?.pendingTraining ? { type: 'training' } : null; endingFace = 'front'; if (data.current?.stage === 'retired') retirement.start(data.current); }
+    if (a === 'ending-card-flip') endingFace = endingFace === 'front' ? 'back' : 'front';
+    if (a === 'ending-replay' && p?.stage === 'retired') retirement.start(p, true);
     if (a === 'scout-report') modal = { type: 'scout-report' };
     if (a === 'scout-confirm') modal = null;
     if (a === 'milestone-report') modal = { type: 'milestones' };
     if (a === 'milestone-confirm') modal = null;
     if (a === 'honours') modal = { type: 'honours' };
     if (a === 'player-card') modal = { type: 'player-card' };
-    if (a === 'card-records') { modal = null; tab = 'career'; }
+    if (a === 'card-records' || a === 'ending-season-records') { modal = null; tab = 'career'; }
     if (a === 'close') { if (modal?.type === 'training' && data.current.pendingTraining) { stopMarker(); modal = null; } else modal = null; }
     if (a === 'browser-help') modal = { type: 'browser-help' };
     if (a === 'copy-page-url') { try { await navigator.clipboard.writeText(location.origin + location.pathname); toast('게임 주소를 복사했습니다. Safari 또는 Chrome에 붙여 넣어 주세요.'); } catch { const input = document.querySelector('#browser-page-url'); input?.focus(); input?.select(); toast('주소를 길게 눌러 복사해 주세요.'); } return; }
@@ -473,6 +487,14 @@ app.addEventListener('submit', async (event) => {
   try { await changeCareer('create', { profile: form }, () => { const next = E.newCareer(form); archiveCurrent(); next.coins = data.coins; next.inventory = [...data.inventory]; return next; }); screen = 'game'; tab = 'season'; selectedCard = 0; focus = []; growthRole = null; render(); } catch (error) { toast(error.message); }
 });
 document.addEventListener('keydown', (event) => {
+  if (retirement.active && event.key === 'Escape') { event.preventDefault(); retirement.handle(retirement.stage === 'result' ? 'ending-records' : 'ending-skip'); return; }
+  if (retirement.active && event.key === 'Tab') {
+    const controls = [...app.querySelectorAll('.retirement-layer button:not([disabled])')], first = controls[0], last = controls.at(-1);
+    if (event.shiftKey && (document.activeElement === first || !controls.includes(document.activeElement))) { event.preventDefault(); last?.focus(); }
+    else if (!event.shiftKey && (document.activeElement === last || !controls.includes(document.activeElement))) { event.preventDefault(); first?.focus(); }
+    return;
+  }
+  if (event.target.matches('[data-action="ending-card-flip"]') && ['Enter',' '].includes(event.key)) { event.preventDefault(); if (!event.repeat) action('ending-card-flip'); return; }
   if (modal) {
     if (event.key === 'Escape') { event.preventDefault(); action('close'); return; }
     if (event.key === 'Tab') {

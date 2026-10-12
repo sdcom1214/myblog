@@ -269,8 +269,19 @@ export function seasonMilestones(c) {
   return metrics.flatMap(([key, label, thresholds]) => thresholds.filter(value => previous[key] < value && current[key] >= value).map(value => ({ key, label, value })));
 }
 export function legacy(c) {
+  return legacyBreakdown(c).total;
+}
+export function legacyBreakdown(c) {
   const t = totals(c);
-  return Math.round(t.games * 1.5 + t.goals * 8 + t.assists * 7 + t.cleanSheets * 9 + t.saves * 0.2 + c.trophies.length * 180 + c.nationalCaps * 12 + c.records.filter(x => x.level === '프로').reduce((a, b) => a + distinctAwards(b.awards).filter(x => x !== '리그 우승').length * 70, 0));
+  const raw = [
+    ['출전 경험', t.games * 1.5],
+    ['누적 기록', t.goals * 8 + t.assists * 7 + t.cleanSheets * 9 + t.saves * 0.2],
+    ['수상', c.records.filter(x => x.level === '프로').reduce((a, b) => a + distinctAwards(b.awards).filter(x => x !== '리그 우승').length * 70, 0)],
+    ['우승', c.trophies.length * 180], ['국가대표', c.nationalCaps * 12],
+  ];
+  let sum = 0;
+  const items = raw.map(([label, value]) => { const previous = Math.round(sum); sum += value; return { label, value: Math.round(sum) - previous }; });
+  return { total: Math.round(sum), items };
 }
 export function careerAchievements(c) {
   const t = totals(c), awards = new Set(c.records.filter(r => r.level === '프로' && r.tier !== '육성팀').flatMap(r => r.awards));

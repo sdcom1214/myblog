@@ -22,6 +22,9 @@ with sync_playwright() as pw:
     page.on('console', lambda m: errors.append(m.text) if m.type=='error' else None)
     page.set_default_timeout(10000)
     def click(action):
+        if not action.startswith('ending-'):
+            if page.locator('[data-action="ending-skip"]').count(): page.locator('[data-action="ending-skip"]').click()
+            if page.locator('[data-action="ending-records"]').count(): page.locator('[data-action="ending-records"]').first.click()
         if action != 'milestone-confirm' and page.locator('[data-action="milestone-confirm"]').count(): page.locator('[data-action="milestone-confirm"]').click()
         if action != 'scout-confirm' and page.locator('[data-action="scout-confirm"]').count(): page.locator('[data-action="scout-confirm"]').click()
         page.locator(f'[data-action="{action}"]').first.click()

@@ -2,7 +2,8 @@ import { createServer } from 'node:http';
 import { DatabaseSync } from 'node:sqlite';
 import { randomBytes, randomUUID, scrypt, timingSafeEqual, createHash } from 'node:crypto';
 import { promisify } from 'node:util';
-import { mkdirSync, existsSync, readFileSync } from 'node:fs';
+import { mkdirSync } from 'node:fs';
+import { readFile, realpath } from 'node:fs/promises';
 import { dirname, resolve, extname, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import * as E from '../src/engine.js';
@@ -29,6 +30,7 @@ const catalogue = [
 ];
 
 export function createApp({ database = resolve('.local/server.sqlite'), staticRoot = resolve('dist'), secureCookies = process.env.COOKIE_SECURE === undefined ? process.env.NODE_ENV === 'production' : process.env.COOKIE_SECURE === 'true', google = null } = {}) {
+  staticRoot = resolve(staticRoot);
   if (database !== ':memory:') mkdirSync(dirname(database), { recursive: true });
   const db = new DatabaseSync(database);
   db.exec(`PRAGMA foreign_keys=ON; PRAGMA journal_mode=WAL;
@@ -44,8 +46,16 @@ export function createApp({ database = resolve('.local/server.sqlite'), staticRo
     CREATE TABLE IF NOT EXISTS achievements(key TEXT PRIMARY KEY, user_id TEXT NOT NULL REFERENCES users(id), career_id TEXT NOT NULL, title TEXT NOT NULL, created INTEGER NOT NULL);
     CREATE TABLE IF NOT EXISTS personal_achievements(user_id TEXT NOT NULL REFERENCES users(id), key TEXT NOT NULL, career_id TEXT NOT NULL, title TEXT NOT NULL, created INTEGER NOT NULL, PRIMARY KEY(user_id,key));
     CREATE TABLE IF NOT EXISTS oauth(state TEXT PRIMARY KEY, verifier TEXT NOT NULL, expires INTEGER NOT NULL);
+    CREATE INDEX IF NOT EXISTS careers_owner_verified_updated ON careers(user_id,verified,updated DESC,created DESC);
+    CREATE INDEX IF NOT EXISTS duels_host_career_status ON duels(host_career,status);
+    CREATE INDEX IF NOT EXISTS duels_guest_career_status ON duels(guest_career,status);
+    CREATE INDEX IF NOT EXISTS sessions_expiry ON sessions(expires);
   `);
-  const statement = sql => db.prepare(sql);
+  const statements = new Map();
+  const statement = sql => {
+    if (!statements.has(sql)) statements.set(sql, db.prepare(sql));
+    return statements.get(sql);
+  };
   const transaction = fn => { db.exec('BEGIN IMMEDIATE'); try { const result = fn(); db.exec('COMMIT'); return result; } catch (e) { db.exec('ROLLBACK'); throw e; } };
   const rate = new Map();
   function limit(req, scope, max = 20, interval = 60_000) {
@@ -72,7 +82,9 @@ export function createApp({ database = resolve('.local/server.sqlite'), staticRo
   function careerRow(id, career, verified = false) {
     const previous = statement('SELECT * FROM careers WHERE id=?').get(career.id);
     requireValue(!previous || previous.user_id === id, '다른 계정의 선수 기록입니다.', 403);
-    statement('INSERT INTO careers(id,user_id,data,verified,created,updated) VALUES(?,?,?,?,?,?) ON CONFLICT(id) DO UPDATE SET data=excluded.data,verified=excluded.verified,updated=excluded.updated').run(career.id, id, JSON.stringify(career), +verified, previous?.created || now(), now());
+    const serialized = JSON.stringify(career);
+    if (previous?.data === serialized && previous.verified === +verified) return;
+    statement('INSERT INTO careers(id,user_id,data,verified,created,updated) VALUES(?,?,?,?,?,?) ON CONFLICT(id) DO UPDATE SET data=excluded.data,verified=excluded.verified,updated=excluded.updated').run(career.id, id, serialized, +verified, previous?.created || now(), now());
     if (verified && career.records.length) {
       for (const { key, unlocked, title } of E.careerAchievements(career)) if (unlocked) {
         statement('INSERT OR IGNORE INTO achievements VALUES(?,?,?,?,?)').run(key, id, career.id, title, now());
@@ -142,7 +154,6 @@ export function createApp({ database = resolve('.local/server.sqlite'), staticRo
   };
   function runCareer(id, command, args) {
     const saved = getSave(id), data = saved.data, c = data.current;
-    const economy = trustedEconomy(id);
     let next;
     if (command === 'create') {
       archive(data); next = E.newCareer(args.profile, seed()); next.id = `FC-${randomUUID()}`;
@@ -174,7 +185,7 @@ export function createApp({ database = resolve('.local/server.sqlite'), staticRo
         default: fail(400, '알 수 없는 진행 명령입니다.');
       }
     }
-    if (command === 'create') { next.coins = economy.coins; next.inventory = [...economy.inventory]; }
+    if (command === 'create') { const economy = trustedEconomy(id); next.coins = economy.coins; next.inventory = [...economy.inventory]; }
     data.current = next; data.coins = next.coins; data.inventory = [...next.inventory];
     transaction(() => { for (const previous of data.archives) { const r = statement('SELECT verified FROM careers WHERE id=? AND user_id=?').get(previous.id, id); careerRow(id, previous, !!r?.verified); } careerRow(id, next, true); persist(id, data, saved.revision + 1); if (command === 'season') statement('UPDATE wallets SET coins=coins+5 WHERE user_id=?').run(id); });
     return { ...getSave(id), verified: true, wallet: wallet(id) };
@@ -264,10 +275,13 @@ export function createApp({ database = resolve('.local/server.sqlite'), staticRo
         const auth = await response.json(); requireValue(response.ok && auth.access_token, 'Google 로그인 연결에 실패했습니다.', 502);
         const infoResponse = await fetch('https://openidconnect.googleapis.com/v1/userinfo', { headers: { Authorization: `Bearer ${auth.access_token}` }, signal: AbortSignal.timeout(15_000) });
         const info = await infoResponse.json(); requireValue(infoResponse.ok && info.email_verified === true && typeof info.sub === 'string' && info.sub.length > 0 && info.sub.length <= 255 && typeof info.email === 'string' && info.email.length <= 200, 'Google 계정을 확인하지 못했습니다.', 502);
-        let u = statement('SELECT * FROM users WHERE google_id=? OR email=?').get(info.sub, info.email.toLowerCase());
-        requireValue(!u?.google_id || u.google_id === info.sub, '다른 Google 계정이 연결되어 있습니다.', 403);
-        if (!u) u = newAccount(info.email.toLowerCase(), `선수${randomBytes(4).toString('hex')}`, null, info.sub);
-        else if (!u.google_id) statement('UPDATE users SET google_id=? WHERE id=?').run(info.sub, u.id);
+        let u = statement('SELECT * FROM users WHERE google_id=?').get(info.sub);
+        if (!u) {
+          // Password signup does not verify email ownership. Matching an email
+          // must not merge credentials or retain a pre-registered user's sessions.
+          requireValue(!statement('SELECT id FROM users WHERE email=?').get(info.email.toLowerCase()), '이미 이메일로 가입된 계정입니다. 이메일과 비밀번호로 로그인해 주세요.', 409);
+          u = newAccount(info.email.toLowerCase(), `선수${randomBytes(4).toString('hex')}`, null, info.sub);
+        }
         setSession(res, u); res.writeHead(302, { Location: '/?login=success' }); return res.end();
       }
       if (path === '/api/rankings' && method === 'GET') {
@@ -288,7 +302,7 @@ export function createApp({ database = resolve('.local/server.sqlite'), staticRo
         requireValue(row, '공개된 선수 기록이 없습니다.', 404); return send(200, { summary: publicCareer(row), career: publicDetails(json(row.data)) });
       }
       if (path === '/api/notices' && method === 'GET') return send(200, { notices: [{ id: 'football', title: '유럽 축구 커리어 안내', body: 'U18 아카데미부터 U21·U23 성장, 프로 계약과 은퇴까지. 로그인하면 온라인 커리어와 MY CLUB 기록을 계정에 저장합니다.' }, { id: 'duels', title: '친구와 커리어 매치', body: '같은 초기 능력치 후보로 시작해 두 선수의 은퇴 후 LEGACY SCORE를 비교합니다. 팀 배틀에서는 보관한 선수로 스쿼드를 편성합니다.' }] });
-      if (!path.startsWith('/api/')) return serveStatic(path, method, res);
+      if (!path.startsWith('/api/')) return await serveStatic(path, method, res);
       const u = authenticate(req), id = u.id;
       if (path === '/api/save' && method === 'GET') { const saved = getSave(id), c = saved.data.current; return send(200, { ...saved, wallet: wallet(id), verified: !!(c && statement('SELECT verified FROM careers WHERE id=? AND user_id=?').get(c.id, id)?.verified) }); }
       if (path === '/api/save' && method === 'PUT') {
@@ -309,7 +323,7 @@ export function createApp({ database = resolve('.local/server.sqlite'), staticRo
           }
           for (const c of profiles(b.data)) {
             const previous = statement('SELECT * FROM careers WHERE id=?').get(c.id);
-            const verified = previous?.user_id === id && previous.verified && JSON.stringify(json(previous.data)) === JSON.stringify(c);
+            const verified = previous?.user_id === id && previous.verified && previous.data === JSON.stringify(c);
             careerRow(id, c, !!verified);
           }
           persist(id, b.data, old.revision + 1);
@@ -425,17 +439,25 @@ export function createApp({ database = resolve('.local/server.sqlite'), staticRo
       if (!res.headersSent) send(status, { error: status === 500 ? '서버 요청을 처리하지 못했습니다.' : error.message, code: status === 500 ? null : error.code || null }); else res.end();
     }
   }
-  function serveStatic(path, method, res) {
+  async function serveStatic(path, method, res) {
     if (!['GET', 'HEAD'].includes(method)) fail(405, '지원하지 않는 요청입니다.');
     let decoded; try { decoded = decodeURIComponent(path); } catch { fail(400, '올바른 경로가 아닙니다.'); }
+    requireValue(!decoded.includes('\0'), '올바른 경로가 아닙니다.');
+    requireValue(!decoded.split('/').some(part => part.startsWith('.')), '공개된 파일이 아닙니다.', 403);
     const requested = resolve(staticRoot, `.${decoded}`); requireValue(requested === staticRoot || requested.startsWith(staticRoot + sep), '올바른 경로가 아닙니다.', 403);
-    if (extname(requested) && !existsSync(requested)) fail(404, '파일을 찾을 수 없습니다.');
-    const file = extname(requested) ? requested : resolve(staticRoot, 'index.html'); requireValue(existsSync(file), '먼저 npm run build를 실행해 주세요.', 404);
-    const types = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json', '.png': 'image/png', '.svg': 'image/svg+xml', '.woff2': 'font/woff2', '.ttf': 'font/ttf' };
-    res.writeHead(200, { 'Content-Type': types[extname(file)] || 'application/octet-stream', 'Cache-Control': extname(file) === '.html' ? 'no-cache' : 'public, max-age=3600' }); res.end(method === 'HEAD' ? undefined : readFileSync(file));
+    let root, file, content;
+    try {
+      root = await realpath(staticRoot);
+      file = await realpath(extname(requested) ? requested : resolve(staticRoot, 'index.html'));
+      requireValue(file.startsWith(root + sep) && !file.slice(root.length + 1).split(sep).some(part => part.startsWith('.')), '공개된 파일이 아닙니다.', 403);
+      // Async reads keep asset transfers from blocking API requests on the event loop.
+      content = method === 'HEAD' ? undefined : await readFile(file);
+    } catch (error) { if (error.status) throw error; if (['ENOENT', 'ENOTDIR', 'EISDIR'].includes(error.code)) fail(404, '파일을 찾을 수 없습니다.'); throw error; }
+    const types = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json', '.png': 'image/png', '.webp': 'image/webp', '.svg': 'image/svg+xml', '.woff2': 'font/woff2', '.ttf': 'font/ttf' };
+    res.writeHead(200, { 'Content-Type': types[extname(file)] || 'application/octet-stream', 'Cache-Control': extname(file) === '.html' ? 'no-cache' : 'public, max-age=3600' }); res.end(content);
   }
   const server = createServer(handle); server.requestTimeout = 30_000;
-  return { server, db, close: () => new Promise((resolve, reject) => server.close(error => { db.close(); error ? reject(error) : resolve(); })) };
+  return { server, db, close: () => new Promise((resolve, reject) => server.close(error => { statements.clear(); db.close(); error ? reject(error) : resolve(); })) };
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {

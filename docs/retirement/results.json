@@ -1,0 +1,30 @@
+{
+  "careers": [
+    {
+      "position": "FW",
+      "online": false,
+      "age": 43,
+      "seasons": 20,
+      "legacy": 10467,
+      "stages": [
+        "epilogue",
+        "decision",
+        "number",
+        "timeline"
+      ],
+      "naturalRetirement": true,
+      "careerUnchanged": true
+    },
+    {
+      "position": "GK",
+      "online": true,
+      "age": 41,
+      "seasons": 18,
+      "legacy": 11273,
+      "stages": [],
+      "naturalRetirement": true,
+      "careerUnchanged": true
+    }
+  ],
+  "consoleErrors": []
+}

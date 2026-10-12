@@ -26,6 +26,8 @@ node tests/browser-server.mjs tests/browser-career-full.py
 # 모든 능력치의 특훈 게임과 터치 사인·PNG 저장:
 node tests/browser-server.mjs tests/browser-training.py
 node tests/browser-server.mjs tests/browser-urgent.py
+# 자연 은퇴 연출·시즌 회고·엔딩 카드·재생/복구:
+node tests/browser-server.mjs tests/browser-ending.py
 # 악성 저장 파일·공개 프로필·브라우저 보안 정책:
 node tests/browser-server.mjs tests/browser-security.py
 # Instagram UA, 저장 차단, 터치 입력, PNG와 쿠키 거부 조건:
@@ -45,6 +47,8 @@ FOOTBALL_WEBKIT=1 node tests/browser-server.mjs tests/browser-instagram.py
 5. 계약 만료 시 재계약·이적을 선택합니다. 은퇴 후 커리어 카드를 PNG 이미지로 저장·공유하고 새 선수로 시작할 수 있습니다. JSON 데이터 백업은 별도 버튼에서 제공합니다.
 
 공격수·미드필더·수비수는 슈팅, 패스, 드리블, 수비, 피지컬로 평가됩니다. 골키퍼는 반사신경, 위치선정, 캐칭, 킥, 피지컬과 선방·클린시트 기록을 사용합니다. 시즌별 성장, 컨디션, 부상, 감독 신뢰, 인기와 나이에 따른 기량 하락이 반영됩니다.
+
+은퇴하면 시즌 회고와 점수·전성기 능력치가 나타나는 최종 카드를 보여 줍니다. 선수 카드의 앞면에는 통산 기록·주요상이, 뒷면에는 점수 구성·능력치 등급이 표시됩니다. 한 구단에서 1군 8시즌 이상, LEGACY SCORE 4,000점 이상을 기록하면 게임 내 영구결번 헌정과 금색 카드를 제공합니다. 현실 구단의 영구결번 규정을 의미하지 않습니다. 연출을 건너뛰거나 다시 볼 수 있으며, 진행 중 새로고침하면 이어서 표시합니다. [실제 원본 대조와 은퇴 검증](docs/retirement/review.md)에 화면·플레이 결과를 기록했습니다.
 
 특별훈련은 기존 모달·5회 시도·점수·성장 보상을 유지하며 아래 게임으로 나뉩니다. 진행 중 새로고침해도 완료한 시도와 도전 과제를 복구합니다. 업데이트 전에 시작한 타이밍 훈련은 끝까지 이어갈 수 있습니다.
 
@@ -88,18 +92,19 @@ Google OAuth는 환경 변수 연결 후 사용할 수 있으며 현재 실제 �
 
 ## 검증과 자료
 
-- 엔진 테스트 26개 + 서버 테스트 26개 + 브라우저 호환성 로직 6개: 리그 경기·통계·성장·계약·이적·은퇴·주요상 자격·통산 기록·9종 특훈 입력·기존 저장 호환·계정 분리·대전·업적·팀 ELO·거래 제한·보안 회귀·저장 차단·로그인 쿠키 거부.
+- 단위 테스트 66개(엔진 26개 + 서버 30개 + 브라우저 호환성 로직 6개 + 엔딩 4개): 리그 경기·통계·성장·계약·이적·은퇴·주요상 자격·통산 기록·9종 특훈 입력·기존 저장 호환·계정 분리·대전·업적·팀 ELO·거래 제한·보안 회귀·저장 차단·로그인 쿠키 거부·엔딩 점수 합계·헌정 자격.
 - 실제 Chromium 브라우저 검증 14개: 전체 플레이 경로, 리그·아카데미·참고 선수 선택, 파일 가져오기·내보내기, 새로고침 복구, 메뉴와 상점, 모바일 크기 320/390/430 및 데스크톱.
 - 온라인 브라우저 검증 11개: 독립된 두 계정으로 가입, 친구 매치, 은퇴 결과, 보관, 업적, 팀 배틀, 구매, 개명, 재로그인 복구.
 - 자연 은퇴까지 여섯 커리어: 네 포지션과 온라인 두 선수의 육성·계약·훈련·이적·저장 복구·최종 기록·대전 점수와 승패. [끝까지 플레이한 검수](docs/playthrough/review.md)에 원본 관찰과 결과를 기록했습니다.
 - 10개 능력치 매핑의 특훈 9종을 각 5회 플레이하고, 비회원 마우스·온라인 터치 사인과 PNG 실제 다운로드를 검증했습니다. [긴급 카드 저장 수정](docs/audit/urgent/review.md)에 원인과 증거가 있습니다.
 - [보안 검토](docs/audit/security/review.md): HTML 주입, 온라인 장비·코인 변조, 난수 예측·공개 범위, 비정상 URL, 의존성을 수정하고 보안 브라우저 3개 시나리오·개발 서버 접근 차단을 검증했습니다. `npm audit`의 알려진 취약점은 0개입니다.
+- [추가 소스 검토](docs/audit/source-review.md): OAuth 이메일 충돌·정적 파일 경계를 보완하고, SQL 준비문 재사용·불필요한 보관 선수 갱신 제거·비동기 파일 읽기를 반영했습니다.
 - [원본 플레이 분석](docs/source-analysis.md), [화면 검수](design-qa.md), [원본과 축구 버전 비교](docs/qa/home-mobile.png).
 
 원본 사이트의 서버 계산식과 계정 데이터는 사용하지 않습니다. 능력치 성장과 경기 결과는 독립적으로 구현한 축구 엔진이 계산합니다. 이 작업 공간에는 처음에 애플리케이션 파일이나 Git 커밋이 없었으며, 현재 결과는 작업 공간에 생성된 상태입니다.
 
 ## 에셋
 
-축구 경기장과 로고는 원본 화면을 시각적 참고로 사용하여 Image Gen으로 제작했습니다. Do Hyeon과 Pretendard는 SIL OFL, Phosphor 아이콘은 MIT 라이선스이며, 해당 라이선스 파일은 `public/fonts`와 `public/icons`에 포함됩니다. 132개 구단 로고는 [football-logos](https://github.com/luukhopman/football-logos)의 2025/26 참고 PNG를 로컬에 저장했습니다. 구단 로고의 권리는 각 구단에 있으며 원본 경로는 `public/clubs/sources.json`에 기록했습니다.
+축구 경기장·로고·은퇴 유니폼·엔딩 배경은 원본 화면을 시각적 참고로 사용하여 Image Gen으로 제작했습니다. Do Hyeon과 Pretendard는 SIL OFL, Phosphor 아이콘은 MIT 라이선스이며, 해당 라이선스 파일은 `public/fonts`와 `public/icons`에 포함됩니다. 132개 구단 로고는 [football-logos](https://github.com/luukhopman/football-logos)의 2025/26 참고 PNG를 로컬에 저장했습니다. 구단 로고의 권리는 각 구단에 있으며 원본 경로는 `public/clubs/sources.json`에 기록했습니다.
 
 최근 오류 수정과 회귀 검증은 [수정 보고서](docs/audit/fixes.md)에 기록했습니다. 전체 1:1 대응 여부는 [최종 대조 검수](design-qa.md)의 판정을 따릅니다.

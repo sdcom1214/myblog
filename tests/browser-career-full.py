@@ -70,6 +70,8 @@ with sync_playwright() as pw:
    else:raise AssertionError('Unknown screen '+stage)
   else:raise AssertionError('Career failed to reach natural retirement')
   c=state(p);assert c['stage']=='retired' and c['proSeasons']>=5
+  if p.locator('[data-action="ending-skip"]').count():click(p,'ending-skip')
+  if p.locator('[data-action="ending-records"]').count():click(p,'ending-records')
   assert c['retirementReason']!='선수 본인의 선택으로 축구 인생을 마무리했습니다.'
   assert len(c['records'])==c['proSeasons']+5
   assert len(trained)==3 and len(c['trainingUsed'])==3

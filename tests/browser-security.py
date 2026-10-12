@@ -4,7 +4,7 @@ from pathlib import Path
 from playwright.sync_api import sync_playwright
 
 BASE=os.environ.get('FOOTBALL_TEST_URL','http://127.0.0.1:4173')
-OUT=Path('docs/audit/security');OUT.mkdir(parents=True,exist_ok=True)
+OUT=Path(os.environ.get('FOOTBALL_EVIDENCE_DIR','docs/audit/security'));OUT.mkdir(parents=True,exist_ok=True)
 PAYLOAD='<svg/onload=alert(1)>'
 results=[]
 with sync_playwright() as pw, tempfile.TemporaryDirectory() as directory:
@@ -13,6 +13,9 @@ with sync_playwright() as pw, tempfile.TemporaryDirectory() as directory:
   ctx=browser.new_context(viewport={'width':390,'height':844},reduced_motion='reduce',accept_downloads=True,bypass_csp=bypass)
   p=ctx.new_page();p.set_default_timeout(12000);p.goto(BASE,wait_until='networkidle');return p
  def click(p,action):
+  if not action.startswith('ending-'):
+   if p.locator('[data-action="ending-skip"]').count():p.locator('[data-action="ending-skip"]').click()
+   if p.locator('[data-action="ending-records"]').count():p.locator('[data-action="ending-records"]').first.click()
   for confirm in ['scout-confirm','milestone-confirm']:
    if action!=confirm and p.locator('[data-action="'+confirm+'"]').count():p.locator('[data-action="'+confirm+'"]').click()
   old=p.evaluate("localStorage.getItem('second-life-football-v1')")

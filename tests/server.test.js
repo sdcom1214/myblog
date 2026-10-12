@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtemp, rm } from 'node:fs/promises';
+import { mkdtemp, rm, mkdir, writeFile, symlink } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { request as httpRequest } from 'node:http';
@@ -351,4 +351,75 @@ test('HTTPS mode uses secure cookies, HSTS and rejects same-host HTTP mutation o
   assert.match(login.headers.get('strict-transport-security'), /max-age=31536000/);
   await a.request('/shop/reward', 'POST', {}, 403, { Origin: f.url });
   await a.request('/shop/reward', 'POST', {}, 200, { Origin: f.url.replace('http:', 'https:') });
+});
+
+test('Google OAuth never auto-links an email/password account by email alone', async t => {
+  const f = await fixture(t, { google: { clientId: 'test-client', clientSecret: 'test-secret', redirectUri: 'https://example.test/api/auth/google/callback' } });
+  const owner = f.client(); await owner.signup('oauthcollision');
+  const originalFetch = globalThis.fetch;
+  t.mock.method(globalThis, 'fetch', (url, options) => {
+    if (String(url) === 'https://oauth2.googleapis.com/token') return Promise.resolve(Response.json({ access_token: 'test-token' }));
+    if (String(url) === 'https://openidconnect.googleapis.com/v1/userinfo') return Promise.resolve(Response.json({ sub: 'google-subject', email: 'oauthcollision@example.test', email_verified: true }));
+    return originalFetch(url, options);
+  });
+  const start = await fetch(f.url + '/api/auth/google', { redirect: 'manual' });
+  const state = new URL(start.headers.get('location')).searchParams.get('state');
+  const result = await fetch(f.url + '/api/auth/google/callback?code=test&state=' + state, { headers: { Cookie: start.headers.get('set-cookie').split(';')[0] }, redirect: 'manual' });
+  assert.equal(result.status, 409); assert.equal(result.headers.get('set-cookie'), null);
+  assert.equal(f.app.db.prepare('SELECT google_id FROM users WHERE id=?').get(owner.user.id).google_id, null);
+  assert.equal((await owner.request('/auth/session')).user.id, owner.user.id);
+});
+
+test('Google login keeps a stable provider identity and rejects a reused OAuth callback', async t => {
+  const f = await fixture(t, { google: { clientId: 'test-client', clientSecret: 'test-secret', redirectUri: 'https://example.test/api/auth/google/callback' } });
+  const other = f.client(); await other.signup('separateoauth');
+  let email = 'newgoogle@example.test'; const originalFetch = globalThis.fetch;
+  t.mock.method(globalThis, 'fetch', (url, options) => {
+    if (String(url) === 'https://oauth2.googleapis.com/token') return Promise.resolve(Response.json({ access_token: 'test-token' }));
+    if (String(url) === 'https://openidconnect.googleapis.com/v1/userinfo') return Promise.resolve(Response.json({ sub: 'stable-subject', email, email_verified: true }));
+    return originalFetch(url, options);
+  });
+  async function login() {
+    const start = await fetch(f.url + '/api/auth/google', { redirect: 'manual' });
+    const state = new URL(start.headers.get('location')).searchParams.get('state');
+    const url = f.url + '/api/auth/google/callback?code=test&state=' + state;
+    const options = { headers: { Cookie: start.headers.get('set-cookie').split(';')[0] }, redirect: 'manual' };
+    const response = await fetch(url, options); assert.equal(response.status, 302);
+    const session = await fetch(f.url + '/api/auth/session', { headers: { Cookie: response.headers.get('set-cookie').split(';')[0] } });
+    assert.equal((await fetch(url, options)).status, 403);
+    return (await session.json()).user;
+  }
+  const first = await login(); email = 'separateoauth@example.test';
+  const second = await login(); assert.equal(second.id, first.id); assert.notEqual(second.id, other.user.id);
+  assert.equal(f.app.db.prepare('SELECT google_id FROM users WHERE id=?').get(other.user.id).google_id, null);
+});
+
+test('static serving blocks dotfiles and symlinks outside the public build directory', async t => {
+  const dir = await mkdtemp(join(tmpdir(), 'football-static-'));
+  t.after(() => rm(dir, { recursive: true, force: true }));
+  const root = join(dir, 'public'); await mkdir(root);
+  await writeFile(join(root, 'index.html'), '<h1>Game</h1>');
+  await writeFile(join(root, '.env.production'), 'PRIVATE_CONFIG=secret');
+  await writeFile(join(dir, 'private.json'), '{"secret":"server-only"}');
+  await symlink(join(dir, 'private.json'), join(root, 'linked.json'));
+  const f = await fixture(t, { staticRoot: root });
+  for (const path of ['/.env.production', '/%2eenv.production', '/linked.json']) {
+    const result = await fetch(f.url + path);
+    assert.equal(result.status, 403, path); assert.doesNotMatch(await result.text(), /PRIVATE_CONFIG|server-only/);
+  }
+  const home = await fetch(f.url + '/'); assert.equal(home.status, 200); assert.equal(await home.text(), '<h1>Game</h1>');
+});
+
+test('unchanged archived careers do not incur writes or move their update timestamps', async t => {
+  const f = await fixture(t), a = f.client(); await a.signup('archivecost');
+  await youth(a); await a.command('retire'); const archived = a.data.current.id;
+  await a.command('create', { profile });
+  f.app.db.prepare('UPDATE careers SET updated=1 WHERE id=?').run(archived);
+  const changes = () => f.app.db.prepare('SELECT total_changes() AS n').get().n;
+  const before = changes(); await a.command('reveal');
+  assert.equal(changes() - before, 2, 'only the current career and save snapshot should be written');
+  assert.equal(f.app.db.prepare('SELECT updated FROM careers WHERE id=?').get(archived).updated, 1);
+  const incoming = structuredClone(a.data); incoming.archives[0].coins++;
+  await a.request('/save', 'PUT', { data: incoming, revision: a.revision });
+  assert.equal(f.app.db.prepare('SELECT verified FROM careers WHERE id=?').get(archived).verified, 0);
 });

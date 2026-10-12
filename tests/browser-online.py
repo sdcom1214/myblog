@@ -24,6 +24,9 @@ with sync_playwright() as pw:
         page.set_default_timeout(10000)
         page.goto(BASE, wait_until='networkidle')
     def click(p, action):
+        if not action.startswith('ending-'):
+            if p.locator('[data-action="ending-skip"]').count(): p.locator('[data-action="ending-skip"]').click()
+            if p.locator('[data-action="ending-records"]').count(): p.locator('[data-action="ending-records"]').first.click()
         if action != 'milestone-confirm' and p.locator('[data-action="milestone-confirm"]').count(): p.locator('[data-action="milestone-confirm"]').click()
         if action != 'scout-confirm' and p.locator('[data-action="scout-confirm"]').count(): p.locator('[data-action="scout-confirm"]').click()
         if action=='nav:home' and not p.locator('[data-action="nav:home"]').count(): action='home'

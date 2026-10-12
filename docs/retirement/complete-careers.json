@@ -1,0 +1,72 @@
+{
+  "careers": [
+    {
+      "name": "FW",
+      "position": "FW",
+      "finalAge": 40,
+      "seasons": 17,
+      "peakOvr": 99.9,
+      "legacy": 10542,
+      "transfers": 5,
+      "milestonePopups": 5,
+      "reason": "39세 시즌을 마친 뒤 기량과 출전 기회를 고려해 선수 생활을 마무리했습니다."
+    },
+    {
+      "name": "MF",
+      "position": "MF",
+      "finalAge": 43,
+      "seasons": 20,
+      "peakOvr": 99.9,
+      "legacy": 6357,
+      "transfers": 6,
+      "milestonePopups": 5,
+      "reason": "42세 시즌을 마친 뒤 기량과 출전 기회를 고려해 선수 생활을 마무리했습니다."
+    },
+    {
+      "name": "DF",
+      "position": "DF",
+      "finalAge": 37,
+      "seasons": 14,
+      "peakOvr": 99.9,
+      "legacy": 2066,
+      "transfers": 4,
+      "milestonePopups": 2,
+      "reason": "36세 시즌을 마친 뒤 기량과 출전 기회를 고려해 선수 생활을 마무리했습니다."
+    },
+    {
+      "name": "GK",
+      "position": "GK",
+      "finalAge": 43,
+      "seasons": 20,
+      "peakOvr": 100,
+      "legacy": 8286,
+      "transfers": 6,
+      "milestonePopups": 8,
+      "reason": "42세 시즌을 마친 뒤 기량과 출전 기회를 고려해 선수 생활을 마무리했습니다."
+    },
+    {
+      "name": "online-0",
+      "position": "FW",
+      "finalAge": 43,
+      "seasons": 20,
+      "peakOvr": 100,
+      "legacy": 11879,
+      "transfers": 6,
+      "milestonePopups": 5,
+      "reason": "42세 시즌을 마친 뒤 기량과 출전 기회를 고려해 선수 생활을 마무리했습니다."
+    },
+    {
+      "name": "online-1",
+      "position": "FW",
+      "finalAge": 40,
+      "seasons": 17,
+      "peakOvr": 100,
+      "legacy": 7185,
+      "transfers": 5,
+      "milestonePopups": 6,
+      "reason": "39세 시즌을 마친 뒤 기량과 출전 기회를 고려해 선수 생활을 마무리했습니다."
+    }
+  ],
+  "consoleErrors": [],
+  "forcedRetirement": false
+}
